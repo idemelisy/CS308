@@ -8,21 +8,21 @@ import {
 // Sign Up Function
 export const signUp = async (email, password) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const token = await userCredential.user.getIdToken();  // 🔥 Get JWT Token
-    localStorage.setItem("token", token);  // 🔥 Store JWT Token
+    const token = await userCredential.user.getIdToken();
+    localStorage.setItem("token", token);
     return token;
 };
 
 // Login Function
 export const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const token = await userCredential.user.getIdToken();  // 🔥 Get JWT Token
-    localStorage.setItem("token", token);  // 🔥 Store JWT Token
+    const token = await userCredential.user.getIdToken();
+    localStorage.setItem("token", token);
     return token;
 };
 
 // Logout Function
 export const logout = async () => {
     await signOut(auth);
-    localStorage.removeItem("token");  // Remove JWT Token
+    localStorage.removeItem("token");
 };

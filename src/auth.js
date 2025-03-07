@@ -5,7 +5,6 @@ import {
     signOut
 } from "firebase/auth";
 
-// Sign Up Function
 export const signUp = async (email, password) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const token = await userCredential.user.getIdToken();
@@ -13,7 +12,6 @@ export const signUp = async (email, password) => {
     return token;
 };
 
-// Login Function
 export const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const token = await userCredential.user.getIdToken();
@@ -21,7 +19,6 @@ export const login = async (email, password) => {
     return token;
 };
 
-// Logout Function
 export const logout = async () => {
     await signOut(auth);
     localStorage.removeItem("token");

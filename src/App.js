@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
-
+import { AuthProvider } from "./AuthContext";
+import ProtectedRoute from './ProtectedRoute';//protected route ile access sadece gereklilere
 import Register from './Register';
 import CustomerRegister from './CustomerRegister';
 import SalesManagerRegister from './SalesManagerRegister';
@@ -13,17 +14,19 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/register/customer" element={<CustomerRegister />} />
-        <Route path="/register/sales-manager" element={<SalesManagerRegister />} />
-        <Route path="/register/product-manager" element={<ProductManagerRegister />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/continue" element={<Continue />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/register/customer" element={<CustomerRegister />} />
+          <Route path="/register/sales-manager" element={<SalesManagerRegister />} />
+          <Route path="/register/product-manager" element={<ProductManagerRegister />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/continue" element={<Continue />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

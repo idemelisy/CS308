@@ -1,0 +1,56 @@
+package org.project.service;
+
+import org.project.model.*;
+import org.project.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+import java.util.Map;
+
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository user_repo;
+
+    private String generate_id(){
+        return UUID.randomUUID().toString();
+    }
+
+    public User general_register(String user_type, String name, String surname, String email, String password, Map<String, String> additional_params){
+        String new_id = generate_id();
+        User new_user;
+
+        switch (user_type.toLowerCase()){
+            case "customer":
+                new_user = new Customer(new_id, name, surname, email, password);
+                break;
+
+            case "sales_manager":
+                String company_name = additional_params.get("company_name");
+                new_user = new SalesManager(new_id, name, surname, email, password, company_name);
+                break;
+
+            case "product_manager":
+                String department = additional_params.get("department");
+                new_user = new ProductManager(new_id, name, surname, email, password, department);
+                break;
+
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        return user_repo.save(new_user);
+    }
+
+    public String login(String email, String password){
+
+        String token = "token";
+        return token;
+
+    }
+
+}

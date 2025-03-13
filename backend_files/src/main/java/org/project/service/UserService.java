@@ -21,6 +21,10 @@ public class UserService {
     }
 
     public User general_register(String user_type, String name, String surname, String email, String password, Map<String, String> additional_params){
+        if (user_repo.existsByEmail(email)) {
+        throw new IllegalArgumentException("Email already in use.");
+        }
+        
         String new_id = generate_id();
         User new_user;
 
@@ -48,6 +52,10 @@ public class UserService {
 
     public User login(String email, String password){
         User user = user_repo.findByEmail(email);
+
+        if(user == null){
+            throw new RuntimeException("No such user");
+        }
 
         if(!password.matches(user.getPassword())){
             throw new RuntimeException("Invalid password");

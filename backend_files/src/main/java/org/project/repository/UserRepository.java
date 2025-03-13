@@ -5,4 +5,5 @@ import org.project.model.User;
 
 public interface UserRepository extends MongoRepository<User, String>{
     User findByEmail(String email);
+    boolean existsByEmail(String email);
 }

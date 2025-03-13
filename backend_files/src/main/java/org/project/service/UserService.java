@@ -46,11 +46,14 @@ public class UserService {
         return user_repo.save(new_user);
     }
 
-    public String login(String email, String password){
+    public User login(String email, String password){
+        User user = user_repo.findByEmail(email);
 
-        String token = "token";
-        return token;
+        if(!password.matches(user.getPassword())){
+            throw new RuntimeException("Invalid password");
+        }
 
+        return user;
     }
 
 }

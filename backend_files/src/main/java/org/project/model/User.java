@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 
-
 public class User {
 
     @Id
@@ -24,11 +23,4 @@ public class User {
     private String password;
     private String email;
 
-    public User(String name, String account_id, String surname, String password, String email) {
-        this.name = name;
-        this.account_id = account_id;
-        this.surname = surname;
-        this.password = password;
-        this.email = email;
-    }
 }

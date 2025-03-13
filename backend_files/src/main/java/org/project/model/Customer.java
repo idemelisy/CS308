@@ -17,4 +17,5 @@ public class Customer extends User{
     public Customer(String account_id, String name, String surname, String email, String password){
         super(account_id, name, surname, email, password);
     }
+
 }

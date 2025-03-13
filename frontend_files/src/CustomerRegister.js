@@ -8,13 +8,43 @@ function CustomerRegister() {
     name: '',
     surname: '',
     email: '',
+    password: '',
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);  // Save to your DB or handle it
-    navigate('/');
+
+    try {
+      const response = await fetch("http://localhost:8080/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userType: "customer", // Assuming your backend needs this
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          password: formData.password,
+          additionalParams: {}, // Sending empty object
+        }),
+      });
+
+      const data = await response.text();
+      console.log("Server Response:", data);
+
+      if (response.ok) {
+        alert("Registration Successful!");
+        navigate("/");  // Redirect to homepage
+      } else {
+        alert("Error: " + data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong.");
+    }
   };
+
 
   return (
     <div className="container">

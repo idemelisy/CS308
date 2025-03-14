@@ -1,4 +1,3 @@
-// pages/ProductManagerRegister.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
@@ -10,12 +9,41 @@ function ProductManagerRegister() {
     surname: '',
     email: '',
     department: '', // New field for Product Manager
+    password: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);  // Save to your DB or handle it
-    navigate('/');
+
+    try {
+      const response = await fetch("http://localhost:8080/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userType: "product_manager", // Assuming your backend needs this
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          password: formData.password,
+          additionalParams: {department: formData.department},
+        }),
+      });
+
+      const data = await response.text();
+      console.log("Server Response:", data);
+
+      if (response.ok) {
+        alert("Registration Successful!");
+        navigate("/home");
+      } else {
+        alert("Error: " + data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong.");
+    }
   };
 
   return (
@@ -53,6 +81,7 @@ function ProductManagerRegister() {
           onChange={(e) => setFormData({ ...formData, department: e.target.value })}
           required
         />
+
         <label>Password</label>
         <input
           type="password"

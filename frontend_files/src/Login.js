@@ -9,11 +9,31 @@ function Login() {
     password: '',
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Logging in with:', formData);
-    // Here, you would usually send the data to your backend for authentication.
-    navigate('/'); // Redirect to homepage after login
+
+    try {
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.text();
+      console.log("Server Response:", data);
+
+      if (response.ok) {
+        alert("Login Successful!");
+        navigate("/home");
+      } else {
+        alert("Error: " + data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong.");
+    }
   };
 
   return (

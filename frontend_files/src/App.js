@@ -9,6 +9,7 @@ import SalesManagerRegister from './SalesManagerRegister';
 import ProductManagerRegister from './ProductManagerRegister';
 import Login from './Login';
 import Continue from './Continue';
+import Home from "./Home";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,6 +25,7 @@ function App() {
           <Route path="/register/product-manager" element={<ProductManagerRegister />} />
           <Route path="/login" element={<Login />} />
           <Route path="/continue" element={<Continue />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
       </Router>
     </AuthProvider>

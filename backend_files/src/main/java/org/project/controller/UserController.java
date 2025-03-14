@@ -30,9 +30,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam String email, @RequestParam String pass){
+    public String loginUser(@RequestBody UserRequest userRequest){
         try{
-            userService.login(email, pass);
+            userService.login(
+                    userRequest.getEmail(),
+                    userRequest.getPassword()
+            );
 
             return "Successfull - POST Login Request";
         } catch (RuntimeException e){

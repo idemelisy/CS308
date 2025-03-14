@@ -7,7 +7,7 @@ import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
-@TypeAlias("product_manager")
+@TypeAlias("sales_manager")
 @NoArgsConstructor
 @Getter
 @Setter

@@ -23,8 +23,12 @@ function SalesManagerRegister() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userType: "salesManager",
-          ...formData,
+          userType: "sales_manager", // Assuming your backend needs this
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          password: formData.password,
+          additionalParams: {company_name: formData.companyName},
         }),
       });
       

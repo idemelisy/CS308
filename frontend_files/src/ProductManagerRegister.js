@@ -21,7 +21,14 @@ function ProductManagerRegister() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          userType: "product_manager", // Assuming your backend needs this
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          password: formData.password,
+          additionalParams: {department: formData.department},
+        }),
       });
 
       const data = await response.text();

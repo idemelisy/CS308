@@ -1,24 +1,58 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './App.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signUp } from "./auth"; // Import Firebase signup function
+import "./App.css";
 
 function CustomerRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    surname: '',
-    email: '',
+    name: "",
+    surname: "",
+    email: "",
+    password: "",
   });
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);  // Save to your DB or handle it
-    navigate('/');
+
+    try {
+      // Step 1: Register in Firebase
+      const token = await signUp(formData.email, formData.password);
+      console.log("Firebase Token:", token);
+
+      // Step 2: Send Data to Backend with Role = Customer
+      const response = await fetch("http://localhost:8080/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          role: "CUSTOMER", // 👈 Add role for backend identification
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to register user in backend");
+      }
+
+      console.log("Customer registration successful!");
+      navigate("/");
+    } catch (error) {
+      console.error("Registration failed:", error.message);
+      setError("Registration failed. Please try again.");
+    }
   };
 
   return (
     <div className="container">
       <h1>Register as a Customer</h1>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input
@@ -43,13 +77,17 @@ function CustomerRegister() {
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
         />
+
         <label>Password</label>
         <input
           type="password"
           value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
           required
         />
+
         <button type="submit">Register</button>
       </form>
     </div>

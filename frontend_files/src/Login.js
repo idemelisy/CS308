@@ -1,19 +1,39 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './App.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "./auth";
 
 function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Logging in with:', formData);
-    // Here, you would usually send the data to your backend for authentication.
-    navigate('/'); // Redirect to homepage after login
+    
+    try {
+      const token = await login(formData.email, formData.password);
+      console.log("Firebase Token:", token);
+
+      const response = await fetch("http://localhost:8080/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Send Firebase token to backend
+        },
+        body: JSON.stringify({ email: formData.email })
+      });
+
+      if (!response.ok) {
+        throw new Error("Backend authentication failed");
+      }
+
+      console.log("Logged in successfully!");
+      navigate("/"); // Redirect to homepage after successful login
+    } catch (error) {
+      console.error("Login failed:", error.message);
+    }
   };
 
   return (

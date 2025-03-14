@@ -35,7 +35,7 @@ function CustomerRegister() {
 
       if (response.ok) {
         alert("Registration Successful!");
-        navigate("/");  // Redirect to homepage
+        navigate("/home");  // Redirect to homepage
       } else {
         alert("Error: " + data);
       }

@@ -29,7 +29,7 @@ function ProductManagerRegister() {
 
       if (response.ok) {
         alert("Registration Successful!");
-        navigate("/");
+        navigate("/home");
       } else {
         alert("Error: " + data);
       }

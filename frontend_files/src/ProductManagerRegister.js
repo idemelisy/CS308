@@ -12,6 +12,8 @@ function ProductManagerRegister() {
     password: ''
   });
 
+  const [error, setError] = useState(null); // ✅ Added error state
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -27,7 +29,7 @@ function ProductManagerRegister() {
           surname: formData.surname,
           email: formData.email,
           password: formData.password,
-          additionalParams: {department: formData.department},
+          additionalParams: { department: formData.department },
         }),
       });
 
@@ -37,19 +39,22 @@ function ProductManagerRegister() {
       if (response.ok) {
         alert("Registration Successful!");
         navigate("/home");
+        setError(null); // ✅ Clear error if successful
       } else {
         alert("Error: " + data);
+        setError(data); // ✅ Store error message
       }
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong.");
+      setError("Something went wrong."); // ✅ Store error message
     }
   };
 
   return (
     <div className="container">
       <h1>Register as a Product Manager</h1>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error}</p>} {/* ✅ Now error is correctly used */}
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input

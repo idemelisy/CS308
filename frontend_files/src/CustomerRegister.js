@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './App.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signUp } from "./auth"; // Import Firebase signup function
+import "./App.css";
 
 function CustomerRegister() {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ function CustomerRegister() {
   return (
     <div className="container">
       <h1>Register as a Customer</h1>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input
@@ -73,13 +75,17 @@ function CustomerRegister() {
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
         />
+
         <label>Password</label>
         <input
           type="password"
           value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
           required
         />
+
         <button type="submit">Register</button>
       </form>
     </div>

@@ -49,6 +49,7 @@ function ProductManagerRegister() {
   return (
     <div className="container">
       <h1>Register as a Product Manager</h1>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input
@@ -78,7 +79,9 @@ function ProductManagerRegister() {
         <input
           type="text"
           value={formData.department}
-          onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, department: e.target.value })
+          }
           required
         />
 
@@ -86,7 +89,9 @@ function ProductManagerRegister() {
         <input
           type="password"
           value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
           required
         />
 

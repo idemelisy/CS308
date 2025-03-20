@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.Map;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -16,19 +17,19 @@ public class UserService {
     @Autowired
     private UserRepository user_repo;
 
-    private String generate_id(){
+    private String generate_id() {
         return UUID.randomUUID().toString();
     }
 
-    public User general_register(String user_type, String name, String surname, String email, String password, Map<String, String> additional_params){
+    public User general_register(String user_type, String name, String surname, String email, String password, Map<String, String> additional_params) {
         if (user_repo.existsByEmail(email)) {
-        throw new IllegalArgumentException("Email already in use.");
+            throw new IllegalArgumentException("Email already in use.");
         }
-        
+
         String new_id = generate_id();
         User new_user;
 
-        switch (user_type.toLowerCase()){
+        switch (user_type.toLowerCase()) {
             case "customer":
                 new_user = new Customer(new_id, name, surname, email, password);
                 break;
@@ -50,18 +51,38 @@ public class UserService {
         return user_repo.save(new_user);
     }
 
-    public User login(String email, String password){
+    public User login(String email, String password) {
         User user = user_repo.findByEmail(email);
 
-        if(user == null){
+        if (user == null) {
             throw new RuntimeException("No such user");
         }
 
-        if(!password.matches(user.getPassword())){
+        if (!password.matches(user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
         return user;
     }
 
+    public List<Customer> getAllCustomers() {
+        return user_repo.findAll().stream()
+                .filter(user -> user instanceof Customer)
+                .map(user -> (Customer) user)
+                .collect(Collectors.toList());
+    }
+    
+    public List<ProductManager> getAllProductManagers() {
+        return user_repo.findAll().stream()
+                .filter(user -> user instanceof ProductManager)
+                .map(user -> (ProductManager) user)
+                .collect(Collectors.toList());
+    }
+
+    public List<SalesManager> getAllSalesManagers() {
+        return user_repo.findAll().stream()
+                .filter(user -> user instanceof SalesManager)
+                .map(user -> (SalesManager) user)
+                .collect(Collectors.toList());
+    }
 }

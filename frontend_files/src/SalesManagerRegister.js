@@ -1,7 +1,7 @@
-// pages/SalesManagerRegister.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './App.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signUp } from "./auth"; // Import Firebase signup function
+import "./App.css";
 
 function SalesManagerRegister() {
   const navigate = useNavigate();
@@ -50,6 +50,7 @@ function SalesManagerRegister() {
   return (
     <div className="container">
       <h1>Register as a Sales Manager</h1>
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />

@@ -6,48 +6,44 @@ import "./App.css";
 function SalesManagerRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-    companyName: "",
-    password: "",
+    name: '',
+    surname: '',
+    email: '',
+    password: '',
+    companyName: '',
   });
-
-  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Step 1: Register in Firebase
-      const token = await signUp(formData.email, formData.password);
-      console.log("Firebase Token:", token);
-
-      // Step 2: Send Data to Backend with Role = Sales Manager
-      const response = await fetch("http://localhost:8080/api/register", {
+      const response = await fetch("http://localhost:8080/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          userType: "sales_manager", // Assuming your backend needs this
           name: formData.name,
           surname: formData.surname,
           email: formData.email,
-          companyName: formData.companyName, // 👈 Send company name
-          role: "SALES_MANAGER", // 👈 Identify role in backend
+          password: formData.password,
+          additionalParams: {company_name: formData.companyName},
         }),
       });
+      
+      const data = await response.text();
+      console.log("Server Response:", data);
 
-      if (!response.ok) {
-        throw new Error("Failed to register user in backend");
+      if (response.ok) {
+        alert("Registration Successful!");
+        navigate("/home");
+      } else {
+        alert("Error: " + data);
       }
-
-      console.log("Sales Manager registration successful!");
-      navigate("/");
     } catch (error) {
-      console.error("Registration failed:", error.message);
-      setError("Registration failed. Please try again.");
+      console.error("Error:", error);
+      alert("Something went wrong.");
     }
   };
 
@@ -57,49 +53,20 @@ function SalesManagerRegister() {
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Name</label>
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
-        />
-
+        <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+        
         <label>Surname</label>
-        <input
-          type="text"
-          value={formData.surname}
-          onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-          required
-        />
-
+        <input type="text" value={formData.surname} onChange={(e) => setFormData({ ...formData, surname: e.target.value })} required />
+        
         <label>Email</label>
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-
+        <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+        
         <label>Company Name</label>
-        <input
-          type="text"
-          value={formData.companyName}
-          onChange={(e) =>
-            setFormData({ ...formData, companyName: e.target.value })
-          }
-          required
-        />
-
+        <input type="text" value={formData.companyName} onChange={(e) => setFormData({ ...formData, companyName: e.target.value })} required />
+        
         <label>Password</label>
-        <input
-          type="password"
-          value={formData.password}
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-          required
-        />
-
+        <input type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
+        
         <button type="submit">Register</button>
       </form>
     </div>

@@ -11,28 +11,28 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      const token = await login(formData.email, formData.password);
-      console.log("Firebase Token:", token);
 
-      const response = await fetch("http://localhost:8080/api/login", {
+    try {
+      const response = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // Send Firebase token to backend
         },
-        body: JSON.stringify({ email: formData.email })
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error("Backend authentication failed");
-      }
+      const data = await response.text();
+      console.log("Server Response:", data);
 
-      console.log("Logged in successfully!");
-      navigate("/"); // Redirect to homepage after successful login
+      if (response.ok) {
+        alert("Login Successful!");
+        navigate("/home");
+      } else {
+        alert("Error: " + data);
+      }
     } catch (error) {
-      console.error("Login failed:", error.message);
+      console.error("Error:", error);
+      alert("Something went wrong.");
     }
   };
 

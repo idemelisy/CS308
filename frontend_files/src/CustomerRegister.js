@@ -6,48 +6,46 @@ import "./App.css";
 function CustomerRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-    password: "",
+    name: '',
+    surname: '',
+    email: '',
+    password: '',
   });
-
-  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Step 1: Register in Firebase
-      const token = await signUp(formData.email, formData.password);
-      console.log("Firebase Token:", token);
-
-      // Step 2: Send Data to Backend with Role = Customer
-      const response = await fetch("http://localhost:8080/api/register", {
+      const response = await fetch("http://localhost:8080/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          userType: "customer", // Assuming your backend needs this
           name: formData.name,
           surname: formData.surname,
           email: formData.email,
-          role: "CUSTOMER", // 👈 Add role for backend identification
+          password: formData.password,
+          additionalParams: {}, // Sending empty object
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to register user in backend");
-      }
+      const data = await response.text();
+      console.log("Server Response:", data);
 
-      console.log("Customer registration successful!");
-      navigate("/");
+      if (response.ok) {
+        alert("Registration Successful!");
+        navigate("/home");  // Redirect to homepage
+      } else {
+        alert("Error: " + data);
+      }
     } catch (error) {
-      console.error("Registration failed:", error.message);
-      setError("Registration failed. Please try again.");
+      console.error("Error:", error);
+      alert("Something went wrong.");
     }
   };
+
 
   return (
     <div className="container">

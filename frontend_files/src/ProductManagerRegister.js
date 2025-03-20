@@ -1,51 +1,48 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { signUp } from "./auth"; // Import Firebase signup function
-import "./App.css";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './App.css';
 
 function ProductManagerRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-    department: "",
-    password: "",
+    name: '',
+    surname: '',
+    email: '',
+    department: '', // New field for Product Manager
+    password: ''
   });
-
-  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const token = await signUp(formData.email, formData.password);
-      console.log("Firebase Token:", token);
-
-      const response = await fetch("http://localhost:8080/api/register", {
+      const response = await fetch("http://localhost:8080/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          userType: "product_manager", // Assuming your backend needs this
           name: formData.name,
           surname: formData.surname,
           email: formData.email,
-          department: formData.department,
-          role: "PRODUCT_MANAGER",
+          password: formData.password,
+          additionalParams: {department: formData.department},
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to register user in backend");
-      }
+      const data = await response.text();
+      console.log("Server Response:", data);
 
-      console.log("Product Manager registration successful!");
-      navigate("/");
+      if (response.ok) {
+        alert("Registration Successful!");
+        navigate("/home");
+      } else {
+        alert("Error: " + data);
+      }
     } catch (error) {
-      console.error("Registration failed:", error.message);
-      setError("Registration failed. Please try again.");
+      console.error("Error:", error);
+      alert("Something went wrong.");
     }
   };
 

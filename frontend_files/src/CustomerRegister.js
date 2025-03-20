@@ -12,6 +12,8 @@ function CustomerRegister() {
     password: '',
   });
 
+  const [error, setError] = useState(null); // ✅ Added missing error state
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -36,21 +38,23 @@ function CustomerRegister() {
 
       if (response.ok) {
         alert("Registration Successful!");
-        navigate("/home");  // Redirect to homepage
+        navigate("/home"); // Redirect to homepage
+        setError(null); // ✅ Clear error if success
       } else {
         alert("Error: " + data);
+        setError(data); // ✅ Store error message
       }
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong.");
+      setError("Something went wrong."); // ✅ Store error message
     }
   };
-
 
   return (
     <div className="container">
       <h1>Register as a Customer</h1>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error}</p>} {/* ✅ Now error state exists */}
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input

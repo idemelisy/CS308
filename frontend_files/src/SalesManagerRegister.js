@@ -13,6 +13,8 @@ function SalesManagerRegister() {
     companyName: '',
   });
 
+  const [error, setError] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -28,29 +30,32 @@ function SalesManagerRegister() {
           surname: formData.surname,
           email: formData.email,
           password: formData.password,
-          additionalParams: {company_name: formData.companyName},
+          additionalParams: { company_name: formData.companyName },
         }),
       });
-      
+
       const data = await response.text();
       console.log("Server Response:", data);
 
       if (response.ok) {
         alert("Registration Successful!");
         navigate("/home");
+        setError(null);
       } else {
         alert("Error: " + data);
+        setError(data);
       }
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong.");
+      setError("Something went wrong.");
     }
   };
 
   return (
     <div className="container">
       <h1>Register as a Sales Manager</h1>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error}</p>} 
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />

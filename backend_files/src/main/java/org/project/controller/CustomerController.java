@@ -18,14 +18,4 @@ public class CustomerController {
     public List<Customer> getAllCustomers() {
         return userService.getAllCustomers();
     }
-
-    @PostMapping("/register")
-    public String registerCustomer(@RequestBody Customer customer) {
-        try {
-            userService.registerCustomer(customer);
-            return "Customer registered successfully!";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
-    }
 }

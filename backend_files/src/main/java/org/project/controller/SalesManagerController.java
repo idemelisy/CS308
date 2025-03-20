@@ -18,14 +18,4 @@ public class SalesManagerController {
     public List<SalesManager> getAllSalesManagers() {
         return userService.getAllSalesManagers();
     }
-
-    @PostMapping("/register")
-    public String registerSalesManager(@RequestBody SalesManager salesManager) {
-        try {
-            userService.registerSalesManager(salesManager);
-            return "Sales Manager registered successfully!";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
-    }
 }

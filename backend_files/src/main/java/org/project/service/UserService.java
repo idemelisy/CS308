@@ -71,11 +71,7 @@ public class UserService {
                 .map(user -> (Customer) user)
                 .collect(Collectors.toList());
     }
-
-    public void registerCustomer(Customer customer) {
-        user_repo.save(customer);
-    }
-
+    
     public List<ProductManager> getAllProductManagers() {
         return user_repo.findAll().stream()
                 .filter(user -> user instanceof ProductManager)
@@ -83,18 +79,10 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void registerProductManager(ProductManager productManager) {
-        user_repo.save(productManager);
-    }
-
     public List<SalesManager> getAllSalesManagers() {
         return user_repo.findAll().stream()
                 .filter(user -> user instanceof SalesManager)
                 .map(user -> (SalesManager) user)
                 .collect(Collectors.toList());
-    }
-
-    public void registerSalesManager(SalesManager salesManager) {
-        user_repo.save(salesManager);
     }
 }

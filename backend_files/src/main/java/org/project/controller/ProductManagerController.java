@@ -18,14 +18,4 @@ public class ProductManagerController {
     public List<ProductManager> getAllProductManagers() {
         return userService.getAllProductManagers();
     }
-
-    @PostMapping("/register")
-    public String registerProductManager(@RequestBody ProductManager productManager) {
-        try {
-            userService.registerProductManager(productManager);
-            return "Product Manager registered successfully!";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
-    }
 }

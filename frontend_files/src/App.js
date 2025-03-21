@@ -10,7 +10,7 @@ import ProductManagerRegister from './ProductManagerRegister';
 import Login from './Login';
 import Continue from './Continue';
 import Home from "./Home";
-
+import Product from "./Product";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -26,6 +26,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/continue" element={<Continue />} />
           <Route path="/home" element={<Home />} />
+        <Route path="/product/:id" element={<Product />} />
         </Routes>
       </Router>
     </AuthProvider>

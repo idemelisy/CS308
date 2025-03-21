@@ -62,3 +62,180 @@ button:focus {
 .footer a:hover {
   color: #ECA427; /* Yellow */
 }
+/* Ensure body and root take full height */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #f5f5f5;
+}
+
+/* Full-screen container */
+.homepage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  padding-top: 200px; /* To prevent overlap with the navbar */
+}
+
+/* Navbar styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Search bar and nav-links in one row */
+.navbar .search-bar {
+  /*flex: 1;*/
+  margin: 0 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width:800px;
+  margin-right: auto;
+}
+
+/* Navigation links */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 50px;
+  margin-right: auto;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+
+/* Product grid - Full width, horizontal scrolling */
+.product-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Ensures responsiveness */
+  gap: 20px;
+  width: 90%;
+  max-width: 1200px;
+  padding: 20px;
+}
+
+/* Product cards - Ensure they are well spaced */
+.product-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 250px;
+}
+
+.product-image {
+  width: 100%;
+  border-radius: 5px;
+}
+
+/* Footer */
+.footer {
+  margin-top: auto;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  background-color: white;
+  border-top: 1px solid #ccc;
+}
+.product-page {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+  display: flex;
+  gap: 20px;
+}
+
+.product-image {
+  width: 300px;
+  border-radius: 8px;
+}
+
+.product-details {
+  flex: 1;
+}
+
+.product-description {
+  font-size: 1rem;
+  color: #555;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FF921C;
+}
+
+.product-rating {
+  font-size: 1.2rem;
+  color: #FF921C;
+}
+
+.add-to-cart {
+  background-color: #FF921C;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.add-to-cart:hover {
+  background-color: #ECA427;
+}
+
+/* Reviews Section */
+.reviews-section {
+  margin-top: 20px;
+}
+
+.review {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+.product-card-link {
+  text-decoration: none;  /* Remove underline */
+  color: inherit;  /* Keep original text colors */
+}
+
+.product-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 250px;
+  cursor: pointer;  /* Make it look clickable */
+  transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+  transform: scale(1.05);  /* Slight zoom effect on hover */
+}

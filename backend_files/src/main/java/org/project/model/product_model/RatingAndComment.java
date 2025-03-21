@@ -12,6 +12,7 @@ import lombok.Setter;
 
 public class RatingAndComment {
 
+    private String user_id;
     private int rating;
     private String comment;
     

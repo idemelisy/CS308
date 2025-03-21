@@ -1,0 +1,26 @@
+/* Home.css */
+.home-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 ürün yan yana */
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  @media (max-width: 1024px) {
+    .product-list {
+      grid-template-columns: repeat(2, 1fr); /* Orta ekranlarda 2 sütun */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .product-list {
+      grid-template-columns: repeat(1, 1fr); /* Mobilde tek sütun */
+    }
+  }
+  

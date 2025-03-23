@@ -24,3 +24,18 @@
     }
   }
   
+  .product-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%; /* Ensure it stays within the box */
+    font-size: 14px; /* Adjust as needed */
+    color: #555;
+  }
+  .product-card:hover .product-description {
+    -webkit-line-clamp: unset;
+    white-space: normal;
+  }
+  

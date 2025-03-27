@@ -2,12 +2,16 @@ package org.project.service;
 
 import org.project.model.product_model.*;
 import org.project.repository.ProductRepository;
+import org.project.repository.CommentRepository;
+import org.project.repository.RatingRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List; 
-
+import java.util.List;
+import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 public class ProductService {
@@ -30,9 +34,6 @@ public class ProductService {
     public List<Product> list_all_products(){
         return product_repo.findAll();
     }
-
-
-
 
     public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
         String mutual_id = generate_id();
@@ -61,9 +62,6 @@ public class ProductService {
         return rating_repo.save(new Rating(rating_id, product_id, user_id, rating, now));
     }
 
-
-
-
     public List<ReviewObject> get_merged_reviews(String product_id){
         List<Rating> ratings = list_product_ratings(product_id);
         List<Comment> comments = list_product_comments(product_id);
@@ -85,8 +83,8 @@ public class ProductService {
             
             for(ReviewObject review: merged_reviews){
                 if(review.getUserId().equals(comment.getUserId()) && 
-                review.getProductId().equals(comment.getProductId()) &&
-                review.getDate().equals(comment.getDate())){
+                   review.getProductId().equals(comment.getProductId()) &&
+                   review.getDate().equals(comment.getDate())) {
 
                     review.setComment_id(comment.getComment_id());
                     review.setContent(comment.getContent());
@@ -118,7 +116,6 @@ public class ProductService {
     }
 
     public double calculate_average_rating(String product_id){
-
         List<Rating> ratings = list_product_ratings(product_id);
         int total = 0;
         if (ratings == null || ratings.isEmpty()) {
@@ -130,26 +127,27 @@ public class ProductService {
 
         return (double) total / ratings.size();
     }
-/*
+
+    /*
     public Product addProduct(Product newProduct) {
-    return product_repo.save(newProduct);
+        return product_repo.save(newProduct);
     }
 
     public Product updateProduct(String product_id, Product updatedProduct) {
-    Product existingProduct = product_repo.findById(product_id).orElse(null);
-    if (existingProduct != null) {
-        existingProduct.setProductName(updatedProduct.getProductName());
-        existingProduct.setDescription(updatedProduct.getDescription());
-        existingProduct.setUnit_price(updatedProduct.getUnit_price());
-        existingProduct.setStock(updatedProduct.getStock());
-        return product_repo.save(existingProduct);
-    }
-    return null;
+        Product existingProduct = product_repo.findById(product_id).orElse(null);
+        if (existingProduct != null) {
+            existingProduct.setProductName(updatedProduct.getProductName());
+            existingProduct.setDescription(updatedProduct.getDescription());
+            existingProduct.setUnit_price(updatedProduct.getUnit_price());
+            existingProduct.setStock(updatedProduct.getStock());
+            return product_repo.save(existingProduct);
+        }
+        return null;
     }
 
     public String deleteProduct(String product_id) {
-    product_repo.deleteById(product_id);
-    return "Product deleted successfully!";
+        product_repo.deleteById(product_id);
+        return "Product deleted successfully!";
     }
-*/
+    */
 }

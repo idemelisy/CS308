@@ -1,5 +1,6 @@
 package org.project.controller;
 
+import org.project.model.product_model.Comment;
 import org.project.model.product_model.Product;
 import org.project.model.product_model.ReviewObject;
 import org.project.service.ProductService;
@@ -26,15 +27,22 @@ public class ProductController {
         return productService.list_all_products();
     }
 
-    @GetMapping("/{product_id}/reviews")
-    public List<ReviewObject> getProductReviews(@PathVariable String product_id) {
-        return productService.get_merged_reviews(product_id);
-    }
-
     @GetMapping("/{product_id}/average-rating")
     public double getAverageRating(@PathVariable String product_id) {
         return productService.calculate_average_rating(product_id);
     }
+
+    @GetMapping("/{product_id}/comments")
+    public List<Comment> getCommentsByProductId(@PathVariable String productId) {
+        return productService.list_product_comments(productId);
+    }
+
+    /*
+    @GetMapping("/{product_id}/reviews")
+    public List<ReviewObject> getProductReviews(@PathVariable String product_id) {
+        return productService.get_merged_reviews(product_id);
+    }
+    */
 
     /*
     @PostMapping("/add")

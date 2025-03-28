@@ -12,6 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 
+// to be deleted
+
 public class ReviewObject {
     
     private String rating_id;

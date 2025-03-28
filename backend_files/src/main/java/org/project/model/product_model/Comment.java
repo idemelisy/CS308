@@ -2,6 +2,7 @@ package org.project.model.product_model;
 
 import java.time.LocalDateTime;
 
+import org.project.model.User;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -21,7 +22,7 @@ public class Comment {
     @Id
     private String comment_id;
     private String productId;
-    private String userId;
+    private User user;
     private String content;
     private LocalDateTime date;
     

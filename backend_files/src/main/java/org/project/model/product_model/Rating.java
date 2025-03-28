@@ -2,6 +2,7 @@ package org.project.model.product_model;
 
 import java.time.LocalDateTime;
 
+import org.project.model.User;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,12 +17,14 @@ import lombok.Setter;
 @Getter
 @Setter
 
+//to be deleted and merged with comment
+
 public class Rating {
 
     @Id
     private String rating_id;
     private String productId;
-    private String userId;
+    private User user;
     private int rating;
     private LocalDateTime date;
     

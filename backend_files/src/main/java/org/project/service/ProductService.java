@@ -1,5 +1,6 @@
 package org.project.service;
 
+import org.project.model.User;
 import org.project.model.product_model.*;
 import org.project.repository.ProductRepository;
 import org.project.repository.CommentRepository;
@@ -35,17 +36,18 @@ public class ProductService {
         return product_repo.findAll();
     }
 
-    public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
+    /*
+    public String add_comment_and_rating(User user, String product_id, String comment, int rating){
         String mutual_id = generate_id();
         LocalDateTime now = LocalDateTime.now();
 
-        Rating new_rating = new Rating(mutual_id, product_id, user_id, rating, now);
-        Comment new_comment = new Comment(mutual_id, product_id, user_id, comment, now);
+        Rating new_rating = new Rating(mutual_id, product_id, user, rating, now); // to be deleted
+        Comment new_comment = new Comment(mutual_id, product_id, user, comment, now);
 
         rating_repo.save(new_rating);
         comment_repo.save(new_comment);
 
-        return mutual_id + " " + product_id + " " + user_id;
+        return mutual_id + " " + product_id + " " + user.getAccount_id();
     }
 
     public Comment add_only_comment(String user_id, String product_id, String content){
@@ -106,6 +108,7 @@ public class ProductService {
 
         return merged_reviews;
     }
+    */
 
     public List<Comment> list_product_comments(String product_id){
         return comment_repo.findByProductId(product_id);

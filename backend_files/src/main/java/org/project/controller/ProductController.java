@@ -1,8 +1,9 @@
 package org.project.controller;
 
 import org.project.model.product_model.Product;
-import org.project.model.product_model.RatingAndComment;
+import org.project.model.product_model.ReviewObject;
 import org.project.service.ProductService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,15 +27,16 @@ public class ProductController {
     }
 
     @GetMapping("/{product_id}/reviews")
-    public List<RatingAndComment> getProductReviews(@PathVariable String product_id) {
-        return productService.past_user_experience(product_id);
+    public List<ReviewObject> getProductReviews(@PathVariable String product_id) {
+        return productService.get_merged_reviews(product_id);
     }
 
     @GetMapping("/{product_id}/average-rating")
     public double getAverageRating(@PathVariable String product_id) {
         return productService.calculate_average_rating(product_id);
     }
-/*
+
+    /*
     @PostMapping("/add")
     public Product addProduct(@RequestBody Product newProduct) {
         return productService.addProduct(newProduct);
@@ -49,5 +51,5 @@ public class ProductController {
     public String deleteProduct(@PathVariable String product_id) {
         return productService.deleteProduct(product_id);
     }
-*/
+    */
 }

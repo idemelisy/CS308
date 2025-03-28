@@ -24,4 +24,9 @@ public class CommentController {
     public List<Comment> getCommentsByProductId(@PathVariable String productId) {
         return commentService.getCommentsByProductId(productId);
     }
+
+    @DeleteMapping("/{commentId}")
+    public void deleteComment(@PathVariable String commentId) {
+        commentService.deleteCommentById(commentId);
+    }
 }

@@ -3,6 +3,7 @@ package org.project.controller;
 import org.project.model.*;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,9 +12,9 @@ public class UserController {
     @Autowired UserService userService;
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody UserRequest userRequest){
+    public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest){
         try{
-            userService.general_register(
+            User newUser = userService.general_register(
                     userRequest.getUserType(),
                     userRequest.getName(),
                     userRequest.getSurname(),
@@ -22,24 +23,24 @@ public class UserController {
                     userRequest.getAdditionalParams()
             );
 
-            return "Successfull - POST Register Request";
+            return ResponseEntity.ok(newUser);
         } catch(IllegalArgumentException e){
-            return "Error Detected.";
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestBody UserRequest userRequest){
+    public ResponseEntity<?> loginUser(@RequestBody UserRequest userRequest){
         try{
-            userService.login(
+            User loggedInUser = userService.login(
                     userRequest.getEmail(),
                     userRequest.getPassword()
             );
 
-            return "Successfull - POST Login Request";
+            return ResponseEntity.ok(loggedInUser);
         } catch (RuntimeException e){
-            return "Incorrect Password";
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

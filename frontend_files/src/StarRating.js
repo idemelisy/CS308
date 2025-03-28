@@ -7,7 +7,9 @@ const StarRating = ({ onRate }) => {
 
   const handleClick = (ratingValue) => {
     setRating(ratingValue);
-    onRate(ratingValue); // Pass rating to parent
+    if (onRate) {
+      onRate(ratingValue); // Pass rating to parent if function exists
+    }
   };
 
   return (

@@ -22,5 +22,7 @@ public class CommentService {
         return commentRepository.findByProductId(productId);
     }
 
-    // Optional: add delete, update, or getByUserId methods later
+    public void deleteCommentById(String commentId) {
+        commentRepository.deleteById(commentId);
+    }
 }

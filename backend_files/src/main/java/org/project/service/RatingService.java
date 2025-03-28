@@ -22,5 +22,7 @@ public class RatingService {
         return ratingRepository.findByProductId(productId);
     }
 
-    // Optional: add delete, update, or getByUserId methods later
+    public void deleteRatingById(String ratingId) {
+        ratingRepository.deleteById(ratingId);
+    }
 }

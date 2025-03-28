@@ -24,4 +24,9 @@ public class RatingController {
     public List<Rating> getRatingsByProductId(@PathVariable String productId) {
         return ratingService.getRatingsByProductId(productId);
     }
+
+    @DeleteMapping("/{ratingId}")
+    public void deleteRating(@PathVariable String ratingId) {
+        ratingService.deleteRatingById(ratingId);
+    }
 }

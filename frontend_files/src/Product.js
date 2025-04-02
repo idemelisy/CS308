@@ -49,7 +49,7 @@ const Product = () => {
 
     const commentData = {
       productId: id,
-      userId: "Guest",
+      userId: "ide",
       content: newComment,
       date: new Date().toISOString(),
     };
@@ -100,7 +100,12 @@ const Product = () => {
   return (
     <div className="product-page">
       <div className="product-info">
-      <img src="/images/book_image.jpg" alt={product.name} className="product-image" />
+      <img 
+  src={`/images/${product.id}.jpg`} 
+  alt={product.name} 
+  className="product-image" 
+/>
+
 
         <div className="product-details">
           <h2>{product.name}</h2>

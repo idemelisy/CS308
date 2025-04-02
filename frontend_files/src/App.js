@@ -12,6 +12,7 @@ import Login from './Login';
 import Continue from './Continue';
 import Home from "./Home";
 import Product from "./Product";
+import OrderHistory from "./OrderHistory";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -28,6 +29,8 @@ function App() {
           <Route path="/continue" element={<Continue />} />
           <Route path="/home" element={<Home />} />
         <Route path="/product/:id" element={<Product />} />
+        <Route path="/order-history" element={<OrderHistory />} /> {/* Added Order History Route */}
+      
         </Routes>
       </Router>
     </AuthProvider>

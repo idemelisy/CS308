@@ -48,7 +48,7 @@ public class ProductService {
         return mutual_id + " " + product_id + " " + user_id;
     }
 
-    public Comment add_only_comment(String user_id, String product_id, String content){
+    public Comment add_only_comment(String product_id, String user_id, String content){
         String comment_id = generate_id();
         LocalDateTime now = LocalDateTime.now();
 
@@ -128,7 +128,7 @@ public class ProductService {
         return (double) total / ratings.size();
     }
 
-    /*
+
     public Product addProduct(Product newProduct) {
         return product_repo.save(newProduct);
     }
@@ -149,5 +149,5 @@ public class ProductService {
         product_repo.deleteById(product_id);
         return "Product deleted successfully!";
     }
-    */
+
 }

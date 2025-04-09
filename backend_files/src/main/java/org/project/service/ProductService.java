@@ -35,6 +35,14 @@ public class ProductService {
         return product_repo.findAll();
     }
 
+    public List<Product> list_by_category(String category){
+        return product_repo.findByCategory(category);
+    }
+
+    public List<Product> search_engine(String keywords){
+        return product_repo.findByNameContainingOrDecriptionContainingAllIgnoreCase(keywords, keywords);
+    }
+
     public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
         String mutual_id = generate_id();
         LocalDateTime now = LocalDateTime.now();

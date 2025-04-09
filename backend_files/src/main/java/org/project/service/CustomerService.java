@@ -1,6 +1,7 @@
 package org.project.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -66,5 +67,9 @@ public class CustomerService {
             shopping_cart.put(certain_product, 1);
             return "added to cart";
         }
-    }    
+    }  
+
+    public List<Invoice> see_shopping_history(Customer current_customer){
+        return receipt.findByPurchaser(current_customer);
+    }
 }

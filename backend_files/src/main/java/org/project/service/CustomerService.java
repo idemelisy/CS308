@@ -86,14 +86,13 @@ public class CustomerService {
 
         if (shopping_cart.containsKey(productID)){
             Integer amount_in_cart = shopping_cart.get(productID);
-            amount_in_cart++;
+            shopping_cart.put(productID, amount_in_cart + 1);
         }
         else{
             shopping_cart.put(productID, 1);
         }
 
         userRepository.save(current_customer);
-
         return shopping_cart.containsKey(productID) ? "increased amount" : "added to cart";
     }  
 

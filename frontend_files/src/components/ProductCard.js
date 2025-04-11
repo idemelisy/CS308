@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./ProductCard.css";
+import { CartContext } from "../CartContext";
 
 const ProductCard = ({ product }) => {
+  const { addToCart } = useContext(CartContext);
+
   return (
     <div className="product-card">
       <img src={product.image} alt={product.name} className="product-image" />
@@ -11,7 +14,11 @@ const ProductCard = ({ product }) => {
       <p className="product-stock">
         {product.quantity > 0 ? `Stock: ${product.quantity}` : "Out of Stock"}
       </p>
-      <button className="add-to-cart" disabled={product.quantity === 0}>
+      <button
+        className="add-to-cart"
+        disabled={product.quantity === 0}
+        onClick={() => addToCart(product)}
+      >
         {product.quantity > 0 ? "Add to Cart" : "Sold Out"}
       </button>
     </div>

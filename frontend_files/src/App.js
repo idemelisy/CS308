@@ -13,14 +13,14 @@ import Continue from './Continue';
 import Home from "./Home";
 import Product from "./Product";
 import OrderHistory from "./OrderHistory";
-import Cart from "./Cart"; // ✅ Cart page import
+import Cart from "./Cart";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <AuthProvider>
-      <CartProvider> {/* ✅ CartProvider wrap */}
+      <CartProvider>
         <Router>
           <Routes>
             <Route path="/" element={<Welcome />} />

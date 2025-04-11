@@ -1,6 +1,8 @@
+// CartContext.js
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const CartContext = createContext();
+export const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
@@ -8,7 +10,7 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const email = "test@test.com";
+  const email = "test@test.com"; // Gerekirse AuthContext'ten alınabilir
 
   useEffect(() => {
     const fetchCart = async () => {

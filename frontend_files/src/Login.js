@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "./auth";
+import { CURRENT_USER } from "./global";
 
 function Login() {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ function Login() {
 
       if (response.ok) {
         alert("Login Successful!");
+        //CURRENT_USER = data;
+        //console.log("Current User:", CURRENT_USER);
         navigate("/home");
       } else {
         alert("Error: " + data);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import { setCurrentUser } from './global';
 
 function ProductManagerRegister() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function ProductManagerRegister() {
 
       if (response.ok) {
         alert("Registration Successful!");
+        setCurrentUser(data); // Sets the CURRENT_USER as a GLOBAL variable
         navigate("/home");
         setError(null); // ✅ Clear error if successful
       } else {

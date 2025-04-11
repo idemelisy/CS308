@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import StarRating from "./StarRating";
+import { useCart } from "./CartContext";
 
 const Product = () => {
   const { id } = useParams();
@@ -42,6 +43,11 @@ const Product = () => {
       })
       .catch((error) => console.error("Error fetching average rating:", error));
   }, [id]);
+
+  const { addToCart } = useCart(); // Use the addToCart function from CartContext
+  const handleAddToCart = () => {
+    addToCart(product); // Call the addToCart function with the product
+  };
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
@@ -114,7 +120,7 @@ const Product = () => {
           <p className="product-rating">
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>
-          <button className="add-to-cart">Add to Cart</button>
+          <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
           <h3>Rate this Product:</h3>
           <StarRating onRate={handleRate} /> {/* Pass the handleRate function */}
         </div>

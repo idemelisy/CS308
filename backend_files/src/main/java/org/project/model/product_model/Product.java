@@ -17,7 +17,7 @@ public class Product {
 
     @Id
     private String product_id;
-    private String productName;
+    private String name;
     private String description;
     private float unit_price;
     private int stock;

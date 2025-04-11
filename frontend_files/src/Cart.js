@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { CartContext } from './CartContext';
-import './Cart.css'; // stil için bir şeyler varsa
+import './Cart.css';
 
 const Cart = () => {
   const { cartItems, removeFromCart, totalPrice, clearCart } = useContext(CartContext);
 
   const handleCheckout = () => {
-    alert("Siparişiniz alınmıştır! 🚀");
+    alert("Order Sent");
     clearCart();
   };
 

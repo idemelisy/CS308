@@ -69,6 +69,10 @@ public class CustomerService {
         }
     }  
 
+    public HashMap<Product, Integer> getShoppingCart(Customer current_customer){
+        return current_customer.getShopping_cart();
+    }
+
     public List<Invoice> see_shopping_history(Customer current_customer){
         return receipt.findByPurchaser(current_customer);
     }

@@ -1,6 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+// CartContext.js
 
-const CartContext = createContext();
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getCurrentUser } from "./global";
+
+export const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
@@ -8,12 +11,19 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const email = "test@test.com"; // Gerekirse AuthContext'ten alınabilir
-
+=======
+>>>>>>> b2e8974ec5625569572a90dfc3c5a69af734053c
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/customers/get-cart?email=${email}`);
+        const response = await fetch(`http://localhost:8080/customers/get-cart`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(getCurrentUser()),
+        });
+
         const data = await response.json();
         setCartItems(data);
         setLoading(false);
@@ -27,7 +37,9 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (product) => {
     try {
-      const response = await fetch("http://localhost:8080/customers/add-to-cart?email=" + email, {
+      const currentUser = JSON.parse(getCurrentUser());
+      const userEmail = currentUser.email;
+      const response = await fetch("http://localhost:8080/customers/add-to-cart?email=" + userEmail, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,26 +50,37 @@ export const CartProvider = ({ children }) => {
       const data = await response.text();
       console.log("Add to Cart response:", data);
 
-      setCartItems((prevItems) => [...prevItems, product]);
+      setCartItems((prevItems) => {
+        const newItems = { ...prevItems };
+        const productId = product.id;
+        
+        // Increment quantity if product exists, otherwise set to 1
+        newItems[productId] = (newItems[productId] || 0) + 1;
+        
+        return newItems;
+      });
     } catch (err) {
       console.error("Error adding to cart:", err);
     }
   };
 
-  const deleteFromCart = async (productId) => {
+  const deleteFromCart = async (product) => {
     try {
-      const response = await fetch("http://localhost:8080/customers/delete-from-cart?email=" + email, {
+      const currentUser = JSON.parse(getCurrentUser());
+      const userEmail = currentUser.email;
+
+      const response = await fetch("http://localhost:8080/customers/delete-from-cart?email=" + userEmail, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ productId }),
+        body: JSON.stringify(product),
       });
 
       const data = await response.text();
       console.log("Remove from Cart response:", data);
 
-      setCartItems((prevItems) => prevItems.filter(item => item.id !== productId));
+      setCartItems((prevItems) => prevItems.filter(item => item !== product));
     } catch (err) {
       console.error("Error removing from cart:", err);
     }
@@ -65,11 +88,12 @@ export const CartProvider = ({ children }) => {
 
   const checkout = async () => {
     try {
-      const response = await fetch("http://localhost:8080/customers/checkout?email=" + email, {
+      const response = await fetch("http://localhost:8080/customers/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(getCurrentUser()),
       });
 
       const data = await response.json();

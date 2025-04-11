@@ -26,28 +26,28 @@ public class CustomerController {
         return userService.getAllCustomers();
     }
 
-    @GetMapping("/get-cart")
-    public HashMap<Product, Integer> getCart(Customer customer){
+    @PostMapping("/get-cart")
+    public HashMap<String, Integer> getCart(@RequestBody Customer customer){
         return customerService.getShoppingCart(customer);
     }
 
     @PostMapping("/add-to-cart")
-    public String addToCart(Product product, Customer customer){
-        return customerService.add_to_cart(product, customer);
+    public String addToCart(@RequestBody Product product, @RequestParam String email){
+        return customerService.add_to_cart(product, email);
     }
 
     @DeleteMapping("/delete-from-cart")
-    public String deleteFromCart(Product product, Customer customer){
-        return customerService.delete_from_cart(product, customer);
+    public String deleteFromCart(@RequestBody Product product, @RequestParam String email){
+        return customerService.delete_from_cart(product,email);
     }
 
     @PostMapping("/checkout")
-    public Invoice checkout(Customer customer){
+    public Invoice checkout(@RequestBody Customer customer){
         return customerService.checkout(customer);
     }
 
     @GetMapping("/shopping-history")
-    public List<Invoice> getShoppingHistory(Customer customer){
+    public List<Invoice> getShoppingHistory(@RequestBody Customer customer){
         return customerService.see_shopping_history(customer);
     }
 }

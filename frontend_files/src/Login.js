@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "./auth";
+import { setCurrentUser } from "./global";
 
 function Login() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function Login() {
 
       if (response.ok) {
         alert("Login Successful!");
+        setCurrentUser(data); //Sets the CURRENT_USER as a GLOBAL variable
         navigate("/home");
       } else {
         alert("Error: " + data);

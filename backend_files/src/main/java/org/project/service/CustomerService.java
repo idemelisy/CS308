@@ -97,7 +97,10 @@ public class CustomerService {
         return shopping_cart.containsKey(productID) ? "increased amount" : "added to cart";
     }  
 
-    public HashMap<String, Integer> getShoppingCart(Customer current_customer){
+    public HashMap<String, Integer> getShoppingCart(String email){
+        User current_user = userRepository.findByEmail(email);
+        Customer current_customer = (Customer) current_user;
+
         return current_customer.getShopping_cart();
     }
 

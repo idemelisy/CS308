@@ -27,8 +27,8 @@ public class CustomerController {
     }
 
     @PostMapping("/get-cart")
-    public HashMap<String, Integer> getCart(@RequestBody Customer customer){
-        return customerService.getShoppingCart(customer);
+    public HashMap<String, Integer> getCart(@RequestParam String email){
+        return customerService.getShoppingCart(email);
     }
 
     @PostMapping("/add-to-cart")

@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class Customer extends User{
 
-    private HashMap<Product, Integer> shopping_cart;
+    private HashMap<String, Integer> shopping_cart;
 
     public Customer(String account_id, String name, String surname, String email, String password){
         super(account_id, name, surname, email, password);

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp } from "./auth"; // Import Firebase signup function
 import "./App.css";
+import { setCurrentUser } from "./global";
 
 function CustomerRegister() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function CustomerRegister() {
 
       if (response.ok) {
         alert("Registration Successful!");
+        setCurrentUser(data); // Sets the CURRENT_USER as a GLOBAL variable
         navigate("/home"); // Redirect to homepage
         setError(null); // ✅ Clear error if success
       } else {

@@ -20,7 +20,7 @@ public class Invoice {
     @Id
     private String InvoiceId;
     private Customer purchaser;
-    private Map<Product, Integer> purchased;
+    private Map<String, Integer> purchased;
     private double total_price;
     
 }

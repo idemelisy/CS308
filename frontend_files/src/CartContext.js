@@ -11,8 +11,6 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-=======
->>>>>>> b2e8974ec5625569572a90dfc3c5a69af734053c
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -54,7 +52,6 @@ export const CartProvider = ({ children }) => {
         const newItems = { ...prevItems };
         const productId = product.id;
         
-        // Increment quantity if product exists, otherwise set to 1
         newItems[productId] = (newItems[productId] || 0) + 1;
         
         return newItems;

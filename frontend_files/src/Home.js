@@ -11,10 +11,10 @@ const Navbar = () => (
     <ul className="nav-links">
       <li><a href="#">Home</a></li>
       <li><a href="#">Shop</a></li>
-      <li><a href="/order-history">Order History</a></li> {/* Added Order History */}
-      <li><a href="#">Cart</a></li>
+      <li><a href="/order-history">Order History</a></li>
+      <li><a href="/cart">Cart</a></li>
       <li><a href="#">Login</a></li>
-      
+
     </ul>
   </nav>
 );

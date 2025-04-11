@@ -54,12 +54,8 @@ public class UserService {
     public User login(String email, String password) {
         User user = user_repo.findByEmail(email);
 
-        if (user == null) {
-            throw new RuntimeException("No such user");
-        }
-
-        if (!password.matches(user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+        if (user == null || !password.matches(user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
         }
 
         return user;

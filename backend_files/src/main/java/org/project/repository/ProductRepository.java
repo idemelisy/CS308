@@ -7,11 +7,11 @@ import java.util.List;
 
 
 public interface ProductRepository extends MongoRepository<Product, String>{
-    Product findByProductName(String product_name);
+    Product findByName(String product_name);
     List<Product> findAll();
 
     List<Product> findByCategory(String category);
 
     List<Product> findByNameContainingIgnoreCase(String productName);
-    List<Product> findByNameContainingOrDecriptionContainingAllIgnoreCase(String productName, String description);
+    List<Product> findByNameContainingOrDescriptionContainingAllIgnoreCase(String productName, String description);
 }

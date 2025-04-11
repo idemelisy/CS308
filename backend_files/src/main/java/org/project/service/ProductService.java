@@ -40,7 +40,7 @@ public class ProductService {
     }
 
     public List<Product> search_engine(String keywords){
-        return product_repo.findByNameContainingOrDecriptionContainingAllIgnoreCase(keywords, keywords);
+        return product_repo.findByNameContainingOrDescriptionContainingAllIgnoreCase(keywords, keywords);
     }
 
     public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
@@ -144,7 +144,7 @@ public class ProductService {
     public Product updateProduct(String product_id, Product updatedProduct) {
         Product existingProduct = product_repo.findById(product_id).orElse(null);
         if (existingProduct != null) {
-            existingProduct.setProductName(updatedProduct.getProductName());
+            existingProduct.setName(updatedProduct.getName());
             existingProduct.setDescription(updatedProduct.getDescription());
             existingProduct.setUnit_price(updatedProduct.getUnit_price());
             existingProduct.setStock(updatedProduct.getStock());

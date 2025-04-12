@@ -108,7 +108,13 @@ public class CustomerService {
         return current_customer.getShopping_cart();
     }
 
-    public List<Invoice> see_shopping_history(Customer current_customer){
-        return receipt.findByPurchaserAccount_id(current_customer.getAccount_id);
+    public List<Invoice> see_shopping_history(String customerID){
+        List<Invoice> all = receipt.findAll();
+
+        return all.stream()
+                .filter(invoice -> invoice.getPurchaser() != null 
+                        && invoice.getPurchaser().getAccount_id() != null
+                        && invoice.getPurchaser().getAccount_id().equals(customerID))
+                .collect(Collectors.toList());
     }
 }

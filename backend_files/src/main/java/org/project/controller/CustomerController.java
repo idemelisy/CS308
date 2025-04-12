@@ -50,8 +50,6 @@ public class CustomerController {
 
     @GetMapping("/shopping-history")
     public List<Invoice> getShoppingHistory(@RequestParam String customerID){
-        User user = user_repo.findById(customerID).get();
-        Customer customer = (Customer) user;
-        return customerService.see_shopping_history(customer);
+        return customerService.see_shopping_history(customerID);
     }
 }

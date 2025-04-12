@@ -31,24 +31,29 @@ public class CustomerService {
     public Invoice checkout(Customer current_customer){
         Invoice new_receipt = new Invoice();
         new_receipt.setInvoiceId(generate_id());
-        new_receipt.setPurchased(current_customer.getShopping_cart());
+        new_receipt.setPurchased(new HashMap<>(current_customer.getShopping_cart()));
         new_receipt.setPurchaser(current_customer);
 
-        /*
+        
         double total_price = current_customer.getShopping_cart().entrySet()
             .stream()
-            .mapToDouble(entry -> entry.getKey().getUnit_price() * entry.getValue())
+            .mapToDouble(entry -> {String productID = entry.getKey();
+                                   Integer quantity = entry.getValue();
+                                   Product product = product_repo.findById(productID).get();
+                                   return product.getUnit_price() * quantity;
+                                })
             .sum();
-        */
+        
 
-        //new_receipt.setTotal_price(total_price);
+        new_receipt.setTotal_price(total_price);
 
         current_customer.getShopping_cart().clear();
+        user_repo.save(current_customer);
         return receipt.save(new_receipt);
     }
 
     public String delete_from_cart(Product certain_product, String email){
-        User current_user = userRepository.findByEmail(email);
+        User current_user = user_repo.findByEmail(email);
         Customer current_customer = (Customer) current_user;
 
         HashMap<String, Integer> shopping_cart = current_customer.getShopping_cart();
@@ -61,18 +66,19 @@ public class CustomerService {
 
         if(amount_in_cart == 1){
             shopping_cart.remove(productID);
-            userRepository.save(current_customer);
+            user_repo.save(current_customer);
             return "dropped item";
         }
         else{
            amount_in_cart--;
-           userRepository.save(current_customer);
+           shopping_cart.put(productID, amount_in_cart);
+           user_repo.save(current_customer);
            return "decreased amount";
         }
     }
 
     public String add_to_cart(Product product, String email){
-        User current_user = userRepository.findByEmail(email);
+        User current_user = user_repo.findByEmail(email);
         Customer current_customer = (Customer) current_user;
 
         HashMap<String, Integer> shopping_cart = current_customer.getShopping_cart();
@@ -87,12 +93,13 @@ public class CustomerService {
         if (shopping_cart.containsKey(productID)){
             Integer amount_in_cart = shopping_cart.get(productID);
             amount_in_cart++;
+            shopping_cart.put(productID, amount_in_cart);
         }
         else{
             shopping_cart.put(productID, 1);
         }
 
-        userRepository.save(current_customer);
+        user_repo.save(current_customer);
 
         return shopping_cart.containsKey(productID) ? "increased amount" : "added to cart";
     }  

@@ -26,8 +26,10 @@ public class CustomerController {
         return userService.getAllCustomers();
     }
 
-    @PostMapping("/get-cart")
-    public HashMap<String, Integer> getCart(@RequestBody Customer customer){
+    @GetMapping("/get-cart")
+    public HashMap<String, Integer> getCart(@RequestParam String customerID){
+        User user = user_repo.findById(customerID).get();
+        Customer customer = (Customer) user;
         return customerService.getShoppingCart(customer);
     }
 

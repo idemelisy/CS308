@@ -109,6 +109,6 @@ public class CustomerService {
     }
 
     public List<Invoice> see_shopping_history(Customer current_customer){
-        return receipt.findByPurchaser(current_customer);
+        return receipt.findByPurchaserAccount_id(current_customer.getAccount_id);
     }
 }

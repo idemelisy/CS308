@@ -3,6 +3,7 @@ package org.project.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 import org.project.model.Customer;
@@ -11,6 +12,7 @@ import org.project.model.User;
 import org.project.model.product_model.Product;
 import org.project.repository.ShoppingHistory;
 import org.project.repository.UserRepository;
+import org.project.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,10 @@ public class CustomerService {
     private ShoppingHistory receipt;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository user_repo;
+
+    @Autowired
+    private ProductRepository product_repo;
 
     private String generate_id() {
         return UUID.randomUUID().toString();

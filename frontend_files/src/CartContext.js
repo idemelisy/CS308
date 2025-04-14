@@ -1,10 +1,8 @@
-// CartContext.js
-
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { normalizeProduct } from "./utils/normalizeProduct";
 import { getCurrentUser } from "./global";
 
 export const CartContext = createContext();
-
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
@@ -14,48 +12,84 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
+        const rawUser = getCurrentUser();
+        if (!rawUser) {
+          console.warn("No user is logged in.");
+          return;
+        }
+
+        const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+
         const response = await fetch(`http://localhost:8080/customers/get-cart`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(getCurrentUser()),
+          body: JSON.stringify(user),
         });
 
         const data = await response.json();
-        setCartItems(data);
-        setLoading(false);
+        const cartMap = data.shopping_cart || {};
+
+        const items = Object.entries(cartMap).map(([product_id, quantity]) => ({
+          product_id,
+          quantity,
+          name: "Product " + product_id, // Placeholder, ideally you’d fetch real product data
+          unit_price: 10.0,
+          image: "",
+        }));
+
+        setCartItems(items);
       } catch (error) {
         console.error("Error fetching cart:", error);
+      } finally {
         setLoading(false);
       }
     };
+
     fetchCart();
   }, []);
 
   const addToCart = async (product) => {
+    const normalizedProduct = normalizeProduct(product);
+
+    if (
+      !normalizedProduct.product_id ||
+      !normalizedProduct.name ||
+      normalizedProduct.unit_price == null
+    ) {
+      console.warn("Invalid product passed to addToCart:", normalizedProduct);
+      return;
+    }
+
     try {
-      const currentUser = JSON.parse(getCurrentUser());
-      const userEmail = currentUser.email;
-      const response = await fetch("http://localhost:8080/customers/add-to-cart?email=" + userEmail, {
+      const rawUser = getCurrentUser();
+      if (!rawUser) return;
+
+      const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+      const userEmail = user.email;
+
+      console.log("🛒 Sending product to backend:", normalizedProduct);
+
+      await fetch(`http://localhost:8080/customers/add-to-cart?email=${userEmail}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(product),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(normalizedProduct),
       });
 
-      const data = await response.text();
-      console.log("Add to Cart response:", data);
-
       setCartItems((prevItems) => {
-        const newItems = { ...prevItems };
-        const productId = product.id;
-        
-        // Increment quantity if product exists, otherwise set to 1
-        newItems[productId] = (newItems[productId] || 0) + 1;
-        
-        return newItems;
+        const existing = prevItems.find(
+          (item) => item.product_id === normalizedProduct.product_id
+        );
+        if (existing) {
+          return prevItems.map((item) =>
+            item.product_id === normalizedProduct.product_id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        } else {
+          return [...prevItems, { ...normalizedProduct, quantity: 1 }];
+        }
       });
     } catch (err) {
       console.error("Error adding to cart:", err);
@@ -64,21 +98,27 @@ export const CartProvider = ({ children }) => {
 
   const deleteFromCart = async (product) => {
     try {
-      const currentUser = JSON.parse(getCurrentUser());
-      const userEmail = currentUser.email;
+      const rawUser = getCurrentUser();
+      if (!rawUser) return;
 
-      const response = await fetch("http://localhost:8080/customers/delete-from-cart?email=" + userEmail, {
+      const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+      const userEmail = user.email;
+
+      await fetch(`http://localhost:8080/customers/delete-from-cart?email=${userEmail}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(product),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product_id: product.product_id }),
       });
 
-      const data = await response.text();
-      console.log("Remove from Cart response:", data);
-
-      setCartItems((prevItems) => prevItems.filter(item => item !== product));
+      setCartItems((prevItems) =>
+        prevItems
+          .map((item) =>
+            item.product_id === product.product_id
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+          .filter((item) => item.quantity > 0)
+      );
     } catch (err) {
       console.error("Error removing from cart:", err);
     }
@@ -86,25 +126,44 @@ export const CartProvider = ({ children }) => {
 
   const checkout = async () => {
     try {
+      const rawUser = getCurrentUser();
+      if (!rawUser) return;
+
+      const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+
       const response = await fetch("http://localhost:8080/customers/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(getCurrentUser()),
+        body: JSON.stringify(user),
       });
 
       const data = await response.json();
       console.log("Checkout response:", data);
 
-      setCartItems([]);
+      setCartItems([]); // Clear cart on success
     } catch (err) {
       console.error("Error during checkout:", err);
     }
   };
 
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + (item.unit_price || 0) * (item.quantity || 0),
+    0
+  );
+
   return (
-    <CartContext.Provider value={{ cartItems, loading, addToCart, deleteFromCart, checkout }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        loading,
+        addToCart,
+        deleteFromCart,
+        checkout,
+        totalPrice,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -31,7 +31,7 @@ const ProductCard = ({ product }) => {
       onClick={() => navigate(`/product/${product.product_id}`)}
     >
       <img src={product.image} alt={product.productName} className="product-image" />
-      <h2 className="product-title">{product.productName}</h2>
+      <h2 className="product-title">{product.name}</h2>
       <p className="product-price">${product.unit_price.toFixed(2)}</p>
       <p className="product-quantity">Stock: {product.stock}</p>
       <p className="product-description"> {product.description}</p>

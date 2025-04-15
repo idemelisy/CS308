@@ -37,6 +37,10 @@ public class UserService {
         User new_user;
 
         switch (user_type.toLowerCase()) {
+            case "guest":
+                new_user = new Guest(new_id);
+                break;
+
             case "customer":
                 new_user = new Customer(new_id, name, surname, email, password);
                 break;

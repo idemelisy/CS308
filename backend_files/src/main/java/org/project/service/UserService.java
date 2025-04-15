@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,12 @@ public class UserService {
 
     private String generate_id() {
         return UUID.randomUUID().toString();
+    }
+
+    public User merge_carts(Guest guest, Customer customer){
+        customer.setShopping_cart(guest.getShopping_cart() != null ? new HashMap<>(guest.getShopping_cart()) : new HashMap<>());
+        user_repo.delete(guest);
+        return user_repo.save(customer);
     }
 
     public User general_register(String user_type, String name, String surname, String email, String password, Map<String, String> additional_params) {

@@ -146,7 +146,7 @@ public class ProductService {
         if (existingProduct != null) {
             existingProduct.setName(updatedProduct.getName());
             existingProduct.setDescription(updatedProduct.getDescription());
-            existingProduct.setUnit_price(updatedProduct.getUnit_price());
+            existingProduct.setUnitPrice(updatedProduct.getUnitPrice());
             existingProduct.setStock(updatedProduct.getStock());
             return product_repo.save(existingProduct);
         }

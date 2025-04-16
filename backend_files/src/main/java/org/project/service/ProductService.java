@@ -1,17 +1,21 @@
 package org.project.service;
 
+import org.project.model.Invoice;
 import org.project.model.product_model.*;
 import org.project.repository.ProductRepository;
 import org.project.repository.CommentRepository;
 import org.project.repository.RatingRepository;
-
+import org.project.repository.ShoppingHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Service
 public class ProductService {
@@ -22,6 +26,8 @@ public class ProductService {
     private CommentRepository comment_repo;
     @Autowired
     private RatingRepository rating_repo;
+    @Autowired
+    private ShoppingHistory receipts;
 
     private String generate_id() {
         return UUID.randomUUID().toString();
@@ -40,8 +46,39 @@ public class ProductService {
     }
 
     public List<Product> search_engine(String keywords){
-        return product_repo.findByNameContainingOrDescriptionContainingAllIgnoreCase(keywords, keywords);
+        return product_repo.fullTextSearch(keywords);
     }
+
+    public List<Product> sort_asc(){
+        return product_repo.findAllByUnitPriceAsc();
+    }
+
+    public List<Product> sort_desc(){
+        return product_repo.findAllByUnitPriceDesc();
+    }
+
+    public List<Product> sort_popular(){
+        List<Invoice> all = receipts.findAll();
+        HashMap<String, Integer> total_purchased = new HashMap<String, Integer>();
+
+        for(Invoice i : all){
+            Map<String, Integer> purchased = i.getPurchased();
+            for(Map.Entry<String, Integer> entry : purchased.entrySet()){
+                String productID = entry.getKey();
+                Integer quantity = entry.getValue();
+                total_purchased.merge(productID, quantity, Integer::sum);
+            }
+        }
+        List<Product> products = product_repo.findAll();
+        return products.stream()
+                .sorted((p1, p2) -> {
+                    Integer count1 = total_purchased.getOrDefault(p1.getProduct_id(), 0);
+                    Integer count2 = total_purchased.getOrDefault(p2.getProduct_id(), 0);
+                    return count2.compareTo(count1); 
+                })
+                .collect(Collectors.toList());
+    }
+    
 
     public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
         String mutual_id = generate_id();

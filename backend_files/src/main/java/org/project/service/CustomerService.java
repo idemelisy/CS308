@@ -45,7 +45,7 @@ public class CustomerService {
             .mapToDouble(entry -> {String productID = entry.getKey();
                                    Integer quantity = entry.getValue();
                                    Product product = product_repo.findById(productID).get();
-                                   return product.getUnit_price() * quantity;
+                                   return product.getUnitPrice() * quantity;
                                 })
             .sum();
         

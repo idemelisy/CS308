@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from "./AuthContext";
-import { CartProvider } from './CartContext'; // ✅ CartProvider import
+import { CartProvider } from './CartContext';
 import ProtectedRoute from './ProtectedRoute';
 import Register from './Register';
 import CustomerRegister from './CustomerRegister';
@@ -14,14 +14,15 @@ import Home from "./Home";
 import Product from "./Product";
 import OrderHistory from "./OrderHistory";
 import Cart from "./Cart";
+import InvoicePage from "./InvoicePage.js";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
+    <Router> {/* ✅ Router goes at the top */}
+      <AuthProvider>
+        <CartProvider>
           <Routes>
             <Route path="/" element={<Welcome />} />
             <Route path="/register" element={<Register />} />
@@ -34,10 +35,11 @@ function App() {
             <Route path="/product/:id" element={<Product />} />
             <Route path="/order-history" element={<OrderHistory />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/invoice" element={<InvoicePage />} />
           </Routes>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+        </CartProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

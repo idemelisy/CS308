@@ -22,16 +22,15 @@ function Login() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.text();
-      console.log("Server Response:", data);
-
+      const data = await response.json();
       if (response.ok) {
         alert("Login Successful!");
-        setCurrentUser(data); //Sets the CURRENT_USER as a GLOBAL variable
+        setCurrentUser(JSON.stringify(data)); // store it as a string
         navigate("/home");
       } else {
         alert("Error: " + data);
       }
+      
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong.");

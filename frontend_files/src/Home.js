@@ -2,23 +2,59 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
 import OrderHistory from "./OrderHistory";
+import { getCurrentUser, logoutUser } from "./global";
 
 
-const Navbar = () => (
-  <nav className="navbar">
-    <h1 className="logo">E-Commerce</h1>
-    <input type="text" placeholder="Search products..." className="search-bar" />
-    <ul className="nav-links">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Shop</a></li>
-      <li><a href="/order-history">Order History</a></li> {/* Added Order History */}
-      <li><a href="#">Cart</a></li>
-      <li><a href="#">Login</a></li>
-      
-    </ul>
-  </nav>
-);
+const Navbar = () => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getCurrentUser());// Check if user is logged in
+  useEffect(() => {
+    const checkLogin = () => {
+      setIsLoggedIn(!!getCurrentUser());
+    };
 
+    window.addEventListener("storage", checkLogin);
+    return () => window.removeEventListener("storage", checkLogin);
+  }, []);
+
+  const handleLogout = async () => {
+    const rawUser = getCurrentUser();
+    const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+  
+    if (user?.account_id) {
+      try {
+        await fetch(`http://localhost:8080/customers/clear-cart?customerID=${user.account_id}`, {
+          method: "DELETE",
+        });
+        console.log("Cart cleared on logout.");
+      } catch (err) {
+        console.error("Failed to clear cart on logout:", err);
+      }
+    }
+  
+    logoutUser();
+    window.location.href = "/login";
+  };
+  
+
+  return (
+    <nav className="navbar">
+      <h1 className="logo">E-Commerce</h1>
+      <input type="text" placeholder="Search products..." className="search-bar" />
+      <ul className="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Shop</a></li>
+        <li><a href="/order-history">Order History</a></li>
+        <li><a href="/Cart">Cart</a></li>
+        {isLoggedIn ? (
+          <li><button onClick={handleLogout} className="logout-btn">Logout</button></li>
+        ) : (
+          <li><a href="/login">Login</a></li>
+        )}
+      </ul>
+    </nav>
+  );
+};
 
 
 

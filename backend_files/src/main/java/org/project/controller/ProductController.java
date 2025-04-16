@@ -28,6 +28,31 @@ public class ProductController {
         return productService.list_all_products();
     }
 
+    @GetMapping("/search")
+    public List<Product> search(@RequestParam String keyword){
+        return productService.search_engine(keyword);
+    }
+
+    @GetMapping("/category")
+    public List<Product> category_search(@RequestParam String category){
+        return productService.list_by_category(category);
+    }
+
+    @GetMapping("/ascending")
+    public List<Product> ascending_price(){
+        return productService.sort_asc();
+    }
+
+    @GetMapping("/descending")
+    public List<Product> descending_price(){
+        return productService.sort_desc();
+    }
+
+    @GetMapping("/popular")
+    public List<Product> sort_popularity(){
+        return productService.sort_popular();
+    }
+
 
 
     @GetMapping("/{product_id}/reviews")

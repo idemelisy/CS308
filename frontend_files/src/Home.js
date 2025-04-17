@@ -2,25 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
 import OrderHistory from "./OrderHistory";
-
-
-const Navbar = () => (
-  <nav className="navbar">
-    <h1 className="logo">E-Commerce</h1>
-    <input type="text" placeholder="Search products..." className="search-bar" />
-    <ul className="nav-links">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Shop</a></li>
-      <li><a href="/order-history">Order History</a></li>
-      <li><a href="/cart">Cart</a></li>
-      <li><a href="#">Login</a></li>
-
-    </ul>
-  </nav>
-);
-
-
-
+import Navbar from "./components/Navbar"; // Güncellendi
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -39,13 +21,12 @@ const ProductCard = ({ product }) => {
   );
 };
 
-
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("http://localhost:8080/products/all") // Adjust URL based on your backend port
+  const fetchAllProducts = () => {
+    fetch("http://localhost:8080/products/all")
       .then((response) => response.json())
       .then((data) => {
         setProducts(data);
@@ -55,11 +36,29 @@ const Home = () => {
         console.error("Error fetching products:", error);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchAllProducts();
   }, []);
+
+  const handleSearch = async (keyword) => {
+    if (!keyword) {
+      fetchAllProducts(); // boşsa tüm ürünleri geri getir
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:8080/products/search?keyword=${keyword}`);
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error during search:", error);
+    }
+  };
 
   return (
     <div className="homepage">
-      <Navbar />
+      <Navbar onSearch={handleSearch} />
       <div className="product-grid" style={{ display: "flex", gap: "20px", overflowX: "auto", whiteSpace: "nowrap", padding: "20px" }}>
         {loading ? <p>Loading products...</p> : products.map((product) => <ProductCard key={product.id} product={product} />)}
       </div>

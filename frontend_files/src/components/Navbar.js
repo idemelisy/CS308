@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Navbar.css";
 
 const Navbar = ({ onSearch }) => {
@@ -25,10 +26,10 @@ const Navbar = ({ onSearch }) => {
         />
       </div>
       <ul className="nav-links">
-        <li><a href="/home">Home</a></li>
-        <li><a href="/order-history">Order History</a></li>
-        <li><a href="/cart">Cart</a></li>
-        <li><a href="/login">Login</a></li>
+        <li><Link to="/home">Home</Link></li>
+        <li><Link to="/order-history">Order History</Link></li>
+        <li><Link to="/cart">Cart</Link></li>
+        <li><Link to="/login">Login</Link></li>
       </ul>
     </nav>
   );

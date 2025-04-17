@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from "./AuthContext";
-import { CartProvider } from './CartContext'; // ✅ CartProvider import
+import { CartProvider } from './CartContext';
 import ProtectedRoute from './ProtectedRoute';
 import Register from './Register';
 import CustomerRegister from './CustomerRegister';

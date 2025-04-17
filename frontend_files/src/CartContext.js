@@ -52,7 +52,6 @@ export const CartProvider = ({ children }) => {
         const newItems = { ...prevItems };
         const productId = product.id;
         
-        // Increment quantity if product exists, otherwise set to 1
         newItems[productId] = (newItems[productId] || 0) + 1;
         
         return newItems;

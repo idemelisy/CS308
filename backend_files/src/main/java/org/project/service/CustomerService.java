@@ -39,6 +39,14 @@ public class CustomerService {
         new_receipt.setPurchased(new HashMap<>(current_customer.getShopping_cart()));
         new_receipt.setPurchaser(current_customer);
 
+        for(HashMap.Entry<String, Integer> entry: current_customer.getShopping_cart().entrySet()){
+            Integer quantity = entry.getValue();
+            String product_id = entry.getKey();
+            Product curr_product = product_repo.findById(product_id).get();
+
+            curr_product.setStock(curr_product.getStock() - quantity);
+            product_repo.save(curr_product);
+        }
         
         double total_price = current_customer.getShopping_cart().entrySet()
             .stream()

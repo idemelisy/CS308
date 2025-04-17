@@ -19,7 +19,7 @@ public class Product {
     private String product_id;
     private String name;
     private String description;
-    private float unit_price;
+    private double unitPrice;
     private int stock;
     private String category;
     

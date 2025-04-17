@@ -26,8 +26,10 @@ public class CustomerController {
         return userService.getAllCustomers();
     }
 
-    @PostMapping("/get-cart")
-    public HashMap<String, Integer> getCart(@RequestBody Customer customer){
+    @GetMapping("/get-cart")
+    public HashMap<String, Integer> getCart(@RequestParam String customerID){
+        User user = user_repo.findById(customerID).get();
+        Customer customer = (Customer) user;
         return customerService.getShoppingCart(customer);
     }
 
@@ -47,7 +49,7 @@ public class CustomerController {
     }
 
     @GetMapping("/shopping-history")
-    public List<Invoice> getShoppingHistory(@RequestBody Customer customer){
-        return customerService.see_shopping_history(customer);
+    public List<Invoice> getShoppingHistory(@RequestParam String customerID){
+        return customerService.see_shopping_history(customerID);
     }
 }

@@ -43,4 +43,10 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/guest-to-user")
+    public User guest_to_user(@RequestBody Customer customer, @RequestParam String guest_id){
+        Guest guest = (Guest) user_repo.findById(guest_id).get();
+        return userService.merge_carts(guest, customer);
+    }
 }

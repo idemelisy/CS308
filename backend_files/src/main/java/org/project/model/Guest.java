@@ -6,23 +6,22 @@ import lombok.Setter;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.project.model.product_model.Product;
 
 import java.util.HashMap;
 
 @Document(collection = "users")
-@TypeAlias("customer")
+@TypeAlias("guest")
 @NoArgsConstructor
 @Getter
 @Setter
 
-public class Customer extends User{
+public class Guest extends Customer{
 
-    @Field("customer_cart")
+    @Field("guest_cart")
     private HashMap<String, Integer> shopping_cart;
 
-    public Customer(String account_id, String name, String surname, String email, String password){
-        super(account_id, name, surname, email, password);
+    public Guest(String account_id){
+        super(account_id, null, null, "guest.mail", null);
         this.shopping_cart = null;
     }
 

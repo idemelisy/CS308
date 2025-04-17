@@ -103,13 +103,18 @@ public class CustomerService {
 
         String productID = product.getProduct_id();
 
-        if (shopping_cart.containsKey(productID)){
-            Integer amount_in_cart = shopping_cart.get(productID);
-            amount_in_cart++;
-            shopping_cart.put(productID, amount_in_cart);
+        if(product.getStock() > 0){
+            if (shopping_cart.containsKey(productID)){
+                Integer amount_in_cart = shopping_cart.get(productID);
+                amount_in_cart++;
+                shopping_cart.put(productID, amount_in_cart);
+            }
+            else{
+                shopping_cart.put(productID, 1);
+            }
         }
-        else{
-            shopping_cart.put(productID, 1);
+        else {
+            return "not enough stock";
         }
 
         user_repo.save(current_customer);

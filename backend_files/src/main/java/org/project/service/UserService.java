@@ -22,7 +22,9 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public User merge_carts(Guest guest, Customer customer){
+    public User merge_carts(String guestID, Customer customer){
+        Guest guest = (Guest) user_repo.findById(guestID).get();
+
         customer.setShopping_cart(guest.getShopping_cart() != null ? new HashMap<>(guest.getShopping_cart()) : new HashMap<>());
         user_repo.delete(guest);
         return user_repo.save(customer);

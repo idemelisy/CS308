@@ -1,12 +1,15 @@
 package org.project.controller;
 
+import jakarta.mail.MessagingException;
 import org.project.model.Customer;
 import org.project.model.Invoice;
 import org.project.model.product_model.Product;
 import org.project.service.CustomerService;
+import org.project.service.EmailSenderService;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +24,9 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private EmailSenderService emailSenderService;
+
     @GetMapping
     public List<Customer> getAllCustomers() {
         return userService.getAllCustomers();
@@ -28,9 +34,7 @@ public class CustomerController {
 
     @GetMapping("/get-cart")
     public HashMap<String, Integer> getCart(@RequestParam String customerID){
-        User user = user_repo.findById(customerID).get();
-        Customer customer = (Customer) user;
-        return customerService.getShoppingCart(customer);
+        return customerService.getShoppingCart(customerID);
     }
 
     @PostMapping("/add-to-cart")
@@ -51,5 +55,10 @@ public class CustomerController {
     @GetMapping("/shopping-history")
     public List<Invoice> getShoppingHistory(@RequestParam String customerID){
         return customerService.see_shopping_history(customerID);
+    }
+
+    @PostMapping("/send-invoice")
+    public void sendInvoiceMail(@RequestParam String toEmail, @RequestParam MultipartFile file) throws MessagingException {
+        emailSenderService.sendEmail(toEmail, file);
     }
 }

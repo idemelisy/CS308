@@ -122,8 +122,10 @@ public class CustomerService {
         return shopping_cart.containsKey(productID) ? "increased amount" : "added to cart";
     }  
 
-    public HashMap<String, Integer> getShoppingCart(Customer current_customer){
-        return current_customer.getShopping_cart();
+    public HashMap<String, Integer> getShoppingCart(String customerID){
+        User user = user_repo.findById(customerID).get();
+        Customer customer = (Customer) user;
+        return customer.getShopping_cart();
     }
 
     public List<Invoice> see_shopping_history(String customerID){

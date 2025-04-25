@@ -1,6 +1,5 @@
 package org.project.repository;
 
-import java.util.List;
 
 import org.project.model.Invoice;
 import org.springframework.data.mongodb.repository.MongoRepository;

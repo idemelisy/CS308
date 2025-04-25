@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 import org.project.model.Customer;
 import org.project.model.Invoice;
 import org.project.model.User;
 import org.project.model.product_model.Product;
+import org.project.repository.ProductRepository;
 import org.project.repository.ShoppingHistory;
 import org.project.repository.UserRepository;
-import org.project.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +46,7 @@ public class CustomerService {
             curr_product.setStock(curr_product.getStock() - quantity);
             product_repo.save(curr_product);
         }
-        
+  
         double total_price = current_customer.getShopping_cart().entrySet()
             .stream()
             .mapToDouble(entry -> {String productID = entry.getKey();
@@ -59,9 +58,12 @@ public class CustomerService {
         
 
         new_receipt.setTotal_price(total_price);
+        new_receipt.setOrderStatus("processing");
 
         current_customer.getShopping_cart().clear();
         user_repo.save(current_customer);
+
+
         return receipt.save(new_receipt);
     }
 
@@ -103,7 +105,9 @@ public class CustomerService {
 
         String productID = product.getProduct_id();
 
-        if(product.getStock() > 0){
+        Integer in_cart = current_customer.getShopping_cart().get(product.getProduct_id());
+        in_cart = in_cart != null ? in_cart : 0;
+        if(product.getStock() - in_cart > 0){
             if (shopping_cart.containsKey(productID)){
                 Integer amount_in_cart = shopping_cart.get(productID);
                 amount_in_cart++;
@@ -122,10 +126,8 @@ public class CustomerService {
         return shopping_cart.containsKey(productID) ? "increased amount" : "added to cart";
     }  
 
-    public HashMap<String, Integer> getShoppingCart(String customerID){
-        User user = user_repo.findById(customerID).get();
-        Customer customer = (Customer) user;
-        return customer.getShopping_cart();
+    public HashMap<String, Integer> getShoppingCart(Customer current_customer){
+        return current_customer.getShopping_cart();
     }
 
     public List<Invoice> see_shopping_history(String customerID){

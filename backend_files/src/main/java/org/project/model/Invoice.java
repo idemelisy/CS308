@@ -22,5 +22,6 @@ public class Invoice {
     private Customer purchaser;
     private Map<String, Integer> purchased;
     private double total_price;
-    
+    private String orderStatus;
+
 }

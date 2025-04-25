@@ -48,4 +48,10 @@ public class UserController {
     public User guest_to_user(@RequestBody Customer customer, @RequestParam String guest_id){
         return userService.merge_carts(guest_id, customer);
     }
+
+    @GetMapping("/instance")
+    public String get_instance(@RequestParam String email){
+        User user = user_repo.findByEmail(email);
+        return user.getClass().getSimpleName();
+    }
 }

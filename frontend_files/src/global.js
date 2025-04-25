@@ -1,7 +1,14 @@
-let CURRENT_USER = null;
+// global.js
 
-export const getCurrentUser = () => CURRENT_USER;
-
-export const setCurrentUser = (user) => {
-    CURRENT_USER = user;
-};
+export function setCurrentUser(user) {
+    localStorage.setItem("CURRENT_USER", user);
+  }
+  
+  export function getCurrentUser() {
+    return localStorage.getItem("CURRENT_USER");
+  }
+  
+  export function logoutUser() {
+    localStorage.removeItem("CURRENT_USER");
+  }
+  

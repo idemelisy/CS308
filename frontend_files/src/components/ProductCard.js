@@ -10,7 +10,11 @@ const ProductCard = ({ product }) => {
       <img src={product.image} alt={product.name} className="product-image" />
       <h3 className="product-name">{product.name}</h3>
       <p className="product-description">{product.description}</p>
-      <p className="product-price">{product.price} TL</p>
+      <p className="product-price">
+  ${Number.isFinite(product?.unitPrice) ? product.unitPrice.toFixed(2) : "0.00"}
+</p>
+
+
       <p className="product-stock">
         {product.quantity > 0 ? `Stock: ${product.quantity}` : "Out of Stock"}
       </p>

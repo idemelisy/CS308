@@ -116,7 +116,10 @@ const Product = () => {
         <div className="product-details">
           <h2>{product.name}</h2>
           <p className="product-description">{product.description}</p>
-          <p className="product-price">${product.unit_price.toFixed(2)}</p>
+          <p className="product-price">
+  ${Number.isFinite(product?.unitPrice) ? product.unitPrice.toFixed(2) : "0.00"}
+</p>
+
           <p className="product-rating">
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>

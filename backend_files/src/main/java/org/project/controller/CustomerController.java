@@ -37,6 +37,11 @@ public class CustomerController {
         return customerService.getShoppingCart(customerID);
     }
 
+    @GetMapping("/in-cart-total")
+    public double inCartTotal(@RequestParam String customerID){
+        return customerService.in_cart_total(customerID);
+    }
+
     @PostMapping("/add-to-cart")
     public String addToCart(@RequestBody Product product, @RequestParam String email){
         return customerService.add_to_cart(product, email);

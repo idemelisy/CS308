@@ -28,6 +28,8 @@ public class ProductService {
     private RatingRepository rating_repo;
     @Autowired
     private ShoppingHistory receipts;
+    @Autowired
+    private UserRepository user_repo;
     
 
     private String generate_id() {
@@ -94,9 +96,10 @@ public class ProductService {
         
         String mutual_id = generate_id();
         Instant now = Instant.now();
+        String email = user_repo.findById(user_id).get().getEmail();
 
-        Rating new_rating = new Rating(mutual_id, product_id, user_id, rating, now);
-        Comment new_comment = new Comment(mutual_id, product_id, user_id, comment, "waiting-approval", now);
+        Rating new_rating = new Rating(mutual_id, product_id, user_id, email, rating, now);
+        Comment new_comment = new Comment(mutual_id, product_id, user_id, email, comment, "waiting-approval", now);
 
         rating_repo.save(new_rating);
         comment_repo.save(new_comment);

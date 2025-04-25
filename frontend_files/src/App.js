@@ -14,14 +14,16 @@ import Home from "./Home";
 import Product from "./Product";
 import OrderHistory from "./OrderHistory";
 import Cart from "./Cart";
+import InvoicePage from "./InvoicePage.js";
+import ApprovalPage from './ApprovalPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
+    <Router> {/* ✅ Router goes at the top */}
+      <AuthProvider>
+        <CartProvider>
           <Routes>
             <Route path="/" element={<Welcome />} />
             <Route path="/register" element={<Register />} />
@@ -34,10 +36,13 @@ function App() {
             <Route path="/product/:id" element={<Product />} />
             <Route path="/order-history" element={<OrderHistory />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/invoice" element={<InvoicePage />} />
+            <Route path="/approval-page" element={<ApprovalPage />} />
+
           </Routes>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+        </CartProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

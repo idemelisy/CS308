@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "./auth";
 import { setCurrentUser } from "./global";
 
 function Login() {
@@ -14,7 +13,8 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      // Step 1: Validate user login via POST /login
+      const loginResponse = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -22,15 +22,43 @@ function Login() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.text();
-      console.log("Server Response:", data);
+      const loginData = await loginResponse.json();
+      console.log("Login Response:", loginData);
 
-      if (response.ok) {
-        alert("Login Successful!");
-        setCurrentUser(data); //Sets the CURRENT_USER as a GLOBAL variable
-        navigate("/home");
-      } else {
-        alert("Error: " + data);
+      if (!loginResponse.ok) {
+        alert("Login failed: " + loginData);
+        return;
+      }
+
+      // Step 2: Save full user info
+      setCurrentUser(JSON.stringify(loginData));
+
+      // Step 3: Fetch role using GET /instance?email=...
+      const roleResponse = await fetch(
+        `http://localhost:8080/instance?email=${formData.email}`
+      );
+
+      const roleData = await roleResponse.text(); // Assuming backend returns plain text like "ProductManager"
+      console.log("Role:", roleData);
+
+      if (!roleResponse.ok) {
+        alert("Failed to fetch user role.");
+        return;
+      }
+
+      // Step 4: Navigate based on role
+      alert("Login Successful!");
+
+      switch (roleData) {
+        case "ProductManager":
+        case "SalesManager":
+          navigate("/approval-page"); // Navigate to approval page for ProductManager and SalesManager
+          break;
+        case "Customer":
+          navigate("/home"); // Navigate to home page for Customer
+          break;
+        default:
+          alert("Unknown user role!");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -60,7 +88,9 @@ function Login() {
 
         <button type="submit">Login</button>
       </form>
-      <p>Don't have an account? <a href="/register">Register here</a></p>
+      <p>
+        Don't have an account? <a href="/register">Register here</a>
+      </p>
     </div>
   );
 }

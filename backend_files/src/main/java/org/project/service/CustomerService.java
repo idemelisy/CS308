@@ -32,6 +32,19 @@ public class CustomerService {
         return UUID.randomUUID().toString();
     }
 
+    public double in_cart_total(String customerID){
+        Customer customer = (Customer) user_repo.findById(customerID).get();
+        double total_price = customer.getShopping_cart().entrySet()
+            .stream()
+            .mapToDouble(entry -> {String productID = entry.getKey();
+                                   Integer quantity = entry.getValue();
+                                   Product product = product_repo.findById(productID).get();
+                                   return product.getUnitPrice() * quantity;
+                                })
+            .sum();
+        return total_price;
+    }
+
     public Invoice checkout(Customer current_customer){
         Invoice new_receipt = new Invoice();
         new_receipt.setInvoiceId(generate_id());
@@ -126,7 +139,9 @@ public class CustomerService {
         return shopping_cart.containsKey(productID) ? "increased amount" : "added to cart";
     }  
 
-    public HashMap<String, Integer> getShoppingCart(Customer current_customer){
+    public HashMap<String, Integer> getShoppingCart(String customerID){
+        User user = user_repo.findById(customerID).get();
+        Customer current_customer = (Customer) user;
         return current_customer.getShopping_cart();
     }
 

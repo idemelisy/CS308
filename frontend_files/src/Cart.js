@@ -3,6 +3,8 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from './CartContext';
 import './Cart.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Cart = () => {
   const { cartItems, deleteFromCart, totalPrice } = useContext(CartContext);
@@ -18,7 +20,7 @@ const Cart = () => {
   });
 
   const handleCheckout = () => {
-    setShowBankingModal(true); // Show the banking modal
+    setShowBankingModal(true);
   };
 
   const handleModalChange = (e) => {
@@ -28,8 +30,17 @@ const Cart = () => {
 
   const handleModalSubmit = (e) => {
     e.preventDefault();
-    setShowBankingModal(false); // Close the modal
-    navigate('/invoice', { state: { invoice: { purchased: cartItems, total_price: totalPrice } } }); // Navigate to InvoicePage
+    setShowBankingModal(false);
+
+    toast.success("Invoice has been sent! ✉️", {
+      position: "bottom-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+    });
+
+    navigate('/invoice', { state: { invoice: { purchased: cartItems, total_price: totalPrice } } });
   };
 
   return (
@@ -41,11 +52,11 @@ const Cart = () => {
         <div>
           <ul className="cart-list">
             {items.map((item) => (
-              <li key={item.id} className="cart-item">
+              <li key={item.product_id} className="cart-item">
                 <img src={item.image || '/placeholder.jpg'} alt={item.name} width="60" />
                 <div className="cart-info">
                   <p>{item.name}</p>
-                  <p>{item.price} TL</p>
+                  <p>{Number(item.unit_price || 0).toFixed(2)} TL</p>
                   <p>Quantity: {item.quantity}</p>
                   <button onClick={() => deleteFromCart(item)}>Remove</button>
                 </div>
@@ -115,6 +126,8 @@ const Cart = () => {
           </div>
         </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

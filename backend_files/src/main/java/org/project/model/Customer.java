@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.project.model.product_model.Product;
 
 import java.util.HashMap;
 

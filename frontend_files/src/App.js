@@ -15,6 +15,7 @@ import Product from "./Product";
 import OrderHistory from "./OrderHistory";
 import Cart from "./Cart";
 import InvoicePage from "./InvoicePage.js";
+import ApprovalPage from './ApprovalPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,6 +37,8 @@ function App() {
             <Route path="/order-history" element={<OrderHistory />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/invoice" element={<InvoicePage />} />
+            <Route path="/approval-page" element={<ApprovalPage />} />
+
           </Routes>
         </CartProvider>
       </AuthProvider>

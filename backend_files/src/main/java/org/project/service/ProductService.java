@@ -81,7 +81,16 @@ public class ProductService {
     }
     
     public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
-        List<Invoice> all = receipts.findAll();
+        List<Invoice> all = receipts.findAll() != null ? receipts.findAll() : Collections.emptyList();
+        
+        boolean bought_before = false;
+        for(Invoice invoice: all){
+            if (invoice.getPurchaser().getAccount_id().equals(user_id) && invoice.getPurchased().containsKey(product_id)){
+                bought_before = true;
+                break;
+            }
+        }
+        if(!bought_before) return "Can't add comment for unbought product.";
         
         String mutual_id = generate_id();
         Instant now = Instant.now();

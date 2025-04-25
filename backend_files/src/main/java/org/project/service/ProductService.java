@@ -85,7 +85,7 @@ public class ProductService {
         
         boolean bought_before = false;
         for(Invoice invoice: all){
-            if (invoice.getPurchaser().getAccount_id().equals(user_id) && invoice.getPurchased().containsKey(product_id)){
+            if (invoice.getPurchaser().getAccount_id().equals(user_id) && invoice.getPurchased().containsKey(product_id) && invoice.getOrderStatus().equals("delivered")){
                 bought_before = true;
                 break;
             }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,6 +28,7 @@ public class ProductService {
     private RatingRepository rating_repo;
     @Autowired
     private ShoppingHistory receipts;
+    
 
     private String generate_id() {
         return UUID.randomUUID().toString();
@@ -79,32 +80,19 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
     
-
     public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
+        List<Invoice> all = receipts.findAll();
+        
         String mutual_id = generate_id();
-        LocalDateTime now = LocalDateTime.now();
+        Instant now = Instant.now();
 
         Rating new_rating = new Rating(mutual_id, product_id, user_id, rating, now);
-        Comment new_comment = new Comment(mutual_id, product_id, user_id, comment, now);
+        Comment new_comment = new Comment(mutual_id, product_id, user_id, comment, "waiting-approval", now);
 
         rating_repo.save(new_rating);
         comment_repo.save(new_comment);
 
         return mutual_id + " " + product_id + " " + user_id;
-    }
-
-    public Comment add_only_comment(String product_id, String user_id, String content){
-        String comment_id = generate_id();
-        LocalDateTime now = LocalDateTime.now();
-
-        return comment_repo.save(new Comment(comment_id, product_id, user_id, content, now));
-    }
-
-    public Rating add_only_rating(String product_id, String user_id, int rating){
-        String rating_id = generate_id();
-        LocalDateTime now = LocalDateTime.now();
-
-        return rating_repo.save(new Rating(rating_id, product_id, user_id, rating, now));
     }
 
     public List<ReviewObject> get_merged_reviews(String product_id){
@@ -125,27 +113,29 @@ public class ProductService {
 
         for (Comment comment: comments){
             boolean matched = false;
-            
-            for(ReviewObject review: merged_reviews){
-                if(review.getUserId().equals(comment.getUserId()) && 
-                   review.getProductId().equals(comment.getProductId()) &&
-                   review.getDate().equals(comment.getDate())) {
+            if(comment.getApprovalStatus().equals("approved")){
+                for(ReviewObject review: merged_reviews){
+                    if(review.getUserId().equals(comment.getUserId()) && 
+                    review.getProductId().equals(comment.getProductId()) &&
+                    review.getDate().equals(comment.getDate())) {
 
-                    review.setComment_id(comment.getComment_id());
-                    review.setContent(comment.getContent());
-                    matched = true;
-                    break;
+                        review.setComment_id(comment.getComment_id());
+                        review.setContent(comment.getContent());
+                        matched = true;
+                        break;
+                    }
                 }
-            }
 
-            if(!matched){
-                ReviewObject newReview = new ReviewObject();
-                newReview.setComment_id(comment.getComment_id());
-                newReview.setProductId(comment.getProductId());
-                newReview.setUserId(comment.getUserId());
-                newReview.setDate(comment.getDate());
-                
-                merged_reviews.add(newReview);
+                if(!matched){
+                    ReviewObject newReview = new ReviewObject();
+                    newReview.setComment_id(comment.getComment_id());
+                    newReview.setProductId(comment.getProductId());
+                    newReview.setUserId(comment.getUserId());
+                    newReview.setDate(comment.getDate());
+                    newReview.setContent(comment.getContent());
+                    
+                    merged_reviews.add(newReview);
+                }
             }
         }
 
@@ -176,18 +166,6 @@ public class ProductService {
 
     public Product addProduct(Product newProduct) {
         return product_repo.save(newProduct);
-    }
-
-    public Product updateProduct(String product_id, Product updatedProduct) {
-        Product existingProduct = product_repo.findById(product_id).orElse(null);
-        if (existingProduct != null) {
-            existingProduct.setName(updatedProduct.getName());
-            existingProduct.setDescription(updatedProduct.getDescription());
-            existingProduct.setUnitPrice(updatedProduct.getUnitPrice());
-            existingProduct.setStock(updatedProduct.getStock());
-            return product_repo.save(existingProduct);
-        }
-        return null;
     }
 
     public String deleteProduct(String product_id) {

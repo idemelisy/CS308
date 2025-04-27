@@ -30,9 +30,22 @@ function Login() {
         return;
       }
 
-      // Step 2: Save full user info
-      setCurrentUser(JSON.stringify(loginData));
-
+      const userToSave = {
+        userId: loginData.account_id || loginData.email,
+        username: loginData.name || "User",
+        email: loginData.email || formData.email,
+      };
+  
+      setCurrentUser(userToSave);
+      const userObject = {
+        account_id: loginData.account_id,   // <- important
+        email: loginData.email,
+        name: loginData.name
+      };
+      
+      localStorage.setItem('currentUser', JSON.stringify(userObject));
+      console.log("User saved to storage:", userToSave);
+  
       // Step 3: Fetch role using GET /instance?email=...
       const roleResponse = await fetch(
         `http://localhost:8080/instance?email=${formData.email}`

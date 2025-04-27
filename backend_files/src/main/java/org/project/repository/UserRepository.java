@@ -1,5 +1,6 @@
 package org.project.repository;
 
+import org.project.model.ProductManager;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.project.model.User;
 import org.springframework.data.mongodb.repository.Query;

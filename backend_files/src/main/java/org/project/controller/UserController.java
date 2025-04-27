@@ -1,6 +1,7 @@
 package org.project.controller;
 
 import org.project.model.*;
+import org.project.repository.UserRepository;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.project.repository.UserRepository;
@@ -9,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
-
+    @Autowired
+    UserRepository user_repo;
     @Autowired UserService userService;
 
     @Autowired

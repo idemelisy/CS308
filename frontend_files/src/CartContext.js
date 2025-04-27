@@ -12,45 +12,52 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [invoice, setInvoice] = useState(null); // ✅ for global invoice access
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const rawUser = getCurrentUser();
-        console.log("Raw User:", rawUser);
-        if (!rawUser) {
-          console.warn("No user is logged in.");
-          return;
+console.log("Raw User:", rawUser);
+
+if (!rawUser) {
+  console.warn("No user is logged in.");
+  return;
+}
+
+const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+console.log("User:", user);
+
+const userId = user.account_id ?? user.email;
+
+if (!userId) {
+  console.error("No user ID found in user object:", user);
+  return;
+}
+
+const response = await fetch(`http://localhost:8080/customers/get-cart?customerID=${encodeURIComponent(userId)}`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch cart: ${response.status}`);
         }
-  
-        const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-        console.log("User:", user);
-        const customerID = user.account_id || user.id; // pick whichever field your backend expects
-        if (!customerID) {
-          console.error("No customer ID found.");
-          return;
-        }
-  
-        const response = await fetch(`http://localhost:8080/customers/get-cart?customerID=${customerID}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const responseData = await response.json();
-      console.log("Response Data:", responseData);
-      if (!response.ok|| !responseData || typeof responseData !="object") {
-        console.error("Failed to fetch cart:", response.status);
-        return;
-      }
-      const cartMap = responseData;
-        
+
+        const cartMap = await response.json();
         console.log("Cart Map:", cartMap);
+
+        if (!cartMap || typeof cartMap !== "object") {
+          console.warn("Invalid cart data received");
+          return;
+        }
+
         const productIds = Object.keys(cartMap);
-  
         const productPromises = productIds.map(async (product_id) => {
           const res = await fetch(`http://localhost:8080/products/${product_id}`);
           const product = await res.json();
-  
+
           return {
             product_id,
             quantity: cartMap[product_id],
@@ -59,7 +66,7 @@ export const CartProvider = ({ children }) => {
             unit_price: product.price,
           };
         });
-  
+
         const items = await Promise.all(productPromises);
         setCartItems(items);
       } catch (error) {
@@ -68,131 +75,160 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     };
-  
+
     fetchCart();
   }, []);
-  
 
   const addToCart = async (product) => {
-    const normalizedProduct = normalizeProduct(product);
-
-    if (
-      !normalizedProduct.product_id ||
-      !normalizedProduct.name ||
-      normalizedProduct.unit_price == null
-    ) {
-      console.warn("Invalid product passed to addToCart:", normalizedProduct);
-      return;
-    }
-
+    console.log("Adding product to cart:", product);
+  
     try {
       const rawUser = getCurrentUser();
-      if (!rawUser) return;
-
+      if (!rawUser) {
+        console.error("No logged-in user.");
+        return;
+      }
+  
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-      const userEmail = user.email;
-
-      console.log("🛒 Sending product to backend:", normalizedProduct);
-
-      await fetch(`http://localhost:8080/customers/add-to-cart?email=${userEmail}`, {
+  
+      const payload = {
+        product_id: (product.product_id || product.id || "").toString(),
+        name: product.name || "",
+        model: product.model || "",
+        serialNumber: product.serialNumber || "",
+        description: product.description || "",
+        unitPrice: product.unitPrice ?? product.unit_price ?? 0,  // ✅ support both unitPrice or unit_price
+        stock: product.stock ?? 0,
+        category: product.category || "",
+        warrantyStatus: product.warrantyStatus || "",
+        distributorID: product.distributorID || ""
+      };
+  
+      console.log("Body being sent to backend:", payload);
+  
+      const response = await fetch(`http://localhost:8080/customers/add-to-cart?email=${encodeURIComponent(user.email)}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(normalizedProduct),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload),
       });
-
-      setCartItems((prevItems) => {
-        const existing = prevItems.find(
-          (item) => item.product_id === normalizedProduct.product_id
-        );
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Error response:", errorText);
+        throw new Error(`Failed to add to cart: ${response.status} - ${errorText}`);
+      }
+  
+      const normalizedProduct = normalizeProduct(product);
+      setCartItems(prevItems => {
+        const existing = prevItems.find(item => item.product_id === normalizedProduct.product_id);
         if (existing) {
-          return prevItems.map((item) =>
+          return prevItems.map(item =>
             item.product_id === normalizedProduct.product_id
               ? { ...item, quantity: item.quantity + 1 }
               : item
           );
-        } else {
-          return [...prevItems, { ...normalizedProduct, quantity: 1 }];
         }
+        return [...prevItems, normalizedProduct];
       });
+  
     } catch (err) {
       console.error("Error adding to cart:", err);
+      throw err;
     }
   };
-
+  
+  
   const deleteFromCart = async (product) => {
     try {
       const rawUser = getCurrentUser();
-      if (!rawUser) return;
-
+      if (!rawUser) {
+        console.error("No logged-in user.");
+        return;
+      }
+  
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-      const userEmail = user.email;
-
-      await fetch(`http://localhost:8080/customers/delete-from-cart?email=${userEmail}`, {
+      
+      if (!user?.email) {
+        console.error("User object missing email:", user);
+        return;
+      }
+  
+      await fetch(`http://localhost:8080/customers/delete-from-cart?email=${encodeURIComponent(user.email)}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product_id: product.product_id }),
+        body: JSON.stringify({
+          product_id: product.product_id,
+          name: product.name || "",
+          model: product.model || "",
+          serialNumber: product.serialNumber || "",
+          description: product.description || "",
+          unitPrice: product.unitPrice || product.unit_price || 0,
+          stock: product.stock || 0,
+          category: product.category || "",
+          warrantyStatus: product.warrantyStatus || "",
+          distributorID: product.distributorID || ""
+        }),
       });
-
-      setCartItems((prevItems) =>
+  
+      setCartItems(prevItems =>
         prevItems
-          .map((item) =>
+          .map(item =>
             item.product_id === product.product_id
               ? { ...item, quantity: item.quantity - 1 }
               : item
           )
-          .filter((item) => item.quantity > 0)
+          .filter(item => item.quantity > 0)
       );
     } catch (err) {
       console.error("Error removing from cart:", err);
     }
   };
   
-  const checkout = async () => {
+  const checkout = () => {
     try {
       const rawUser = getCurrentUser();
-      if (!rawUser) return;
-
-      const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-       // Log the user to see its contents before updating
-    console.log("User before update:", user);
-
-    // Update the shopping_cart object with the current cartItems
-    const shoppingCart = cartItems.reduce((acc, item) => {
-      acc[item.product_id] = item.quantity;  // Ensure product_id is the key and quantity is the value
-      return acc;
-    }, {});
-
-    // Update the user object to include the correct shopping_cart format
-    user.shopping_cart = shoppingCart;
-
-    // Log the updated user with the shopping_cart
-    console.log("Updated User with Shopping Cart:", user);
-      console.log("🛒 Cart Items at checkout:", cartItems);
-
-      const response = await fetch("http://localhost:8080/customers/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      });
-
-      if (!response.ok) {
-        console.error("Failed to checkout");
+      if (!rawUser) {
+        console.error("No logged-in user.");
         return;
       }
-      const invoice = await response.json();
-      
-      console.log("Invoice received from backend:", invoice);
-      console.log("Checkout response:", invoice);
-      setInvoice(invoice);
-      setCartItems([]); // Clear cart on success
-     
-      navigate("/invoice", { state: { invoice } });
+  
+      const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+      console.log("Preparing checkout for user:", user);
+  
+      const shoppingCart = cartItems.reduce((acc, item) => {
+        acc[item.product_id] = item.quantity;
+        return acc;
+      }, {});
+  
+      // Prepare fake invoice to show in InvoicePage
+      const fakeInvoice = {
+        name: user.username,
+        surname: user.username,
+        email: user.email,
+        purchased: cartItems.map(item => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          name: item.name,
+          image: item.image,
+          unit_price: item.unit_price
+        })),
+        total_price: totalPrice,
+        orderStatus: "pending",
+        invoiceId: null
+      };
+  
+      console.log("Fake invoice prepared:", fakeInvoice);
+  
+      // NO BACKEND CALL! just navigate
+      navigate("/invoice", { state: { invoice: fakeInvoice } });
     } catch (err) {
-      console.error("Error during checkout:", err);
+      console.error("Error preparing checkout:", err);
     }
   };
+  
+  
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.unit_price || 0) * (item.quantity || 0),

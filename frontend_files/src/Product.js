@@ -15,7 +15,9 @@ const Product = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [userRating, setUserRating] = useState(0);
   const [user, setUser] = useState(null);
-
+  const getCurrentUser = () => {
+    return localStorage.getItem('user');
+  };
   const { addToCart } = useCart();
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -81,7 +83,18 @@ const Product = () => {
   }, [user]);
 
   const handleAddToCart = () => {
-    addToCart(product); // Call the addToCart function with the product
+    if (!product || !product.stock || product.stock <= 0) {
+      toast.error("Sorry, this product is out of stock!", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return;
+    }
+     
+    addToCart(product);
     toast.success("Product Added to Cart Successfully!", {
       position: "bottom-right",
       autoClose: 2000,
@@ -185,7 +198,10 @@ const Product = () => {
           <p className="product-rating">
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>
-
+          
+<p className="product-stock">
+  {product.stock > 0 ? `In Stock (${product.stock} available)` : "Out of Stock"}
+</p>
           <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
 
           <h3>Rate this Product:</h3>

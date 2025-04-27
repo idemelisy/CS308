@@ -24,6 +24,7 @@ public class Rating {
     private String rating_id;
     private String productId;
     private String userId;
+    private String userEmail;
     private int rating;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private Instant date;

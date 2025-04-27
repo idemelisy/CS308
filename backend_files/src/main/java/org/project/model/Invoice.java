@@ -2,7 +2,6 @@ package org.project.model;
 
 import java.util.Map;
 
-import org.project.model.product_model.Product;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

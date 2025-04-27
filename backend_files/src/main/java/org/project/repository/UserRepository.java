@@ -4,7 +4,7 @@ import org.project.model.ProductManager;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.project.model.User;
 import org.springframework.data.mongodb.repository.Query;
-
+import org.project.model.ProductManager;
 import java.util.List;
 
 public interface UserRepository extends MongoRepository<User, String>{
@@ -14,4 +14,3 @@ public interface UserRepository extends MongoRepository<User, String>{
     @Query("{ '_class' : 'product_manager' }")
     List<ProductManager> findAllProductManagers();
 }
-

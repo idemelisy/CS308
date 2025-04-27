@@ -24,6 +24,7 @@ public class Comment {
     private String comment_id;
     private String productId;
     private String userId;
+    private String userEmail;
     private String content;
     private String approvalStatus = "waiting-approval";
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")

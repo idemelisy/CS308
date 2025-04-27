@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import StarRating from "./StarRating";
 import { useCart } from "./CartContext";
-import { getCurrentUser } from "./global";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Product = () => {
   const { id } = useParams();
@@ -80,9 +81,14 @@ const Product = () => {
   }, [user]);
 
   const handleAddToCart = () => {
-    if (product) {
-      addToCart(product);
-    }
+    addToCart(product); // Call the addToCart function with the product
+    toast.success("Product Added to Cart Successfully!", {
+      position: "bottom-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+    });
   };
 
   const handleCommentSubmit = (e) => {
@@ -168,14 +174,20 @@ const Product = () => {
           alt={product.name} 
           className="product-image" 
         />
+
         <div className="product-details">
           <h2>{product.name}</h2>
           <p className="product-description">{product.description}</p>
-          <p className="product-price">${product.unitPrice.toFixed(2)}</p>
+          <p className="product-price">
+            ${Number.isFinite(product?.unitPrice) ? product.unitPrice.toFixed(2) : "0.00"}
+          </p>
+
           <p className="product-rating">
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>
+
           <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+
           <h3>Rate this Product:</h3>
           <StarRating onRate={handleRate} />
         </div>
@@ -213,6 +225,8 @@ const Product = () => {
           <button type="submit">Submit Comment</button>
         </form>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };

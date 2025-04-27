@@ -28,6 +28,8 @@ public class ProductService {
     private RatingRepository rating_repo;
     @Autowired
     private ShoppingHistory receipts;
+    @Autowired
+    private UserRepository user_repo;
     
 
     private String generate_id() {
@@ -81,13 +83,23 @@ public class ProductService {
     }
     
     public String add_comment_and_rating(String user_id, String product_id, String comment, int rating){
-        List<Invoice> all = receipts.findAll();
+        List<Invoice> all = receipts.findAll() != null ? receipts.findAll() : Collections.emptyList();
+        
+        boolean bought_before = false;
+        for(Invoice invoice: all){
+            if (invoice.getPurchaser().getAccount_id().equals(user_id) && invoice.getPurchased().containsKey(product_id) && invoice.getOrderStatus().equals("delivered")){
+                bought_before = true;
+                break;
+            }
+        }
+        if(!bought_before) return "Can't add comment for unbought product.";
         
         String mutual_id = generate_id();
         Instant now = Instant.now();
+        String email = user_repo.findById(user_id).get().getEmail();
 
-        Rating new_rating = new Rating(mutual_id, product_id, user_id, rating, now);
-        Comment new_comment = new Comment(mutual_id, product_id, user_id, comment, "waiting-approval", now);
+        Rating new_rating = new Rating(mutual_id, product_id, user_id, email, rating, now);
+        Comment new_comment = new Comment(mutual_id, product_id, user_id, email, comment, "waiting-approval", now);
 
         rating_repo.save(new_rating);
         comment_repo.save(new_comment);

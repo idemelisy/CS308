@@ -1,9 +1,11 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import { useState } from "react";
+import { getCurrentUser } from "./global"; // make sure you import this
 
 function InvoicePage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { invoice } = location.state || {};
   const [email, setEmail] = useState("");
 
@@ -17,20 +19,84 @@ function InvoicePage() {
   };
 
   const sendEmail = async () => {
-    const element = document.getElementById("invoice-section");
-    const opt = { filename: "invoice.pdf" };
-    const worker = html2pdf().from(element).set(opt);
-    const blob = await worker.outputPdf("blob");
+    try {
+      const element = document.getElementById("invoice-section");
+      const opt = { filename: "invoice.pdf" };
+      const worker = html2pdf().from(element).set(opt);
+      const blob = await worker.outputPdf("blob");
 
-    const formData = new FormData();
-    formData.append("toEmail", email);
-    formData.append("file", blob, "invoice.pdf");
+      const formData = new FormData();
+      formData.append("toEmail", email);
+      formData.append("file", new File([blob], "invoice.pdf", { type: "application/pdf" }));
 
-    await fetch("/send-invoice", {
-      method: "POST",
-      body: formData,
-    });
+      const response = await fetch("http://localhost:8080/customers/send-invoice", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log("Invoice sent successfully!");
+      } else {
+        console.error("Failed to send invoice. Status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error during sendEmail:", error);
+    }
   };
+
+  const finishCheckout = async () => {
+    try {
+      const rawUser = getCurrentUser();
+      if (!rawUser) {
+        console.error("No logged-in user.");
+        return;
+      }
+  
+      const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+      console.log("Current user at finish checkout:", user);
+  
+      const shoppingCart = invoice.purchased.reduce((acc, item) => {
+        acc[item.product_id] = item.quantity;
+        return acc;
+      }, {});
+  
+      // This payload matches your backend format
+      const payload = {
+        account_id: user.account_id, // ✅ the correct Mongo _id
+        shopping_cart: shoppingCart,
+        name: user.username,
+        surname: user.username,
+        email: user.email,
+        password: "1" // if backend needs it
+      };
+  
+      console.log("Payload being sent to backend:", payload);
+  
+      const response = await fetch("http://localhost:8080/customers/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      if (!response.ok) {
+        console.error("Failed to finish checkout", await response.text());
+        return;
+      }
+  
+      const updatedInvoice = await response.json();
+      console.log("Checked out successfully:", updatedInvoice);
+  
+      // 🧹 After checkout, clear cart locally
+      user.shopping_cart = {};
+      localStorage.setItem("user", JSON.stringify(user));
+  
+      alert("Checkout completed successfully!");
+      navigate("/home");
+    } catch (err) {
+      console.error("Error finishing checkout:", err);
+    }
+  };
+  
 
   return (
     <div>
@@ -65,6 +131,10 @@ function InvoicePage() {
       <br />
       <button onClick={downloadPdf}>Download PDF</button>
       <button onClick={sendEmail}>Send via Email</button>
+      <br /><br />
+      
+      {/* ✅ New button to actually trigger checkout */}
+      <button onClick={finishCheckout}>Finish Checking Out</button>
     </div>
   );
 }

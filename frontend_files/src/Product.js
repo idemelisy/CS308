@@ -20,7 +20,7 @@ const Product = () => {
   const [userRating, setUserRating] = useState(0);
   const [user, setUser] = useState(null);
 
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -75,6 +75,30 @@ const Product = () => {
   }, [user]);
 
   const handleAddToCart = () => {
+    if (product.stock === 0) {
+      toast.error("Product is out of stock!", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return;
+    }
+  
+    const existingItem = cartItems.find(item => item.product_id === product.product_id);
+  
+    if (existingItem && existingItem.quantity >= product.stock) {
+      toast.error("Cannot add more, stock limit reached!", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return;
+    }
+  
     addToCart(product);
     toast.success("Product Added to Cart Successfully!", {
       position: "bottom-right",
@@ -84,6 +108,7 @@ const Product = () => {
       pauseOnHover: true,
     });
   };
+  
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
@@ -171,7 +196,14 @@ const Product = () => {
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>
 
-          <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+          <button 
+            className="add-to-cart" 
+            onClick={handleAddToCart}
+            disabled={product.stock === 0} 
+          >
+            {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+          </button>
+
 
           <h3>Rate this Product:</h3>
           <StarRating onRate={handleRate} />

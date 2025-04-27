@@ -1,15 +1,15 @@
 package org.project.controller;
 
-import jakarta.mail.MessagingException;
 import org.project.model.Customer;
+import org.project.model.Guest;
 import org.project.model.Invoice;
+import org.project.model.User;
 import org.project.model.product_model.Product;
+import org.project.repository.UserRepository;
 import org.project.service.CustomerService;
-import org.project.service.EmailSenderService;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +24,7 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @Autowired
-    private EmailSenderService emailSenderService;
+    @Autowired UserRepository user_repo;
 
     @GetMapping
     public List<Customer> getAllCustomers() {
@@ -34,12 +33,16 @@ public class CustomerController {
 
     @GetMapping("/get-cart")
     public HashMap<String, Integer> getCart(@RequestParam String customerID){
-        return customerService.getShoppingCart(customerID);
+        User user = user_repo.findById(customerID).get();
+        Customer customer = (Customer) user;
+        return customerService.getShoppingCart(customer);
     }
 
-    @GetMapping("/in-cart-total")
-    public double inCartTotal(@RequestParam String customerID){
-        return customerService.in_cart_total(customerID);
+    @GetMapping("/get-guest-cart")
+    public HashMap<String, Integer> getGuestCart(@RequestParam String customerID){
+        User user = user_repo.findById(customerID).get();
+        Guest customer = (Guest) user;
+        return customerService.getShoppingCart(customer);
     }
 
     @PostMapping("/add-to-cart")
@@ -47,9 +50,19 @@ public class CustomerController {
         return customerService.add_to_cart(product, email);
     }
 
+    @PostMapping("/add-to-guest-cart")
+    public String addToGuestCart(@RequestBody Product product, @RequestParam String email){
+        return customerService.add_to_guest_cart(product, email);
+    }
+
     @DeleteMapping("/delete-from-cart")
     public String deleteFromCart(@RequestBody Product product, @RequestParam String email){
         return customerService.delete_from_cart(product,email);
+    }
+
+    @DeleteMapping("/delete-from-guest-cart")
+    public String deleteFromGuestCart(@RequestBody Product product, @RequestParam String email){
+        return customerService.delete_from_guest_cart(product,email);
     }
 
     @PostMapping("/checkout")
@@ -57,13 +70,13 @@ public class CustomerController {
         return customerService.checkout(customer);
     }
 
-    @GetMapping("/shopping-history")
-    public List<Invoice> getShoppingHistory(@RequestParam String customerID){
-        return customerService.see_shopping_history(customerID);
+    @GetMapping("/in-cart-total")
+    public double inCartTotal(@RequestParam String customerID){
+        return customerService.in_cart_total(customerID);
     }
 
-    @PostMapping("/send-invoice")
-    public void sendInvoiceMail(@RequestParam String toEmail, @RequestParam MultipartFile file) throws MessagingException {
-        emailSenderService.sendEmail(toEmail, file);
+    @GetMapping("/shopping-history")
+    public List<Invoice> getShoppingHistory(@RequestParam String customerID){     
+        return customerService.see_shopping_history(customerID);
     }
 }

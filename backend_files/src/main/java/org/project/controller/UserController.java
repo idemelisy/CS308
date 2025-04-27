@@ -4,7 +4,6 @@ import org.project.model.*;
 import org.project.repository.UserRepository;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.project.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +13,6 @@ public class UserController {
     UserRepository user_repo;
     @Autowired UserService userService;
 
-    @Autowired
-    private UserRepository user_repo;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest){

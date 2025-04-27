@@ -19,3 +19,16 @@ export function getCurrentUser() {
 export function logoutUser() {
   localStorage.removeItem('currentUser');
 }
+
+export function createGuestUser() {
+  const guestUser = {
+    userId: "guest_" + Math.random().toString(36).substr(2, 9),
+    username: "Guest",
+    email: "guest@example.com",
+    isGuest: true
+  };
+  console.log("Creating guest user:", guestUser);
+  setCurrentUser(guestUser);
+  return guestUser;
+}
+

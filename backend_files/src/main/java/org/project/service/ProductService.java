@@ -6,6 +6,7 @@ import org.project.repository.ProductRepository;
 import org.project.repository.CommentRepository;
 import org.project.repository.RatingRepository;
 import org.project.repository.ShoppingHistory;
+import org.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 @Service

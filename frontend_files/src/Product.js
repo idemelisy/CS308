@@ -47,6 +47,7 @@ const Product = () => {
     fetch(`http://localhost:8080/products/${id}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log("Fetched Product:", data);
         setProduct(data);
         setLoading(false);
       })
@@ -117,16 +118,12 @@ const Product = () => {
       body: JSON.stringify(reviewObject)
     })
       .then(async (response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        const result = await response.text();
+  
+        if (result.includes("Can't add comment for unbought product.")) {
+          alert("You can't review unbought product.");
+          return;
         }
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          return response.json();
-        }
-        return response.text();
-      })
-      .then((result) => {
         alert("Your review has been submitted and is waiting for approval.");
         setNewComment("");
         setUserRating(0);
@@ -154,17 +151,20 @@ const Product = () => {
   return (
     <div className="product-page">
       <div className="product-info">
-        <img 
-          src={`/images/${product.id}.jpg`} 
-          alt={product.name} 
-          className="product-image" 
+        <img
+          src={`/images/${product.product_id}.jpg`}
+          alt={product.name}
+          width="300"
+          height="300"
+          style={{ objectFit: "cover", borderRadius: "10px" }}
+          onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.jpg'; }}
         />
 
         <div className="product-details">
           <h2>{product.name}</h2>
           <p className="product-description">{product.description}</p>
           <p className="product-price">
-            ${Number.isFinite(product?.unitPrice) ? product.unitPrice.toFixed(2) : "0.00"}
+            {Number.isFinite(product?.unitPrice) ? product.unitPrice.toFixed(2) : "0.00"}TL
           </p>
 
           <p className="product-rating">
@@ -183,7 +183,7 @@ const Product = () => {
         {comments.length > 0 ? (
           comments.map((review, index) => (
             <div key={index} className="review">
-              <p><strong>{review.userId || "Anonymous"}</strong></p>
+              <p><strong>{review.userEmail || review.userId || "Anonymous"}</strong></p>
               <p><strong>Rating:</strong> {review.rating ? `${review.rating}/5` : "No rating"}</p>
               <p>{review.content}</p>
               <p><em>{new Date(review.date).toLocaleString()}</em></p>

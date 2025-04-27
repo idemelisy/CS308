@@ -56,7 +56,7 @@ const Cart = () => {
                 <img src={item.image || '/placeholder.jpg'} alt={item.name} width="60" />
                 <div className="cart-info">
                   <p>{item.name}</p>
-                  <p>{Number(item.unit_price || 0).toFixed(2)} TL</p>
+                  <p>{Number(item.unitPrice || 0).toFixed(2)} TL</p>
                   <p>Quantity: {item.quantity}</p>
                   <button onClick={() => deleteFromCart(item)}>Remove</button>
                 </div>

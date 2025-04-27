@@ -5,6 +5,10 @@ import { useCart } from "./CartContext";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
+const getCurrentUser = () => {
+  return localStorage.getItem('user');
+};
+
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -17,37 +21,27 @@ const Product = () => {
   const [user, setUser] = useState(null);
 
   const { addToCart } = useCart();
+
   useEffect(() => {
     const currentUser = getCurrentUser();
-    console.log("Current user from storage:", currentUser);
-  
     try {
       const parsed = typeof currentUser === "string" ? JSON.parse(currentUser) : currentUser;
-      console.log("************************", parsed); // <-- this should appear!
-      console.log("Parsed user:", parsed);
-  
       if (parsed && (parsed.account_id || parsed.email)) {
         const userState = {
-          userId: parsed.account_id ?? parsed.email, // prefer account_id!
+          userId: parsed.account_id ?? parsed.email,
           username: parsed.name || "User",
           email: parsed.email || "noemail@domain.com",
         };
-        console.log("Setting user state to:", userState);
         setUser(userState);
       } else {
-        console.warn("Parsed user missing account_id and email, treating as Guest.");
         setUser({ userId: "Guest", username: "Anonymous" });
       }
-      console.table(parsed);
-
     } catch (error) {
       console.error("Error parsing user data:", error);
       setUser({ userId: "Guest", username: "Anonymous" });
     }
-  
     setLoadingUser(false);
   }, []);
-  
 
   useEffect(() => {
     fetch(`http://localhost:8080/products/${id}`)
@@ -75,13 +69,12 @@ const Product = () => {
       .catch((error) => console.error("Error fetching average rating:", error));
   }, [id]);
 
-  // Add new useEffect to track user state changes
   useEffect(() => {
     console.log("🔵 User state changed to:", user);
   }, [user]);
 
   const handleAddToCart = () => {
-    addToCart(product); // Call the addToCart function with the product
+    addToCart(product);
     toast.success("Product Added to Cart Successfully!", {
       position: "bottom-right",
       autoClose: 2000,
@@ -92,11 +85,9 @@ const Product = () => {
   };
 
   const handleCommentSubmit = (e) => {
-    
     e.preventDefault();
 
     if (!user || !user.userId || user.userId === "Guest") {
-      console.log("User state at comment submit:", user); 
       alert("You need to be logged in to submit a review.");
       return;
     }
@@ -116,7 +107,6 @@ const Product = () => {
       content: newComment,
       date: null
     };
-    
 
     fetch(`http://localhost:8080/products/add-comment-rating`, {
       method: "POST",
@@ -137,7 +127,6 @@ const Product = () => {
         return response.text();
       })
       .then((result) => {
-        console.log("Review submission result:", result);
         alert("Your review has been submitted and is waiting for approval.");
         setNewComment("");
         setUserRating(0);
@@ -153,17 +142,13 @@ const Product = () => {
       alert("You need to be logged in to rate this product.");
       return;
     }
-  
-    console.log("Current user during rating:", user);
-    setUserRating(value); // just update the local state, don't POST here
+    setUserRating(value);
   };
-  
 
   if (loading || loadingUser || user === null) {
-    console.log("Waiting for user and product...");
     return <h2>Loading...</h2>;
   }
-  
+
   if (!product) return <h2>Product not found</h2>;
 
   return (
@@ -198,13 +183,10 @@ const Product = () => {
         {comments.length > 0 ? (
           comments.map((review, index) => (
             <div key={index} className="review">
-              <p>
-                <strong>{review.userId || "Anonymous"}</strong>
-                {" ("}
-                {new Date(review.date).toLocaleString()}
-                {")"}
-              </p>
+              <p><strong>{review.userId || "Anonymous"}</strong></p>
+              <p><strong>Rating:</strong> {review.rating ? `${review.rating}/5` : "No rating"}</p>
               <p>{review.content}</p>
+              <p><em>{new Date(review.date).toLocaleString()}</em></p>
             </div>
           ))
         ) : (

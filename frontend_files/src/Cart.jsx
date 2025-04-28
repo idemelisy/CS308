@@ -1,7 +1,9 @@
 // Cart.js
-import React, { useContext, useState } from 'react';
+import React from 'react';
+import { useCart } from "./CartContext"; // or "./CartContext.jsx" if using .jsx
+import  { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CartContext } from './CartContext';
+import { CartContext } from './CartContext.jsx';
 import './Cart.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

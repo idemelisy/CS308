@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from "./AuthContext";
-import { CartProvider } from './CartContext';
+import { CartProvider , MyComponent} from './CartContext';
 import ProtectedRoute from './ProtectedRoute';
 import Register from './Register';
 import CustomerRegister from './CustomerRegister';
@@ -16,7 +16,7 @@ import OrderHistory from "./OrderHistory";
 import Cart from "./Cart";
 import InvoicePage from "./InvoicePage.js";
 import ApprovalPage from './ApprovalPage';
-
+import MyComponent from "./MyComponent";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -40,6 +40,7 @@ function App() {
             <Route path="/approval-page" element={<ApprovalPage />} />
 
           </Routes>
+          <MyComponent />
         </CartProvider>
       </AuthProvider>
     </Router>

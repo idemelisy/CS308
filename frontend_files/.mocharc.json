@@ -1,0 +1,7 @@
+{
+  "require": ["ignore-styles","@babel/register", "./test/styleMock.js","./test/setupFiles.js"],
+  "extension": ["js"],
+  "watch-files": ["src/**/*.js"],
+  "recursive": true
+  
+}

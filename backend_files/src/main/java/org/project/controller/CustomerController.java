@@ -1,5 +1,6 @@
 package org.project.controller;
 
+import jakarta.mail.MessagingException;
 import org.project.model.Customer;
 import org.project.model.Guest;
 import org.project.model.Invoice;

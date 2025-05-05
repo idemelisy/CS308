@@ -13,7 +13,6 @@ function Login() {
     e.preventDefault();
 
     try {
-      // Step 1: Validate user login via POST /login
       const loginResponse = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: {
@@ -35,23 +34,22 @@ function Login() {
         username: loginData.name || "User",
         email: loginData.email || formData.email,
       };
-  
+
       setCurrentUser(userToSave);
       const userObject = {
-        account_id: loginData.account_id,   // <- important
+        account_id: loginData.account_id,
         email: loginData.email,
         name: loginData.name
       };
-      
+
       localStorage.setItem('currentUser', JSON.stringify(userObject));
       console.log("User saved to storage:", userToSave);
-  
-      // Step 3: Fetch role using GET /instance?email=...
+
       const roleResponse = await fetch(
         `http://localhost:8080/instance?email=${formData.email}`
       );
 
-      const roleData = await roleResponse.text(); // Assuming backend returns plain text like "ProductManager"
+      const roleData = await roleResponse.text();
       console.log("Role:", roleData);
 
       if (!roleResponse.ok) {
@@ -59,16 +57,15 @@ function Login() {
         return;
       }
 
-      // Step 4: Navigate based on role
       alert("Login Successful!");
 
       switch (roleData) {
         case "ProductManager":
         case "SalesManager":
-          navigate("/approval-page"); // Navigate to approval page for ProductManager and SalesManager
+          navigate("/approval-page");
           break;
         case "Customer":
-          navigate("/home"); // Navigate to home page for Customer
+          navigate("/home");
           break;
         default:
           alert("Unknown user role!");
@@ -80,8 +77,26 @@ function Login() {
   };
 
   return (
-    <div className="container">
-      <h1>Login</h1>
+    <div className="container" style={{ position: "relative", paddingTop: "3rem" }}>
+      <button
+        onClick={() => navigate("/")}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "150px",
+          backgroundColor: "transparent",
+          border: "none",
+          color: "orange",
+          textDecoration: "underline",
+          fontWeight: "bold",
+          cursor: "pointer",
+          fontSize: "14px"
+        }}
+      >
+        ← Back
+      </button>
+  
+      <h1 style={{ color: "orange" }}>Login</h1>
       <form onSubmit={handleSubmit}>
         <label>Email</label>
         <input
@@ -90,7 +105,7 @@ function Login() {
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
         />
-
+  
         <label>Password</label>
         <input
           type="password"
@@ -98,14 +113,16 @@ function Login() {
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
         />
-
-        <button type="submit">Login</button>
+  
+        <button type="submit" style={{ backgroundColor: "orange", color: "white" }}>
+          Login
+        </button>
       </form>
       <p>
         Don't have an account? <a href="/register">Register here</a>
       </p>
     </div>
-  );
+  );  
 }
 
 export default Login;

@@ -88,7 +88,7 @@ public class CustomerController {
     }
 
     @PostMapping("/send-invoice")
-    public void sendInvoiceMail(@RequestParam String toEmail, @RequestParam MultiparFile file) throws MessagingException{
+    public void sendInvoiceMail(@RequestParam String toEmail, @RequestParam MultipartFile file) throws MessagingException{
         emailSenderService.sendEmail(toEmail, file);
     }
 }

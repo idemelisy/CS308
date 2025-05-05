@@ -20,6 +20,15 @@ const Cart = () => {
   });
 
   const handleCheckout = () => {
+    const rawUser = localStorage.getItem("user");
+    const user = rawUser ? JSON.parse(rawUser) : null;
+    const isGuest = user?.userType === "guest" || user?._class === "guest";
+  
+    if (isGuest) {
+      navigate("/login");
+      return;
+    }
+  
     setShowBankingModal(true);
   };
 

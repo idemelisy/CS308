@@ -91,7 +91,12 @@ export const CartProvider = ({ children }) => {
         distributorID: product.distributorID || ""
       };
 
-      const response = await fetch(`http://localhost:8080/customers/add-to-cart?email=${encodeURIComponent(user.email)}`, {
+      const isGuest = user.userType === "guest" || user._class === "guest";
+      const endpoint = isGuest
+        ? `http://localhost:8080/customers/add-to-guest-cart?email=${encodeURIComponent(user.email)}`
+        : `http://localhost:8080/customers/add-to-cart?email=${encodeURIComponent(user.email)}`;
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

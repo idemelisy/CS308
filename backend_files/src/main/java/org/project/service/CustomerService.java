@@ -1,5 +1,6 @@
 package org.project.service;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -8,9 +9,11 @@ import java.util.stream.Collectors;
 import org.project.model.Customer;
 import org.project.model.Guest;
 import org.project.model.Invoice;
+import org.project.model.Refund;
 import org.project.model.User;
 import org.project.model.product_model.Product;
 import org.project.repository.ProductRepository;
+import org.project.repository.RefundRepository;
 import org.project.repository.ShoppingHistory;
 import org.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,9 @@ public class CustomerService {
 
     @Autowired
     private ProductRepository product_repo;
+
+    @Autowired
+    private RefundRepository refund_repo;
 
     private String generate_id() {
         return UUID.randomUUID().toString();
@@ -86,6 +92,7 @@ public class CustomerService {
 
         new_receipt.setTotal_price(total_price);
         new_receipt.setOrderStatus("processing");
+        new_receipt.setDate(Instant.now());
 
         current_customer.getShopping_cart().clear();
         user_repo.save(current_customer);
@@ -225,4 +232,27 @@ public class CustomerService {
                         && invoice.getPurchaser().getAccount_id().equals(customerID))
                 .collect(Collectors.toList());
     }
+
+    public Customer add_to_wishlist(Product product, String customerID){
+        Customer customer = (Customer) user_repo.findById(customerID).get();
+        customer.getWishlist().add(product.getProduct_id());
+
+        return user_repo.save(customer);
+    }
+
+    public Customer drop_from_wishlist(Product product, String customerID){
+        Customer customer = (Customer) user_repo.findById(customerID).get();
+        customer.getWishlist().remove(product.getProduct_id());
+
+        return user_repo.save(customer);
+    }
+
+    public Refund request_refund(String productID, Customer customer, int refund_amount){
+        Refund new_refund = new Refund(generate_id(), customer, productID, refund_amount, 
+                                        product_repo.findById(productID).get().getUnitPrice() * refund_amount, 
+                                        "waiting-approval");
+
+        return refund_repo.save(new_refund);
+    }
 }
+

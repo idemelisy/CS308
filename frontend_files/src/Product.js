@@ -187,11 +187,15 @@ const Product = () => {
 
         <div className="product-details">
           <h2>{product.name}</h2>
-          <p className="product-description">{product.description}</p>
+          <p className="product-sn">Serial-Number: {product.serialNumber}</p>
+          <p className="product-di">Distributor: {product.distributorID}</p>
+          <p className="product-description">Description: {product.description}</p>
+          <p className="product-category">Category: {product.category}</p>
+          <p className="product-model">Model: {product.model}</p>
+          <p className="product-warranty">Warranty: {product.warrantyStatus}</p>
           <p className="product-price">
             {Number.isFinite(product?.unitPrice) ? product.unitPrice.toFixed(2) : "0.00"}TL
           </p>
-
           <p className="product-rating">
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>

@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserController {
     @Autowired
-    UserRepository user_repo;
+   UserRepository user_repo;
     @Autowired UserService userService;
 
-    @Autowired
-    private UserRepository user_repo;
+
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest){

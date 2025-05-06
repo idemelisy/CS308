@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "./global";
 import Navbar from "./components/Navbar";
 import SortProducts from "./components/SortProducts"; // 🌟 BURAYI UNUTMA
-
+import { FaHeart } from "react-icons/fa";
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   console.log("💡 Rendering product card:", product);
@@ -14,6 +14,7 @@ const ProductCard = ({ product }) => {
       className="product-card"
       onClick={() => navigate(`/product/${product.product_id}`)}
     >
+      
       <img
         src={product.image}
         alt={product.productName}
@@ -72,6 +73,15 @@ const Home = () => {
   return (
     <div className="homepage">
       <Navbar onSearch={handleSearch} />
+      <div style={{
+        position: "fixed",
+        bottom: 30,
+        right: 30,
+        zIndex: 1000
+      }}>  <Link to="/wishlist">
+      <FaHeart size={32} color="#e63946" title="Wishlist" />
+    </Link>
+      </div>
         <SortProducts onSorted={setProducts} />
         <div
           className="product-grid"

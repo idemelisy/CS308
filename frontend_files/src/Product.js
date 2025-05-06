@@ -4,7 +4,8 @@ import StarRating from "./StarRating";
 import { useCart } from "./CartContext";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
+import { FaHeart } from "react-icons/fa";
+import { useWishlist } from "./WishlistContext";
 const getCurrentUser = () => {
   return localStorage.getItem('user');
 };
@@ -23,7 +24,7 @@ const Product = () => {
     return localStorage.getItem('user');
   };
   const { addToCart } = useCart();
-
+  const { addToWishlist } = useWishlist();
   useEffect(() => {
     const currentUser = getCurrentUser();
     try {
@@ -173,7 +174,7 @@ const Product = () => {
           className="product-image" 
         />
 
-        <div className="product-details">
+        <div className="product-details" style={{padding: "0 36px 0 0"}}>
           <h2>{product.name}</h2>
           <p className="product-description">{product.description}</p>
           <p className="product-price">
@@ -184,16 +185,53 @@ const Product = () => {
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>
           
-<p className="product-stock">
-  {product.stock > 0 ? `In Stock (${product.stock} available)` : "Out of Stock"}
-</p>
-          <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+          <p className="product-stock">
+            {product.stock > 0 ? `In Stock (${product.stock} available)` : "Out of Stock"}
+          </p>
 
-          <h3>Rate this Product:</h3>
-          <StarRating onRate={handleRate} />
+          <button style={{maxWidth: "360px"}} className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginTop: '20px'
+          }}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-middle',
+                    marginRight: '20px'
+                  }}>
+                    <h3>Rate this Product:</h3>
+                    <StarRating onRate={handleRate} />
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-middle',
+                    marginRight: '20px'
+                  }}>
+                  <h3>Add to Wishlist</h3>
+                  <button
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          marginTop: "-12px",
+                        }}
+                        title="Add to Wishlist"
+                        onClick={() => addToWishlist(product)}
+                      >
+                        <FaHeart size={45} color="#e63946" />
+                      </button>
+                  </div>
+          </div>
         </div>
       </div>
-
+      
       <div className="reviews-section">
         <h3>Customer Reviews</h3>
         {comments.length > 0 ? (

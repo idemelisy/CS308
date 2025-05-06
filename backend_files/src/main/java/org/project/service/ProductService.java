@@ -2,20 +2,13 @@ package org.project.service;
 
 import org.project.model.Invoice;
 import org.project.model.product_model.*;
-import org.project.repository.ProductRepository;
-import org.project.repository.CommentRepository;
-import org.project.repository.RatingRepository;
-import org.project.repository.ShoppingHistory;
+import org.project.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @Service
 public class ProductService {

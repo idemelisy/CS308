@@ -16,7 +16,8 @@ import OrderHistory from "./OrderHistory";
 import Cart from "./Cart";
 import InvoicePage from "./InvoicePage.js";
 import ApprovalPage from './ApprovalPage';
-
+import Wishlist from './Wishlist';
+import { WishlistProvider } from "./WishlistContext";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -24,6 +25,7 @@ function App() {
     <Router> {/* ✅ Router goes at the top */}
       <AuthProvider>
         <CartProvider>
+        <WishlistProvider>
           <Routes>
             <Route path="/" element={<Welcome />} />
             <Route path="/register" element={<Register />} />
@@ -38,8 +40,9 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/invoice" element={<InvoicePage />} />
             <Route path="/approval-page" element={<ApprovalPage />} />
-
+            <Route path="/wishlist" element={<Wishlist />} />
           </Routes>
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </Router>

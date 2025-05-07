@@ -87,9 +87,18 @@ const OrderHistory = () => {
               <p><strong>Invoice ID:</strong> {order.invoiceId}</p>
               <p><strong>Purchaser:</strong> {order.purchaser.name} {order.purchaser.surname}</p>
               <p><strong>Email:</strong> {order.purchaser.email}</p>
+              <p><strong>Status:</strong> {order.orderStatus}</p>
               <p><strong>Total:</strong> ${order.total_price.toFixed(2)}</p>
               <p><strong>Purchased Items:</strong> {Object.keys(order.purchased).length === 0 ? 'No items purchased' : `${Object.keys(order.purchased).length} items`}</p>
-              <button onClick={() => navigate(`/order/${order.invoiceId}`)}>View Details</button>
+              <div className="order-actions">
+                <button onClick={() => navigate(`/order/${order.invoiceId}`)}>View Details</button>
+                <button 
+                  onClick={() => navigate('/request-refund', { state: { order } })}
+                  className="refund-button"
+                >
+                  Request Refund
+                </button>
+              </div>
             </li>
           ))}
         </ul>

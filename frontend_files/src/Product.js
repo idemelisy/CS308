@@ -98,6 +98,38 @@ const Product = () => {
     });
   };
 
+  const handleAddToWishlist = async () => {
+    if (!user || !user.userId || user.userId === "Guest") {
+      toast.error("Please log in to add items to your wishlist", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return;
+    }
+
+    try {
+      await addToWishlist(product);
+      toast.success("Product Added to Wishlist!", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    } catch (error) {
+      toast.error(error.message || "Failed to add to wishlist", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    }
+  };
+
   const handleCommentSubmit = (e) => {
     e.preventDefault();
 
@@ -198,36 +230,36 @@ const Product = () => {
             alignItems: 'baseline',
             marginTop: '20px'
           }}>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-middle',
-                    marginRight: '20px'
-                  }}>
-                    <h3>Rate this Product:</h3>
-                    <StarRating onRate={handleRate} />
-                  </div>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-middle',
+              marginRight: '20px'
+            }}>
+              <h3>Rate this Product:</h3>
+              <StarRating onRate={handleRate} />
+            </div>
 
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-middle',
-                    marginRight: '20px'
-                  }}>
-                  <h3>Add to Wishlist</h3>
-                  <button
-                        style={{
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          marginTop: "-12px",
-                        }}
-                        title="Add to Wishlist"
-                        onClick={() => addToWishlist(product)}
-                      >
-                        <FaHeart size={45} color="#e63946" />
-                      </button>
-                  </div>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-middle',
+              marginRight: '20px'
+            }}>
+              <h3>Add to Wishlist</h3>
+              <button
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  marginTop: "-12px",
+                }}
+                title="Add to Wishlist"
+                onClick={handleAddToWishlist}
+              >
+                <FaHeart size={45} color="#e63946" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

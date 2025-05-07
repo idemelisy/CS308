@@ -44,11 +44,31 @@
   color: #555;
 }
 
-.order-item button {
-  margin-top: 10px;
+.refund-status {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  border-left: 4px solid;
+}
+
+.refund-status p {
+  margin: 5px 0;
+  font-weight: 500;
+}
+
+.refund-status p strong {
+  font-weight: 600;
+}
+
+.order-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.order-actions button {
   padding: 10px 20px;
-  background: #FF921C;
-  color: white;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
@@ -57,6 +77,20 @@
   transition: background 0.3s ease;
 }
 
-.order-item button:hover {
+.order-actions button:first-child {
+  background: #FF921C;
+  color: white;
+}
+
+.order-actions button:first-child:hover {
   background: #ECA427;
+}
+
+.refund-button {
+  background: #e63946 !important;
+  color: white !important;
+}
+
+.refund-button:hover {
+  background: #dc2f3d !important;
 }

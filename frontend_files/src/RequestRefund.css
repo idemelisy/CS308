@@ -1,0 +1,164 @@
+.refund-container {
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 100px auto 40px auto;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.refund-container h2 {
+  font-size: 2rem;
+  color: #FF921C;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #FF921C;
+  box-shadow: 0 0 0 2px rgba(255, 146, 28, 0.2);
+}
+
+.order-details {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.order-details h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.order-details h4 {
+  color: #555;
+  margin: 20px 0 15px 0;
+}
+
+.order-details p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.product-info {
+  flex: 1;
+}
+
+.product-info p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+.product-info p strong {
+  color: #333;
+  margin-right: 5px;
+}
+
+.product-id {
+  color: #666;
+  font-size: 0.9rem;
+  margin-left: 5px;
+}
+
+.refund-quantity-input {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.refund-quantity-input label {
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+}
+
+.refund-quantity-input input {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.refund-quantity-input input:focus {
+  outline: none;
+  border-color: #FF921C;
+  box-shadow: 0 0 0 2px rgba(255, 146, 28, 0.2);
+}
+
+.max-quantity {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.refund-total {
+  margin-top: 8px;
+  color: #e63946;
+  font-weight: bold;
+}
+
+.refund-button {
+  padding: 8px 16px;
+  background: #e63946;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  white-space: nowrap;
+  margin-left: 15px;
+}
+
+.refund-button:hover {
+  background: #dc2f3d;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+} 

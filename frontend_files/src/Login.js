@@ -30,17 +30,34 @@ function Login() {
         return;
       }
 
+      // Fetch wishlist data for customers
+      let wishlist = [];
+      if (loginData.account_id) {
+        try {
+          const wishlistResponse = await fetch(`http://localhost:8080/customers/get-wishlist?customerID=${loginData.account_id}`);
+          if (wishlistResponse.ok) {
+            wishlist = await wishlistResponse.json();
+          }
+        } catch (error) {
+          console.error("Error fetching wishlist:", error);
+        }
+      }
+
       const userToSave = {
         userId: loginData.account_id || loginData.email,
         username: loginData.name || "User",
         email: loginData.email || formData.email,
+        wishlist: wishlist, // Add wishlist to the user object
+        wishlistNeedsUpdate: false // Add flag to track if wishlist needs updating
       };
   
       setCurrentUser(userToSave);
       const userObject = {
         account_id: loginData.account_id,   // <- important
         email: loginData.email,
-        name: loginData.name
+        name: loginData.name,
+        wishlist: wishlist, // Add wishlist to localStorage
+        wishlistNeedsUpdate: false // Add flag to localStorage
       };
       
       localStorage.setItem('currentUser', JSON.stringify(userObject));

@@ -216,12 +216,20 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
         })),
         total_price: totalPrice,
         orderStatus: "pending",
-        invoiceId: null
+        invoiceId: null,
+        wishlist: user.wishlist || [] // Preserve the wishlist in the invoice data
       };
   
       console.log("Fake invoice prepared:", fakeInvoice);
   
-      // NO BACKEND CALL! just navigate
+      // Update user in localStorage to preserve wishlist
+      const updatedUser = {
+        ...user,
+        wishlist: user.wishlist || []
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+  
+      // Navigate to invoice page
       navigate("/invoice", { state: { invoice: fakeInvoice } });
     } catch (err) {
       console.error("Error preparing checkout:", err);

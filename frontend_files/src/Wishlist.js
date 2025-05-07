@@ -1,40 +1,63 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useWishlist } from "./WishlistContext";
 import "./Wishlist.css";
 
 function Wishlist() {
-  const { wishlist, loading, removeFromWishlist } = useWishlist();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { wishlist, loading, removeFromWishlist, fetchWishlist } = useWishlist();
+
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+      console.log("No user found, redirecting to login");
+      navigate("/login");
+      return;
+    }
+
+    // Fetch wishlist whenever component mounts or pathname changes
+    console.log("Fetching wishlist...");
+    fetchWishlist();
+  }, [navigate, location.pathname, fetchWishlist]);
+
+  const handleRemoveFromWishlist = async (product) => {
+    try {
+      await removeFromWishlist(product);
+    } catch (error) {
+      alert('Failed to remove item from wishlist');
+    }
+  };
+
+  if (loading) {
+    return <div>Loading wishlist...</div>;
+  }
 
   return (
     <div className="wishlist-container">
-      <h2>Your Wishlist</h2>
-      {loading ? (
-        <p>Loading wishlist...</p>
-      ) : wishlist.length === 0 ? (
-        <p>Your wishlist is empty.</p>
+      <h2>My Wishlist</h2>
+      {wishlist.length === 0 ? (
+        <p>Your wishlist is empty</p>
       ) : (
-        <div className="wishlist-list">
-          {wishlist.map((product) => (
-            <div key={product.id || product.product_id} className="wishlist-item">
-              {product.image && (
-                <img
-                  src={product.image}
-                  alt={product.name || product.productName}
-                />
-              )}
-              <div className="wishlist-info">
-                <p>{product.name || product.productName}</p>
-              {/*  {product.unitPrice && <p>Price: ${product.unitPrice}</p>}
-                console.log("Product:", product);
-                {product.stock && <p>Stock: {product.stock}</p>}
-                {product.description && <p>{product.description}</p>}  */}
+        <div className="wishlist-items">
+          {wishlist.map((item) => (
+            <div key={item.product_id} className="wishlist-item">
+              <img src={item.image} alt={item.name} />
+              <div className="item-details">
+                <h3>{item.name}</h3>
+                <p>${item.unitPrice}</p>
+                <div className="button-group">
+                  <button onClick={() => navigate(`/product/${item.product_id}`)}>
+                    View Product
+                  </button>
+                  <button 
+                    className="remove-button"
+                    onClick={() => handleRemoveFromWishlist(item)}
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
-              <button
-                className="remove-btn"
-                onClick={() => removeFromWishlist(product)}
-              >
-                Remove
-              </button>
             </div>
           ))}
         </div>

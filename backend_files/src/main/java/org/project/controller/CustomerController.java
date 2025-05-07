@@ -1,10 +1,7 @@
 package org.project.controller;
 
 import jakarta.mail.MessagingException;
-import org.project.model.Customer;
-import org.project.model.Guest;
-import org.project.model.Invoice;
-import org.project.model.User;
+import org.project.model.*;
 import org.project.model.product_model.Product;
 import org.project.repository.UserRepository;
 import org.project.service.CustomerService;
@@ -82,9 +79,9 @@ public class CustomerController {
 
     @PostMapping("/send-invoice")
     public void sendInvoiceMail(@RequestParam String toEmail, @RequestParam MultipartFile file) throws MessagingException{
-        emailSenderService.sendEmail(toEmail, file);
+        emailSenderService.sendEmail(toEmail, file, "invoice", "", 0);
     }
-/*
+
     @PostMapping("add-wishlist")
     public Customer add_to_wishlist(@RequestBody Product product, @RequestParam String customerID){
         return customerService.add_to_wishlist(product, customerID);
@@ -98,5 +95,5 @@ public class CustomerController {
     @PostMapping("request-refund")
     public Refund request_refund(@RequestParam String productID, @RequestBody Customer customer, @RequestParam int refund_amount){
         return customerService.request_refund(productID, customer, refund_amount);
-    }*/
+    }
 }

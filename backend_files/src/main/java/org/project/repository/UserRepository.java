@@ -1,5 +1,6 @@
 package org.project.repository;
 
+import org.project.model.Customer;
 import org.project.model.ProductManager;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.project.model.User;
@@ -12,7 +13,7 @@ public interface UserRepository extends MongoRepository<User, String>{
 
     @Query("{ '_class' : 'product_manager' }")
     List<ProductManager> findAllProductManagers();
-/*
+
     @Query("{ '_class': 'customer' }")
-    List<Customer> findAllCustomers(); */
+    List<Customer> findAllCustomers();
 }

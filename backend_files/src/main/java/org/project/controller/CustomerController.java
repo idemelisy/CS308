@@ -41,35 +41,28 @@ public class CustomerController {
     @GetMapping("/get-cart")
     public HashMap<String, Integer> getCart(@RequestParam String customerID){
         User user = user_repo.findById(customerID).get();
-        Customer customer = (Customer) user;
-        return customerService.getShoppingCart(customer);
-    }
-
-    @GetMapping("/get-guest-cart")
-    public HashMap<String, Integer> getGuestCart(@RequestParam String customerID){
-        User user = user_repo.findById(customerID).get();
-        Guest customer = (Guest) user;
-        return customerService.getShoppingCart(customer);
+        if (user instanceof Customer){
+            Customer customer = (Customer) user;
+            return customerService.getShoppingCart(customer);
+        }
+        else{
+            Guest guest = (Guest) user;
+            return customerService.getShoppingCart(guest);
+        }
     }
 
     @PostMapping("/add-to-cart")
     public String addToCart(@RequestBody Product product, @RequestParam String email){
-        return customerService.add_to_cart(product, email);
-    }
-
-    @PostMapping("/add-to-guest-cart")
-    public String addToGuestCart(@RequestBody Product product, @RequestParam String email){
-        return customerService.add_to_guest_cart(product, email);
+        User user = user_repo.findByEmail(email);
+        if (user instanceof Customer) return customerService.add_to_cart(product, email);
+        else return customerService.add_to_guest_cart(product, email);
     }
 
     @DeleteMapping("/delete-from-cart")
     public String deleteFromCart(@RequestBody Product product, @RequestParam String email){
-        return customerService.delete_from_cart(product,email);
-    }
-
-    @DeleteMapping("/delete-from-guest-cart")
-    public String deleteFromGuestCart(@RequestBody Product product, @RequestParam String email){
-        return customerService.delete_from_guest_cart(product,email);
+        User user = user_repo.findByEmail(email);
+        if (user instanceof Customer) return customerService.delete_from_cart(product,email);
+        else return customerService.delete_from_guest_cart(product, email);
     }
 
     @PostMapping("/checkout")

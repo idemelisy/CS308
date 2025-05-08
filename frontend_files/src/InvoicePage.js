@@ -55,6 +55,10 @@ function InvoicePage() {
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
       console.log("Current user at finish checkout:", user);
   
+      // First, fetch the current wishlist from the backend
+      const wishlistResponse = await fetch(`http://localhost:8080/customers/get-wishlist?customerID=${user.account_id}`);
+      const currentWishlist = await wishlistResponse.json();
+      
       const shoppingCart = invoice.purchased.reduce((acc, item) => {
         acc[item.product_id] = item.quantity;
         return acc;
@@ -62,12 +66,13 @@ function InvoicePage() {
   
       // This payload matches your backend format
       const payload = {
-        account_id: user.account_id, // ✅ the correct Mongo _id
+        account_id: user.account_id,
         shopping_cart: shoppingCart,
         name: user.username,
         surname: user.username,
         email: user.email,
-        password: "1" // if backend needs it
+        password: "1", // if backend needs it
+        wishlist: currentWishlist.map(product => product.product_id) // Use the backend wishlist data
       };
   
       console.log("Payload being sent to backend:", payload);
@@ -86,9 +91,13 @@ function InvoicePage() {
       const updatedInvoice = await response.json();
       console.log("Checked out successfully:", updatedInvoice);
   
-      // 🧹 After checkout, clear cart locally
-      user.shopping_cart = {};
-      localStorage.setItem("user", JSON.stringify(user));
+      // Update local storage with the backend wishlist data
+      const updatedUser = {
+        ...user,
+        shopping_cart: {},
+        wishlist: currentWishlist.map(product => product.product_id)
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
   
       alert("Checkout completed successfully!");
       navigate("/home");

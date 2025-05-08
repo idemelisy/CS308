@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 import org.project.model.Customer;
 import org.project.model.Guest;
 import org.project.model.Invoice;
-import org.project.model.Refund;
+//import org.project.model.Refund;
 import org.project.model.User;
 import org.project.model.product_model.Product;
 import org.project.repository.ProductRepository;
-import org.project.repository.RefundRepository;
+//import org.project.repository.RefundRepository;
 import org.project.repository.ShoppingHistory;
 import org.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class CustomerService {
     private ProductRepository product_repo;
 
     @Autowired
-    private RefundRepository refund_repo;
+    //private RefundRepository refund_repo;
 
     private String generate_id() {
         return UUID.randomUUID().toString();
@@ -42,29 +42,29 @@ public class CustomerService {
     public double in_cart_total(String customerID){
         Customer customer = (Customer) user_repo.findById(customerID).get();
         double total_price = customer.getShopping_cart().entrySet()
-            .stream()
-            .mapToDouble(entry -> {String productID = entry.getKey();
-                                   Integer quantity = entry.getValue();
-                                   Product product = product_repo.findById(productID).get();
-                                   return product.getUnitPrice() * quantity;
-                                })
-            .sum();
+                .stream()
+                .mapToDouble(entry -> {String productID = entry.getKey();
+                    Integer quantity = entry.getValue();
+                    Product product = product_repo.findById(productID).get();
+                    return product.getUnitPrice() * quantity;
+                })
+                .sum();
         return total_price;
     }
 
     public double in_cart_total_guest(String customerID){
         Guest customer = (Guest) user_repo.findById(customerID).get();
         double total_price = customer.getShopping_cart().entrySet()
-            .stream()
-            .mapToDouble(entry -> {String productID = entry.getKey();
-                                   Integer quantity = entry.getValue();
-                                   Product product = product_repo.findById(productID).get();
-                                   return product.getUnitPrice() * quantity;
-                                })
-            .sum();
+                .stream()
+                .mapToDouble(entry -> {String productID = entry.getKey();
+                    Integer quantity = entry.getValue();
+                    Product product = product_repo.findById(productID).get();
+                    return product.getUnitPrice() * quantity;
+                })
+                .sum();
         return total_price;
     }
-
+/*
     public Invoice checkout(Customer current_customer){
         Invoice new_receipt = new Invoice();
         new_receipt.setInvoiceId(generate_id());
@@ -79,16 +79,16 @@ public class CustomerService {
             curr_product.setStock(curr_product.getStock() - quantity);
             product_repo.save(curr_product);
         }
-  
+
         double total_price = current_customer.getShopping_cart().entrySet()
-            .stream()
-            .mapToDouble(entry -> {String productID = entry.getKey();
-                                   Integer quantity = entry.getValue();
-                                   Product product = product_repo.findById(productID).get();
-                                   return product.getUnitPrice() * quantity;
-                                })
-            .sum();
-        
+                .stream()
+                .mapToDouble(entry -> {String productID = entry.getKey();
+                    Integer quantity = entry.getValue();
+                    Product product = product_repo.findById(productID).get();
+                    return product.getUnitPrice() * quantity;
+                })
+                .sum();
+
 
         new_receipt.setTotal_price(total_price);
         new_receipt.setOrderStatus("processing");
@@ -99,7 +99,7 @@ public class CustomerService {
 
 
         return receipt.save(new_receipt);
-    }
+    }*/
 
     public String delete_from_cart(Product certain_product, String email){
         User current_user = user_repo.findByEmail(email);
@@ -119,10 +119,10 @@ public class CustomerService {
             return "dropped item";
         }
         else{
-           amount_in_cart--;
-           shopping_cart.put(productID, amount_in_cart);
-           user_repo.save(current_customer);
-           return "decreased amount";
+            amount_in_cart--;
+            shopping_cart.put(productID, amount_in_cart);
+            user_repo.save(current_customer);
+            return "decreased amount";
         }
     }
 
@@ -144,10 +144,10 @@ public class CustomerService {
             return "dropped item";
         }
         else{
-           amount_in_cart--;
-           shopping_cart.put(productID, amount_in_cart);
-           user_repo.save(current_customer);
-           return "decreased amount";
+            amount_in_cart--;
+            shopping_cart.put(productID, amount_in_cart);
+            user_repo.save(current_customer);
+            return "decreased amount";
         }
     }
 
@@ -183,7 +183,7 @@ public class CustomerService {
         user_repo.save(current_customer);
 
         return shopping_cart.containsKey(productID) ? "increased amount" : "added to cart";
-    }  
+    }
 
     public String add_to_guest_cart(Product product, String email){
         User current_user = user_repo.findByEmail(email);
@@ -227,7 +227,7 @@ public class CustomerService {
         List<Invoice> all = receipt.findAll();
 
         return all.stream()
-                .filter(invoice -> invoice.getPurchaser() != null 
+                .filter(invoice -> invoice.getPurchaser() != null
                         && invoice.getPurchaser().getAccount_id() != null
                         && invoice.getPurchaser().getAccount_id().equals(customerID))
                 .collect(Collectors.toList());
@@ -246,13 +246,12 @@ public class CustomerService {
 
         return user_repo.save(customer);
     }
-
+/*
     public Refund request_refund(String productID, Customer customer, int refund_amount){
-        Refund new_refund = new Refund(generate_id(), customer, productID, refund_amount, 
-                                        product_repo.findById(productID).get().getUnitPrice() * refund_amount, 
-                                        "waiting-approval");
+        Refund new_refund = new Refund(generate_id(), customer, productID, refund_amount,
+                product_repo.findById(productID).get().getUnitPrice() * refund_amount,
+                "waiting-approval");
 
         return refund_repo.save(new_refund);
-    }
+    }*/
 }
-

@@ -4,7 +4,8 @@ import StarRating from "./StarRating";
 import { useCart } from "./CartContext";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
+import { FaHeart } from "react-icons/fa";
+import { useWishlist } from "./WishlistContext";
 const getCurrentUser = () => {
   return localStorage.getItem('user');
 };
@@ -19,9 +20,11 @@ const Product = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [userRating, setUserRating] = useState(0);
   const [user, setUser] = useState(null);
-
-  const { addToCart, cartItems } = useCart();
-
+  const getCurrentUser = () => {
+    return localStorage.getItem('user');
+  };
+  const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist();
   useEffect(() => {
     const currentUser = getCurrentUser();
     try {
@@ -75,8 +78,8 @@ const Product = () => {
   }, [user]);
 
   const handleAddToCart = () => {
-    if (product.stock === 0) {
-      toast.error("Product is out of stock!", {
+    if (!product || !product.stock || product.stock <= 0) {
+      toast.error("Sorry, this product is out of stock!", {
         position: "bottom-right",
         autoClose: 2000,
         hideProgressBar: false,
@@ -85,20 +88,7 @@ const Product = () => {
       });
       return;
     }
-  
-    const existingItem = cartItems.find(item => item.product_id === product.product_id);
-  
-    if (existingItem && existingItem.quantity >= product.stock) {
-      toast.error("Cannot add more, stock limit reached!", {
-        position: "bottom-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-      return;
-    }
-  
+     
     addToCart(product);
     toast.success("Product Added to Cart Successfully!", {
       position: "bottom-right",
@@ -108,7 +98,38 @@ const Product = () => {
       pauseOnHover: true,
     });
   };
-  
+
+  const handleAddToWishlist = async () => {
+    if (!user || !user.userId || user.userId === "Guest") {
+      toast.error("Please log in to add items to your wishlist", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return;
+    }
+
+    try {
+      await addToWishlist(product);
+      toast.success("Product Added to Wishlist!", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    } catch (error) {
+      toast.error(error.message || "Failed to add to wishlist", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    }
+  };
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
@@ -185,7 +206,7 @@ const Product = () => {
           onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.jpg'; }}
         />
 
-        <div className="product-details">
+        <div className="product-details" style={{padding: "0 36px 0 0"}}>
           <h2>{product.name}</h2>
           <p className="product-sn">Serial-Number: {product.serialNumber}</p>
           <p className="product-di">Distributor: {product.distributorID}</p>
@@ -199,21 +220,54 @@ const Product = () => {
           <p className="product-rating">
             ⭐ {isNaN(averageRating) ? "No rating yet" : averageRating.toFixed(1)} / 5
           </p>
+          
+          <p className="product-stock">
+            {product.stock > 0 ? `In Stock (${product.stock} available)` : "Out of Stock"}
+          </p>
 
-          <button 
-            className="add-to-cart" 
-            onClick={handleAddToCart}
-            disabled={product.stock === 0} 
-          >
-            {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-          </button>
+          <button style={{maxWidth: "360px"}} className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
 
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginTop: '20px'
+          }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-middle',
+              marginRight: '20px'
+            }}>
+              <h3>Rate this Product:</h3>
+              <StarRating onRate={handleRate} />
+            </div>
 
-          <h3>Rate this Product:</h3>
-          <StarRating onRate={handleRate} />
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-middle',
+              marginRight: '20px'
+            }}>
+              <h3>Add to Wishlist</h3>
+              <button
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  marginTop: "-12px",
+                }}
+                title="Add to Wishlist"
+                onClick={handleAddToWishlist}
+              >
+                <FaHeart size={45} color="#e63946" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
+      
       <div className="reviews-section">
         <h3>Customer Reviews</h3>
         {comments.length > 0 ? (

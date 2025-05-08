@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from "./AuthContext";
 import { CartProvider } from './CartContext';
+import { WishlistProvider } from "./WishlistContext";
 import ProtectedRoute from './ProtectedRoute';
 import Register from './Register';
 import CustomerRegister from './CustomerRegister';
@@ -16,30 +17,35 @@ import OrderHistory from "./OrderHistory";
 import Cart from "./Cart";
 import InvoicePage from "./InvoicePage.js";
 import ApprovalPage from './ApprovalPage';
+import Wishlist from './Wishlist';
+import RequestRefund from './RequestRefund';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <Router> {/* ✅ Router goes at the top */}
+    <Router>
       <AuthProvider>
         <CartProvider>
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/register/customer" element={<CustomerRegister />} />
-            <Route path="/register/sales-manager" element={<SalesManagerRegister />} />
-            <Route path="/register/product-manager" element={<ProductManagerRegister />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/continue" element={<Continue />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/product/:id" element={<Product />} />
-            <Route path="/order-history" element={<OrderHistory />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/invoice" element={<InvoicePage />} />
-            <Route path="/approval-page" element={<ApprovalPage />} />
-
-          </Routes>
+          <WishlistProvider>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/register/customer" element={<CustomerRegister />} />
+              <Route path="/register/sales-manager" element={<SalesManagerRegister />} />
+              <Route path="/register/product-manager" element={<ProductManagerRegister />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/continue" element={<Continue />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/product/:id" element={<Product />} />
+              <Route path="/order-history" element={<OrderHistory />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/invoice" element={<InvoicePage />} />
+              <Route path="/approval-page" element={<ApprovalPage />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/request-refund" element={<RequestRefund />} />
+            </Routes>
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </Router>

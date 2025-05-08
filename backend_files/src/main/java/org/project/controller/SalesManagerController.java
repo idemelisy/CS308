@@ -31,12 +31,12 @@ public class SalesManagerController {
     }
 
     @PostMapping("approve-refund")
-    public Refund approve_refund(Refund refund) throws Exception{
+    public Refund approve_refund(@RequestBody Refund refund) throws Exception{
         return manager_service.approve_refund(refund);
     }
 
     @PostMapping("reject-refund")
-    public Refund reject_refund(Refund refund) throws Exception{
+    public Refund reject_refund(@RequestBody Refund refund) throws Exception{
         return manager_service.reject_refund(refund);
     } 
 

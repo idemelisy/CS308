@@ -5,6 +5,7 @@ import { getCurrentUser, logoutUser } from "./global";
 import Navbar from "./components/Navbar";
 import SortProducts from "./components/SortProducts"; // 🌟 BURAYI UNUTMA
 import { FaHeart } from "react-icons/fa";
+
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   console.log("💡 Rendering product card:", product);

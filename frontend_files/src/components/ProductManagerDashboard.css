@@ -1,0 +1,17 @@
+.product-manager {
+    padding: 20px;
+  }
+  
+  .add-product input {
+    margin: 5px;
+    padding: 10px;
+  }
+  
+  .product-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .product-list li {
+    margin: 10px 0;
+  }

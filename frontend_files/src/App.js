@@ -19,6 +19,7 @@ import InvoicePage from "./InvoicePage.js";
 import ApprovalPage from './ApprovalPage';
 import Wishlist from './Wishlist';
 import RequestRefund from './RequestRefund';
+import ProductManager from "./components/ProductManagerDashboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -44,6 +45,7 @@ function App() {
               <Route path="/approval-page" element={<ApprovalPage />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/request-refund" element={<RequestRefund />} />
+              <Route path="/product-managers" element={<ProductManager />} />
             </Routes>
           </WishlistProvider>
         </CartProvider>

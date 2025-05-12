@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-
+import { useNavigate } from "react-router-dom";
 import "./ProductManagerDashboard.css";
 
 const ProductManager = () => {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
@@ -64,6 +65,7 @@ const ProductManager = () => {
   return (
     <div className="product-manager">
       <h1>Product Manager</h1>
+      <button onClick={() => navigate("/product-managers/orders")}>Orders</button>
 
       <div className="add-product">
         <h2>Add New Product</h2>

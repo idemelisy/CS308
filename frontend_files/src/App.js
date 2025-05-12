@@ -20,6 +20,7 @@ import ApprovalPage from './ApprovalPage';
 import Wishlist from './Wishlist';
 import RequestRefund from './RequestRefund';
 import ProductManager from "./components/ProductManagerDashboard";
+import Orders from "./components/Orders";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -46,6 +47,7 @@ function App() {
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/request-refund" element={<RequestRefund />} />
               <Route path="/product-managers" element={<ProductManager />} />
+              <Route path="/product-managers/orders" element={<Orders />} />
             </Routes>
           </WishlistProvider>
         </CartProvider>

@@ -84,7 +84,7 @@ function Login() {
           navigate("/product-managers"); // Navigate to ProductManager dashboard
           break;
         case "SalesManager":
-          navigate("/approval-page"); // Navigate to approval page for ProductManager and SalesManager
+          navigate("/sales-managers"); // Navigate to approval page for ProductManager and SalesManager
           break;
         case "Customer":
           navigate("/home"); // Navigate to home page for Customer

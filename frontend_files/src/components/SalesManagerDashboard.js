@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SalesManagerDashboard = () => {
   const [products, setProducts] = useState([]);
   const [discounts, setDiscounts] = useState({});
+  const navigate = useNavigate();
 
   // Ürünleri backend'den fetch et
   useEffect(() => {
@@ -38,6 +40,7 @@ const SalesManagerDashboard = () => {
   return (
     <div>
       <h1>Sales Manager Dashboard</h1>
+      <button onClick={() => navigate("/sales-managers/invoices")}>Invoices</button>
       <h2>Product Discounts</h2>
       <ul>
         {products.map((product) => (

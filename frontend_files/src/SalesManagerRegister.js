@@ -41,7 +41,7 @@ function SalesManagerRegister() {
       if (response.ok) {
         alert("Registration Successful!");
         setCurrentUser(data); // Sets the CURRENT_USER as a GLOBAL variable
-        navigate("/home");
+        navigate("/sales-managers");
         setError(null);
       } else {
         alert("Error: " + data);

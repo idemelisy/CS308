@@ -67,10 +67,10 @@ public class CustomerController {
         return customerService.delete_from_guest_cart(product,email);
     }
 
-  /*  @PostMapping("/checkout")
+    @PostMapping("/checkout")
     public Invoice checkout(@RequestBody Customer customer){
         return customerService.checkout(customer);
-    }*/
+    }
 
     @GetMapping("/in-cart-total")
     public double inCartTotal(@RequestParam String customerID){

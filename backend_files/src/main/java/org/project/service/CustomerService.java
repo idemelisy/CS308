@@ -2,6 +2,7 @@ package org.project.service;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public class CustomerService {
                 .sum();
         return total_price;
     }
-/*
+
     public Invoice checkout(Customer current_customer){
         Invoice new_receipt = new Invoice();
         new_receipt.setInvoiceId(generate_id());
@@ -89,17 +90,18 @@ public class CustomerService {
                 })
                 .sum();
 
-
         new_receipt.setTotal_price(total_price);
         new_receipt.setOrderStatus("processing");
         new_receipt.setDate(Instant.now());
 
+        // Preserve the wishlist before clearing the cart
+        HashSet<String> wishlist = current_customer.getWishlist();
         current_customer.getShopping_cart().clear();
+        current_customer.setWishlist(wishlist); // Ensure wishlist is preserved
         user_repo.save(current_customer);
 
-
         return receipt.save(new_receipt);
-    }*/
+    }
 
     public String delete_from_cart(Product certain_product, String email){
         User current_user = user_repo.findByEmail(email);

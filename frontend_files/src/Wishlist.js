@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWishlist } from "./WishlistContext";
 import "./Wishlist.css";
+import { getCurrentUser } from './global.js';
 
 function Wishlist() {
   const navigate = useNavigate();
@@ -9,7 +10,8 @@ function Wishlist() {
   const { wishlist, loading, removeFromWishlist, fetchWishlist } = useWishlist();
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
+    //const user = localStorage.getItem('user');
+    const user=getCurrentUser();
     if (!user) {
       console.log("No user found, redirecting to login");
       navigate("/login");
@@ -19,7 +21,7 @@ function Wishlist() {
     // Fetch wishlist whenever component mounts or pathname changes
     console.log("Fetching wishlist...");
     fetchWishlist();
-  }, [navigate, location.pathname, fetchWishlist]);
+  }, [navigate, location.pathname]);
 
   const handleRemoveFromWishlist = async (product) => {
     try {

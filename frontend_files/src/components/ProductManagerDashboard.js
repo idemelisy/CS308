@@ -146,6 +146,23 @@ const ProductManager = () => {
           {products.map((product) => (
             <li key={product.product_id}>
               <strong>{product.name}</strong> - ${product.unitPrice} - Stock: {product.stock}
+              <input
+                type="number"
+                placeholder="New Stock"
+                onChange={(e) => {
+                  const newStock = e.target.value;
+                  setProducts((prevProducts) =>
+                    prevProducts.map((p) =>
+                      p.product_id === product.product_id ? { ...p, stock: newStock } : p
+                    )
+                  );
+                }}
+              />
+              <button
+                onClick={() => alert(`Stock for ${product.name} updated to ${product.stock}`)}
+              >
+                Update Stock
+              </button>
               <button onClick={() => handleDeleteProduct(product.product_id)}>Delete</button>
             </li>
           ))}

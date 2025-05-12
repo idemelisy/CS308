@@ -9,10 +9,16 @@ const ProductManager = () => {
     description: "",
     unitPrice: 0,
     stock: 0,
+    product_id: "",
+    model: "",
+    serialNumber: "",
+    category: "",
+    warrantyStatus: "",
+    distributorID: "",
   });
 
   useEffect(() => {
-    fetch("http://localhost:8080/products")
+    fetch("http://localhost:8080/products/all")
       .then((response) => response.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -35,7 +41,7 @@ const ProductManager = () => {
 
   const handleAddProduct = () => {
     // Yeni ürün ekleme
-    fetch("http://localhost:8080/products", {
+    fetch("http://localhost:8080/products/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newProduct),
@@ -43,15 +49,15 @@ const ProductManager = () => {
       .then((response) => response.json())
       .then((data) => {
         setProducts([...products, data]);
-        setNewProduct({ name: "", description: "", unitPrice: 0, stock: 0 });
+        setNewProduct({ name: "", description: "", unitPrice: 0, stock: 0, product_id: "", model: "", serialNumber: "", category: "", warrantyStatus: "", distributorID: "" });
       })
       .catch((error) => console.error("Error adding product:", error));
   };
 
   const handleDeleteProduct = (id) => {
     // Ürün silme
-    fetch(`http://localhost:8080/products/${id}`, { method: "DELETE" })
-      .then(() => setProducts(products.filter((product) => product.id !== id)))
+    fetch(`http://localhost:8080/products/${id}/delete`, { method: "DELETE" })
+      .then(() => setProducts(products.filter((product) => product.product_id !== id)))
       .catch((error) => console.error("Error deleting product:", error));
   };
 
@@ -89,6 +95,48 @@ const ProductManager = () => {
           value={newProduct.stock}
           onChange={handleInputChange}
         />
+        <input
+          type="text"
+          name="product_id"
+          placeholder="Product ID"
+          value={newProduct.product_id}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="model"
+          placeholder="Model"
+          value={newProduct.model}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="serialNumber"
+          placeholder="Serial Number"
+          value={newProduct.serialNumber}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="category"
+          placeholder="Category"
+          value={newProduct.category}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="warrantyStatus"
+          placeholder="Warranty Status"
+          value={newProduct.warrantyStatus}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="distributorID"
+          placeholder="Distributor ID"
+          value={newProduct.distributorID}
+          onChange={handleInputChange}
+        />
         <button onClick={handleAddProduct}>Add Product</button>
       </div>
 
@@ -96,9 +144,9 @@ const ProductManager = () => {
         <h2>Product List</h2>
         <ul>
           {products.map((product) => (
-            <li key={product.id}>
+            <li key={product.product_id}>
               <strong>{product.name}</strong> - ${product.unitPrice} - Stock: {product.stock}
-              <button onClick={() => handleDeleteProduct(product.id)}>Delete</button>
+              <button onClick={() => handleDeleteProduct(product.product_id)}>Delete</button>
             </li>
           ))}
         </ul>

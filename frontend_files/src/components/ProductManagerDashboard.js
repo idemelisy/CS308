@@ -66,6 +66,7 @@ const ProductManager = () => {
     <div className="product-manager">
       <h1>Product Manager</h1>
       <button onClick={() => navigate("/product-managers/orders")}>Orders</button>
+      <button onClick={() => navigate("/product-managers/comments")}>Comments</button>
 
       <div className="add-product">
         <h2>Add New Product</h2>

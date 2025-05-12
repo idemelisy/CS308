@@ -40,7 +40,7 @@ function ProductManagerRegister() {
       if (response.ok) {
         alert("Registration Successful!");
         setCurrentUser(data); // Sets the CURRENT_USER as a GLOBAL variable
-        navigate("/home");
+        navigate("/product-managers"); // Redirect to Product Manager dashboard
         setError(null); // ✅ Clear error if successful
       } else {
         alert("Error: " + data);

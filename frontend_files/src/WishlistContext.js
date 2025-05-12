@@ -96,7 +96,13 @@ export const WishlistProvider = ({ children }) => {
         return;
       }
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-      const userId = user.account_id ?? user.email;
+      const userId = user.userId;
+      
+      if (!userId) {
+        console.error("Invalid user data:", user);
+        throw new Error("Invalid user data");
+      }
+
       const response = await fetch(`http://localhost:8080/customers/drop-wishlist?customerID=${encodeURIComponent(userId)}`, {
         method: "POST",
         headers: {
@@ -104,17 +110,24 @@ export const WishlistProvider = ({ children }) => {
         },
         body: JSON.stringify(product),
       });
+      
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to remove from wishlist: ${response.status} - ${errorText}`);
       }
-      // Optionally, refetch wishlist or optimistically update
-     setRefetch(prev => !prev);
       
-      // Uncomment the line below if you want to optimistically update the wishlist state
-     // setWishlist(prev => prev.filter(item => item.id !== product.id && item.product_id !== product.product_id));
+      // Update wishlist state optimistically
+      setWishlist(prev => prev.filter(item => 
+        item.product_id !== product.product_id && 
+        item.id !== product.id
+      ));
+      
+      // Trigger a refetch to ensure consistency
+      setRefetch(prev => !prev);
+      
     } catch (err) {
       console.error("Error removing from wishlist:", err);
+      throw err; // Re-throw the error so the component can handle it
     }
   };
 

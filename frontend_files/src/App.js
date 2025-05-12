@@ -22,6 +22,7 @@ import RequestRefund from './RequestRefund';
 import ProductManager from "./components/ProductManagerDashboard";
 import Orders from "./components/Orders";
 import Comments from "./components/Comments";
+import SalesManagerDashboard from './components/SalesManagerDashboard.js';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -50,6 +51,7 @@ function App() {
               <Route path="/product-managers" element={<ProductManager />} />
               <Route path="/product-managers/orders" element={<Orders />} />
               <Route path="/product-managers/comments" element={<Comments />} />
+              <Route path="/sales-managers" element={<SalesManagerDashboard />} />
             </Routes>
           </WishlistProvider>
         </CartProvider>

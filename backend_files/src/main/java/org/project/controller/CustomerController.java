@@ -1,19 +1,18 @@
 package org.project.controller;
 
-import org.project.model.Customer;
-import org.project.model.Guest;
-import org.project.model.Invoice;
-import org.project.model.Refund;
-import org.project.model.User;
+import jakarta.mail.MessagingException;
+import org.project.model.*;
 import org.project.model.product_model.Product;
 import org.project.repository.UserRepository;
 import org.project.service.CustomerService;
-import org.project.service.ProductService;
+import org.project.service.EmailSenderService;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/customers")
@@ -21,12 +20,15 @@ public class CustomerController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private ProductService productService;
+
     @Autowired
     private CustomerService customerService;
 
-    @Autowired UserRepository user_repo;
+    @Autowired 
+    private UserRepository user_repo;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @GetMapping
     public List<Customer> getAllCustomers() {
@@ -75,27 +77,15 @@ public class CustomerController {
         return customerService.see_shopping_history(customerID);
     }
 
+    @PostMapping("/send-invoice")
+    public void sendInvoiceMail(@RequestParam String toEmail, @RequestParam MultipartFile file) throws MessagingException{
+        emailSenderService.sendEmail(toEmail, file, "invoice", "", 0);
+    }
+
     @PostMapping("add-wishlist")
     public Customer add_to_wishlist(@RequestBody Product product, @RequestParam String customerID){
         return customerService.add_to_wishlist(product, customerID);
     }
-    @GetMapping("get-wishlist")
-    public List<Product> get_wishlist(@RequestParam String customerID) {
-        Customer customer = (Customer) user_repo.findById(customerID).get();
-        Set<String> productIds = customer.getWishlist();
-
-        List<Product> wishlistProducts = new ArrayList<>();
-
-        for (String productId : productIds) {
-            Product product = productService.find_product(productId);
-            if (product != null) {
-                wishlistProducts.add(product);
-            }
-        }
-
-        return wishlistProducts;
-    }
-
 
     @PostMapping("drop-wishlist")
     public Customer drop_wishlist(@RequestBody Product product, @RequestParam String customerID){
@@ -103,7 +93,7 @@ public class CustomerController {
     }
 
     @PostMapping("request-refund")
-    public Refund request_refund(@RequestParam String productID, @RequestBody Customer customer, @RequestParam int refund_amount){
+    public Refund request_refund(@RequestParam String productID, @RequestBody Customer customer, @RequestParam int refund_amount) throws Exception{
         return customerService.request_refund(productID, customer, refund_amount);
     }
 }

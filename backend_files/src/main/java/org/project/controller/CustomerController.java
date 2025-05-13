@@ -3,7 +3,7 @@ package org.project.controller;
 import org.project.model.Customer;
 import org.project.model.Guest;
 import org.project.model.Invoice;
-//import org.project.model.Refund;
+import org.project.model.Refund;
 import org.project.model.User;
 import org.project.model.product_model.Product;
 import org.project.repository.UserRepository;
@@ -21,8 +21,6 @@ public class CustomerController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private ProductService productService;
     @Autowired
     private ProductService productService;
     @Autowired
@@ -62,10 +60,10 @@ public class CustomerController {
         else return customerService.delete_from_guest_cart(product, email);
     }
 
-  /*  @PostMapping("/checkout")
+    @PostMapping("/checkout")
     public Invoice checkout(@RequestBody Customer customer){
         return customerService.checkout(customer);
-    }*/
+    }
 
     @GetMapping("/in-cart-total")
     public double inCartTotal(@RequestParam String customerID){
@@ -103,7 +101,7 @@ public class CustomerController {
     public Customer drop_wishlist(@RequestBody Product product, @RequestParam String customerID){
         return customerService.drop_from_wishlist(product, customerID);
     }
-/*
+
     @PostMapping("request-refund")
     public Refund request_refund(@RequestParam String productID, @RequestBody Customer customer, @RequestParam int refund_amount){
         return customerService.request_refund(productID, customer, refund_amount);

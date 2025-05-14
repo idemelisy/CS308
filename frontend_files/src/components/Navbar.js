@@ -5,13 +5,17 @@ import { getCurrentUser, logoutUser } from "../global";
 const Navbar = ({ onSearch }) => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(!!getCurrentUser());
+  const [isGuest, setIsGuest] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     const checkLogin = () => {
-      setIsLoggedIn(!!getCurrentUser());
+      const user = getCurrentUser();
+      setIsLoggedIn(!!user);
+      setIsGuest(user?.userType === "guest");
     };
 
+    checkLogin(); // Check on initial load
     window.addEventListener("storage", checkLogin);
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
@@ -58,12 +62,22 @@ const Navbar = ({ onSearch }) => {
         <li><a href="#">Shop</a></li>
         <li><a href="/order-history">Order History</a></li>
         <li><a href="/Cart">Cart</a></li>
+        <li><a href="/wishlist">Wishlist</a></li>
         {isLoggedIn ? (
-          <li>
-            <button onClick={handleLogout} className="logout-btn">
-              Logout
-            </button>
-          </li>
+          <>
+            {isGuest && (
+              <li>
+                <a href="/convert-account" className="create-account-btn">
+                  Create Account
+                </a>
+              </li>
+            )}
+            <li>
+              <button onClick={handleLogout} className="logout-btn">
+                Logout
+              </button>
+            </li>
+          </>
         ) : (
           <li><a href="/login">Login</a></li>
         )}

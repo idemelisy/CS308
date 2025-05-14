@@ -60,7 +60,8 @@ export const WishlistProvider = ({ children }) => {
 
       if (!user.userId) {
         console.error("Invalid user data:", user);
-        throw new Error("Invalid user data");
+        console.log("User object:", user);
+        throw new Error("Invalid user data - no userId found");
       }
 
       const userId = user.userId;
@@ -96,7 +97,7 @@ export const WishlistProvider = ({ children }) => {
         return;
       }
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-      const userId = user.account_id ?? user.email;
+      const userId = user.userId;
       const response = await fetch(`http://localhost:8080/customers/drop-wishlist?customerID=${encodeURIComponent(userId)}`, {
         method: "POST",
         headers: {
@@ -104,6 +105,7 @@ export const WishlistProvider = ({ children }) => {
         },
         body: JSON.stringify(product),
       });
+      window.location.reload();
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to remove from wishlist: ${response.status} - ${errorText}`);

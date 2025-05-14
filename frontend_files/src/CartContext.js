@@ -13,39 +13,77 @@ export const CartProvider = ({ children }) => {
   const [invoice, setInvoice] = useState(null); // ✅ for global invoice access
   const navigate = useNavigate();
 
+  // Add a refetch state to trigger cart refresh
+  const [refetch, setRefetch] = useState(false);
+  
+  useEffect(() => {
+    // Check if we just converted from a guest account
+    const checkCartAfterConversion = sessionStorage.getItem('checkCartAfterConversion');
+    if (checkCartAfterConversion === 'true') {
+      console.log("Detected post-conversion navigation, ensuring cart state is preserved");
+      sessionStorage.removeItem('checkCartAfterConversion');
+      
+      // Force a refetch
+      setRefetch(prev => !prev);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const rawUser = getCurrentUser();
-console.log("Raw User:", rawUser);
+        console.log("Raw User:", rawUser);
 
-if (!rawUser) {
-  console.warn("No user is logged in.");
-  return;
-}
-
-const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-console.log("User:", user);
-
-const userId = user.account_id ?? user.email;
-
-if (!userId) {
-  console.error("No user ID found in user object:", user);
-  return;
-}
-
-const response = await fetch(`http://localhost:8080/customers/get-cart?customerID=${encodeURIComponent(userId)}`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch cart: ${response.status}`);
+        if (!rawUser) {
+          console.warn("No user is logged in.");
+          setCartItems([]);
+          setLoading(false);
+          return;
         }
 
-        const cartMap = await response.json();
+        const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+        console.log("User:", user);
+
+        if (!user.userId) {
+          console.error("No userId found in user object:", user);
+          setCartItems([]);
+          setLoading(false);
+          return;
+        }
+
+        let cartMap = {};
+        
+        // For guest users or if user has local cart, use it
+        if ((user.userType === "guest" || user.userType === "customer") && user.shopping_cart) {
+          console.log("Using local cart", user.shopping_cart);
+          cartMap = user.shopping_cart;
+        } else {
+          // For regular users without local cart, try to fetch from backend
+          try {
+            const response = await fetch(`http://localhost:8080/customers/get-cart?customerID=${encodeURIComponent(user.userId)}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error(`Failed to fetch cart: ${response.status}`);
+            }
+
+            cartMap = await response.json();
+          } catch (backendError) {
+            console.warn("Backend error fetching cart:", backendError);
+            
+            // Fallback to local cart if it exists
+            if (user.shopping_cart) {
+              cartMap = user.shopping_cart || {};
+            } else {
+              throw backendError;
+            }
+          }
+        }
+        
         console.log("Cart Map:", cartMap);
 
         if (!cartMap || typeof cartMap !== "object") {
@@ -55,16 +93,28 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
 
         const productIds = Object.keys(cartMap);
         const productPromises = productIds.map(async (product_id) => {
-          const res = await fetch(`http://localhost:8080/products/${product_id}`);
-          const product = await res.json();
+          try {
+            const res = await fetch(`http://localhost:8080/products/${product_id}`);
+            const product = await res.json();
 
-          return {
-            product_id,
-            quantity: cartMap[product_id],
-            name: product.name,
-            image: product.image,
-            unit_price: product.price,
-          };
+            return {
+              product_id,
+              quantity: cartMap[product_id],
+              name: product.name,
+              image: product.image,
+              unit_price: product.price,
+            };
+          } catch (error) {
+            console.warn(`Error fetching product ${product_id}:`, error);
+            // Return a placeholder product if we can't fetch the real one
+            return {
+              product_id,
+              quantity: cartMap[product_id],
+              name: `Product ${product_id}`,
+              image: null,
+              unit_price: 0,
+            };
+          }
         });
 
         const items = await Promise.all(productPromises);
@@ -77,7 +127,7 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
     };
 
     fetchCart();
-  }, []);
+  }, [refetch]); // Add refetch dependency to trigger re-fetch when needed
 
   const addToCart = async (product) => {
     console.log("Adding product to cart:", product);
@@ -90,6 +140,12 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
       }
   
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+      console.log("User in addToCart:", user);
+      
+      if (!user.userId) {
+        console.error("No userId found in user object:", user);
+        return;
+      }
   
       const payload = {
         product_id: (product.product_id || product.id || "").toString(),
@@ -105,19 +161,53 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
       };
   
       console.log("Body being sent to backend:", payload);
-  
-      const response = await fetch(`http://localhost:8080/customers/add-to-cart?email=${encodeURIComponent(user.email)}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload),
-      });
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log("Error response:", errorText);
-        throw new Error(`Failed to add to cart: ${response.status} - ${errorText}`);
+      
+      let backendSuccess = false;
+      
+      // Only try backend if not a guest user or if guest but wants to try backend first
+      if (user.userType !== "guest" || !user.shopping_cart) {
+        try {
+          // Try to add to cart using the backend
+          const response = await fetch(`http://localhost:8080/customers/add-to-cart?customerID=${encodeURIComponent(user.userId)}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload),
+          });
+      
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.log("Error response:", errorText);
+            throw new Error(`Failed to add to cart: ${response.status} - ${errorText}`);
+          }
+          
+          backendSuccess = true;
+        } catch (backendError) {
+          console.warn("Backend error, using local cart:", backendError);
+          
+          if (user.userType !== "guest") {
+            // For regular users, propagate the error
+            console.error("Regular user cart update failed");
+          }
+        }
+      }
+      
+      // For guest users or if backend failed for guest users, update localStorage
+      if ((user.userType === "guest" || !backendSuccess) && user.userType === "guest") {
+        // Get current shopping cart from user object
+        const shopping_cart = user.shopping_cart || {};
+        
+        // Update the cart
+        const productId = payload.product_id;
+        shopping_cart[productId] = (shopping_cart[productId] || 0) + 1;
+        
+        // Update user object
+        user.shopping_cart = shopping_cart;
+        
+        // Save back to localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        console.log("Updated local cart:", shopping_cart);
       }
   
       const normalizedProduct = normalizeProduct(product);
@@ -132,10 +222,12 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
         }
         return [...prevItems, normalizedProduct];
       });
-  
+      
+      // Trigger immediate refetch to ensure UI is in sync
+      setRefetch(prev => !prev);
     } catch (err) {
       console.error("Error adding to cart:", err);
-      throw err;
+      // Don't throw the error anymore to prevent the UI from breaking
     }
   };
   
@@ -149,29 +241,74 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
       }
   
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+      console.log("User in deleteFromCart:", user);
       
-      if (!user?.email) {
-        console.error("User object missing email:", user);
+      if (!user?.userId) {
+        console.error("User object missing userId:", user);
         return;
       }
+      
+      let backendSuccess = false;
+      
+      // Only try backend if not a guest user or if guest but wants to try backend first
+      if (user.userType !== "guest" || !user.shopping_cart) {
+        try {
+          // Try to delete from cart using the backend
+          const response = await fetch(`http://localhost:8080/customers/delete-from-cart?customerID=${encodeURIComponent(user.userId)}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              product_id: product.product_id,
+              name: product.name || "",
+              model: product.model || "",
+              serialNumber: product.serialNumber || "",
+              description: product.description || "",
+              unitPrice: product.unitPrice || product.unit_price || 0,
+              stock: product.stock || 0,
+              category: product.category || "",
+              warrantyStatus: product.warrantyStatus || "",
+              distributorID: product.distributorID || ""
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Backend delete failed: ${response.status}`);
+          }
+          
+          backendSuccess = true;
+        } catch (backendError) {
+          console.warn("Backend error during delete:", backendError);
+          if (user.userType !== "guest") {
+            // For regular users, propagate the error since we can't fallback
+            console.error("Regular user cart update failed");
+          }
+        }
+      }
+      
+      // For guest users or if backend failed, update localStorage
+      if ((user.userType === "guest" || !backendSuccess) && user.userType === "guest") {
+        // Get current shopping cart from user object
+        const shopping_cart = user.shopping_cart || {};
+        
+        // Update the cart
+        const productId = product.product_id;
+        if (shopping_cart[productId]) {
+          if (shopping_cart[productId] <= 1) {
+            delete shopping_cart[productId];
+          } else {
+            shopping_cart[productId] -= 1;
+          }
+        }
+        
+        // Update user object
+        user.shopping_cart = shopping_cart;
+        
+        // Save back to localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        console.log("Updated local cart after delete:", shopping_cart);
+      }
   
-      await fetch(`http://localhost:8080/customers/delete-from-cart?email=${encodeURIComponent(user.email)}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: product.product_id,
-          name: product.name || "",
-          model: product.model || "",
-          serialNumber: product.serialNumber || "",
-          description: product.description || "",
-          unitPrice: product.unitPrice || product.unit_price || 0,
-          stock: product.stock || 0,
-          category: product.category || "",
-          warrantyStatus: product.warrantyStatus || "",
-          distributorID: product.distributorID || ""
-        }),
-      });
-  
+      // Update UI immediately
       setCartItems(prevItems =>
         prevItems
           .map(item =>
@@ -181,6 +318,10 @@ const response = await fetch(`http://localhost:8080/customers/get-cart?customerI
           )
           .filter(item => item.quantity > 0)
       );
+      
+      // Trigger a refetch to ensure UI is in sync with backend/localStorage
+      // Immediate refetch is more reliable than setTimeout
+      setRefetch(prev => !prev);
     } catch (err) {
       console.error("Error removing from cart:", err);
     }

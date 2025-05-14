@@ -35,7 +35,7 @@ const OrderHistory = () => {
 
         const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
         console.log("User:", user); // Debug: Log the parsed user object
-        const customerID = user.account_id || user.id;
+        const customerID = user.account_id || user.userId;
         console.log("Customer ID:", customerID); // Debug: Log the customer ID
         if (!customerID) {
           console.error("No customer ID found.");

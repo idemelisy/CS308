@@ -56,8 +56,21 @@ function InvoicePage() {
       console.log("Current user at finish checkout:", user);
   
       // First, fetch the current wishlist from the backend
-      const wishlistResponse = await fetch(`http://localhost:8080/customers/get-wishlist?customerID=${user.account_id}`);
-      const currentWishlist = await wishlistResponse.json();
+      const wishlistResponse = await fetch(`http://localhost:8080/customers/get-wishlist?customerID=${user.userId}`);
+      
+      if (!wishlistResponse.ok) {
+        console.error("Failed to fetch wishlist:", await wishlistResponse.text());
+      }
+      
+      let currentWishlist = [];
+      try {
+        const wishlistData = await wishlistResponse.json();
+        currentWishlist = Array.isArray(wishlistData) ? wishlistData : [];
+      } catch (error) {
+        console.error("Error parsing wishlist response:", error);
+      }
+      
+      console.log("Current wishlist:", currentWishlist);
       
       const shoppingCart = invoice.purchased.reduce((acc, item) => {
         acc[item.product_id] = item.quantity;
@@ -66,13 +79,13 @@ function InvoicePage() {
   
       // This payload matches your backend format
       const payload = {
-        account_id: user.account_id,
+        account_id: user.userId, // Use userId instead of account_id
         shopping_cart: shoppingCart,
         name: user.username,
         surname: user.username,
         email: user.email,
         password: "1", // if backend needs it
-        wishlist: currentWishlist.map(product => product.product_id) // Use the backend wishlist data
+        wishlist: Array.isArray(currentWishlist) ? currentWishlist.map(product => product.product_id) : []
       };
   
       console.log("Payload being sent to backend:", payload);
@@ -95,7 +108,7 @@ function InvoicePage() {
       const updatedUser = {
         ...user,
         shopping_cart: {},
-        wishlist: currentWishlist.map(product => product.product_id)
+        wishlist: Array.isArray(currentWishlist) ? currentWishlist.map(product => product.product_id) : []
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
   

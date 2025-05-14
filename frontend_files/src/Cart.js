@@ -1,7 +1,8 @@
 // Cart.js
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from './CartContext';
+import { getCurrentUser } from './global';
 import './Cart.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,6 +11,7 @@ const Cart = () => {
   const { cartItems, deleteFromCart, totalPrice } = useContext(CartContext);
   const items = Array.isArray(cartItems) ? cartItems : [];
   const navigate = useNavigate();
+  const [isGuest, setIsGuest] = useState(false);
 
   const [showBankingModal, setShowBankingModal] = useState(false);
   const [cardInfo, setCardInfo] = useState({
@@ -18,6 +20,11 @@ const Cart = () => {
     expiryDate: '',
     ccv: '',
   });
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    setIsGuest(user?.userType === "guest");
+  }, []);
 
   const handleCheckout = () => {
     setShowBankingModal(true);
@@ -46,6 +53,20 @@ const Cart = () => {
   return (
     <div className="cart-container">
       <h2>Your Cart</h2>
+      
+      {isGuest && (
+        <div className="guest-banner" style={{
+          backgroundColor: "#fff3cd",
+          color: "#856404",
+          padding: "10px",
+          margin: "10px 0",
+          borderRadius: "5px",
+          border: "1px solid #ffeeba"
+        }}>
+          <p>You're shopping as a guest. <a href="/convert-account" style={{color: "#0066cc", fontWeight: "bold"}}>Create an account</a> to save your cart and access order history!</p>
+        </div>
+      )}
+      
       {items.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (

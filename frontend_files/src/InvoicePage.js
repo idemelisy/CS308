@@ -123,7 +123,7 @@ function InvoicePage() {
               <p>Product Name: {item.name || "Unknown"}</p>
               <p>Product ID: {item.product_id || "N/A"}</p>
               <p>Quantity: {item.quantity || 0}</p>
-              <p>Unit Price: ${item.unit_price ? item.unit_price.toFixed(2) : "0.00"}</p>
+              <p>Unit Price: {item.unitPrice ? item.unitPrice.toFixed(2) : "0.00"}TL</p>
               <img src={item.image || "/placeholder.jpg"} alt={item.name || "Product"} width="60" />
             </li>
           ))}

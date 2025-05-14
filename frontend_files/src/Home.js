@@ -23,7 +23,7 @@ const ProductCard = ({ product }) => {
       />
       <h2 className="product-title">{product.name}</h2>
       <p className="product-price">
-        ${typeof product.unitPrice === "number" ? product.unitPrice.toFixed(2) : "0.00"}
+        {typeof product.unitPrice === "number" ? product.unitPrice.toFixed(2) : "0.00"}TL
       </p>
       <p className="product-quantity">Stock: {product.stock}</p>
       <p className="product-description">{product.description}</p>

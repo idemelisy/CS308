@@ -6,9 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { FaHeart } from "react-icons/fa";
 import { useWishlist } from "./WishlistContext";
-const getCurrentUser = () => {
-  return localStorage.getItem('user');
-};
+import { getCurrentUser } from './global'; // Import from global.js
 
 const Product = () => {
   const { id } = useParams();
@@ -20,20 +18,17 @@ const Product = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [userRating, setUserRating] = useState(0);
   const [user, setUser] = useState(null);
-  const getCurrentUser = () => {
-    return localStorage.getItem('user');
-  };
   const { addToCart } = useCart();
   const { addToWishlist } = useWishlist();
+
   useEffect(() => {
     const currentUser = getCurrentUser();
     try {
-      const parsed = typeof currentUser === "string" ? JSON.parse(currentUser) : currentUser;
-      if (parsed && (parsed.account_id || parsed.email)) {
+      if (currentUser && (currentUser.account_id || currentUser.email)) {
         const userState = {
-          userId: parsed.account_id ?? parsed.email,
-          username: parsed.name || "User",
-          email: parsed.email || "noemail@domain.com",
+          userId: currentUser.account_id ?? currentUser.email,
+          username: currentUser.name || "User",
+          email: currentUser.email || "noemail@domain.com",
         };
         setUser(userState);
       } else {
@@ -100,6 +95,8 @@ const Product = () => {
   };
 
   const handleAddToWishlist = async () => {
+    console.log("adding to wishlist");
+    console.log("user",user);
     if (!user || !user.userId || user.userId === "Guest") {
       toast.error("Please log in to add items to your wishlist", {
         position: "bottom-right",

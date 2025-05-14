@@ -61,8 +61,10 @@ public class CustomerController {
     }
 
     @PostMapping("/checkout")
+    @PostMapping("/checkout")
     public Invoice checkout(@RequestBody Customer customer){
         return customerService.checkout(customer);
+    }
     }
 
     @GetMapping("/in-cart-total")

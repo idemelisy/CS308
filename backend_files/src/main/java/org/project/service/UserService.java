@@ -8,17 +8,40 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class    UserService {
 
     @Autowired
     private UserRepository user_repo;
 
     private String generate_id() {
         return UUID.randomUUID().toString();
+    }
+
+    public User merge_carts(String guestID, Customer customer){
+        Guest guest = (Guest) user_repo.findById(guestID).get();
+        if(guest.getShopping_cart() == null){
+            user_repo.delete(guest);
+            return customer;
+        }
+
+        HashMap<String, Integer> guestCart = guest.getShopping_cart();
+        HashMap<String, Integer> customerCart = customer.getShopping_cart() != null ? customer.getShopping_cart() : new HashMap<>(); 
+        customer.setShopping_cart(customerCart);
+
+        for (Map.Entry<String, Integer> entry : guestCart.entrySet()) {
+            String productId = entry.getKey();
+            Integer guestQuantity = entry.getValue() != null ? entry.getValue() : 0;
+            Integer customerQuantity = customerCart.getOrDefault(productId, 0);
+            customerCart.put(productId, customerQuantity + guestQuantity);
+        }
+
+        user_repo.delete(guest);
+        return user_repo.save(customer);
     }
 
     public User general_register(String user_type, String name, String surname, String email, String password, Map<String, String> additional_params) {
@@ -30,6 +53,10 @@ public class UserService {
         User new_user;
 
         switch (user_type.toLowerCase()) {
+            case "guest":
+                new_user = new Guest(new_id);
+                break;
+
             case "customer":
                 new_user = new Customer(new_id, name, surname, email, password);
                 break;

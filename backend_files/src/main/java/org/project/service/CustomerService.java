@@ -270,4 +270,16 @@ public class CustomerService {
 
         return refund_repo.save(new_refund);
     }
+
+    public String cancel_order(String invoiceID){
+        Invoice invoice = receipt.findByInvoiceId(invoiceID);
+
+        if(invoice.getOrderStatus().equals("processing")){
+            receipt.delete(invoice);
+
+            return "Successfully deleted order";
+        }
+
+        return "Could not delete order";
+    }
 }

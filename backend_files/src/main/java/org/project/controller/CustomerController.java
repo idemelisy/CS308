@@ -121,4 +121,9 @@ public class CustomerController {
     public Refund request_refund(@RequestParam String productID, @RequestBody Customer customer, @RequestParam int refund_amount) throws Exception{
         return customerService.request_refund(productID, customer, refund_amount);
     }
+
+    @DeleteMapping("cancel-order")
+    public String cancel_order(@RequestParam String invoiceID){
+        return customerService.cancel_order(invoiceID);
+    }
 }

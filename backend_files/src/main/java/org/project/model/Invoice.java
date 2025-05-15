@@ -18,7 +18,7 @@ import lombok.*;
 public class Invoice {
 
     @Id
-    private String InvoiceId;
+    private String invoiceId;
     private Customer purchaser;
     private Map<String, Integer> purchased;
     private double total_price;

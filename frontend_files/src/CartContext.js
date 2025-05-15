@@ -60,7 +60,7 @@ export const CartProvider = ({ children }) => {
         } else if (user.userType !== "guest") {
           // If no local cart and user is a regular user, fetch from backend
           try {
-            const response = await fetch(`http://localhost:8080/customers/get-cart?email=${encodeURIComponent(user.email)}`, {
+            const response = await fetch(`http://localhost:8080/customers/get-cart?customerID=${encodeURIComponent(user.userId ?? user.account_id)}`, {
               method: "GET",
               headers: {
                 "Content-Type": "application/json",

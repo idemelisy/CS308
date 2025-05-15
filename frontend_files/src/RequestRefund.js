@@ -25,7 +25,7 @@ const RequestRefund = () => {
         }
 
         const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-        const customerID = user.account_id || user.id;
+        const customerID = user.account_id ?? user.userId;
 
         const response = await fetch(`http://localhost:8080/customers/shopping-history?customerID=${customerID}`);
         if (!response.ok) {

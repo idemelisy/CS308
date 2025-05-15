@@ -22,7 +22,7 @@ export const WishlistProvider = ({ children }) => {
         return;
       }
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-      const userId = user.userId;
+      const userId = user.userId||user.account_id;
       if (!userId) {
         console.error("No user ID found in user object:", user);
         return;
@@ -58,16 +58,17 @@ export const WishlistProvider = ({ children }) => {
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
       console.log("Parsed user:", user);
 
-      if (!user.userId) {
+      if (!(user.userId || user.account_id)) {
         console.error("Invalid user data:", user);
-        console.log("User object:", user);
+        console.log("User object:---------", user);
         throw new Error("Invalid user data - no userId found");
       }
 
-      const userId = user.userId;
+      const userId =  user.account_id ||user.userId ;
+
       console.log("Using userId:", userId);
 
-      const response = await fetch(`http://localhost:8080/customers/add-wishlist?customerID=${encodeURIComponent(userId)}`, {
+      const response = await fetch(`http://localhost:8080/customers/add-wishlist?customerID=${encodeURIComponent(user.account_id||user.userId)}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -97,7 +98,7 @@ export const WishlistProvider = ({ children }) => {
         return;
       }
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-      const userId = user.userId;
+      const userId = user.userId || user.account_id;
       const response = await fetch(`http://localhost:8080/customers/drop-wishlist?customerID=${encodeURIComponent(userId)}`, {
         method: "POST",
         headers: {

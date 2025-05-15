@@ -33,14 +33,21 @@ function Login() {
 
       // Fetch wishlist data for customers
       let wishlist = [];
+      let shoppingCart = {};
       if (loginData.account_id) {
         try {
           const wishlistResponse = await fetch(`http://localhost:8080/customers/get-wishlist?customerID=${loginData.account_id}`);
           if (wishlistResponse.ok) {
             wishlist = await wishlistResponse.json();
           }
+          
+          // Also fetch shopping cart
+          const cartResponse = await fetch(`http://localhost:8080/customers/get-cart?customerID=${loginData.account_id}`);
+          if (cartResponse.ok) {
+            shoppingCart = await cartResponse.json();
+          }
         } catch (error) {
-          console.error("Error fetching wishlist:", error);
+          console.error("Error fetching user data:", error);
         }
       }
 
@@ -50,7 +57,8 @@ function Login() {
         email: loginData.email || formData.email,
         wishlist: wishlist, // Add wishlist to the user object
         wishlistNeedsUpdate: false, // Add flag to track if wishlist needs updating
-        userType: "customer" // Add user type
+        userType: "customer", // Add user type
+        shopping_cart: shoppingCart // Add shopping cart to the user object
       };
   
       setCurrentUser(userToSave);

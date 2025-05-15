@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import "./ProductCard.css";
 import { CartContext } from "../CartContext";
+import { normalizeProduct } from "../utils/normalizeProduct";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
@@ -21,7 +22,7 @@ const ProductCard = ({ product }) => {
       <button
         className="add-to-cart"
         disabled={product.quantity === 0}
-        onClick={() => addToCart(product)}
+        onClick={() => addToCart(normalizeProduct(product))}
       >
         {product.quantity > 0 ? "Add to Cart" : "Sold Out"}
       </button>

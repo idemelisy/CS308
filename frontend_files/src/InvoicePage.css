@@ -1,0 +1,248 @@
+.invoice-container {
+  padding: 40px;
+  max-width: 1000px;
+  margin: 100px auto 40px auto;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.invoice-header h2 {
+  font-size: 2.4rem;
+  color: #FF921C;
+  margin: 0;
+}
+
+.invoice-id {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.invoice-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.purchaser-info, .order-summary {
+  flex: 1;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  margin: 0 10px;
+}
+
+.purchaser-info h3, .order-summary h3 {
+  color: #333;
+  margin-top: 0;
+  font-size: 1.2rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.purchaser-info p, .order-summary p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.order-summary p.total {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #FF921C;
+  margin-top: 15px;
+}
+
+.items-list {
+  margin-top: 30px;
+}
+
+.items-list h3 {
+  font-size: 1.6rem;
+  color: #333;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.items-list h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: #FF921C;
+}
+
+.items-container {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.invoice-item {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out;
+}
+
+.invoice-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.item-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.invoice-item p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.invoice-item p.price {
+  color: #FF921C;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 10px;
+}
+
+.invoice-item p.product-id {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.invoice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.email-input-container {
+  display: flex;
+  gap: 10px;
+  max-width: 500px;
+  margin-bottom: 15px;
+}
+
+.email-input-container input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.email-input-container input:focus {
+  outline: none;
+  border-color: #FF921C;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+}
+
+.action-button {
+  padding: 12px 25px;
+  background-color: #FF921C;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-button:hover {
+  background-color: #ECA427;
+  transform: translateY(-2px);
+}
+
+.action-button.secondary {
+  background-color: white;
+  border: 2px solid #FF921C;
+  color: #FF921C;
+}
+
+.action-button.secondary:hover {
+  background-color: #fff9f2;
+}
+
+.finish-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 30px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+  align-self: center;
+}
+
+.finish-button:hover {
+  background-color: #3e8e41;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .invoice-container {
+    padding: 20px;
+  }
+  
+  .invoice-details {
+    flex-direction: column;
+  }
+  
+  .purchaser-info, .order-summary {
+    margin: 10px 0;
+  }
+  
+  .items-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+} 

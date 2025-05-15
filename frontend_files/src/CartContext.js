@@ -44,8 +44,8 @@ export const CartProvider = ({ children }) => {
         const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
         console.log("User:", user);
 
-        if (!user.userId) {
-          console.error("No userId found in user object:", user);
+        if (!user.email) {
+          console.error("No email found in user object:", user);
           setCartItems([]);
           setLoading(false);
           return;
@@ -53,14 +53,14 @@ export const CartProvider = ({ children }) => {
 
         let cartMap = {};
         
-        // For guest users or if user has local cart, use it
-        if ((user.userType === "guest" || user.userType === "customer") && user.shopping_cart) {
+        // Always check local cart first (whether guest or regular user)
+        if (user.shopping_cart && Object.keys(user.shopping_cart).length > 0) {
           console.log("Using local cart", user.shopping_cart);
           cartMap = user.shopping_cart;
-        } else {
-          // For regular users without local cart, try to fetch from backend
+        } else if (user.userType !== "guest") {
+          // If no local cart and user is a regular user, fetch from backend
           try {
-            const response = await fetch(`http://localhost:8080/customers/get-cart?customerID=${encodeURIComponent(user.userId)}`, {
+            const response = await fetch(`http://localhost:8080/customers/get-cart?email=${encodeURIComponent(user.email)}`, {
               method: "GET",
               headers: {
                 "Content-Type": "application/json",
@@ -72,15 +72,20 @@ export const CartProvider = ({ children }) => {
             }
 
             cartMap = await response.json();
-          } catch (backendError) {
-            console.warn("Backend error fetching cart:", backendError);
             
-            // Fallback to local cart if it exists
-            if (user.shopping_cart) {
-              cartMap = user.shopping_cart || {};
-            } else {
-              throw backendError;
+            // Also update the local shopping_cart
+            user.shopping_cart = cartMap;
+            localStorage.setItem('user', JSON.stringify(user));
+          } catch (backendError) {
+            console.error("Backend error fetching cart:", backendError);
+            
+            // Initialize empty shopping_cart if needed
+            if (!user.shopping_cart) {
+              user.shopping_cart = {};
+              localStorage.setItem('user', JSON.stringify(user));
             }
+            
+            cartMap = user.shopping_cart || {};
           }
         }
         
@@ -88,6 +93,8 @@ export const CartProvider = ({ children }) => {
 
         if (!cartMap || typeof cartMap !== "object") {
           console.warn("Invalid cart data received");
+          setCartItems([]);
+          setLoading(false);
           return;
         }
 
@@ -102,7 +109,7 @@ export const CartProvider = ({ children }) => {
               quantity: cartMap[product_id],
               name: product.name,
               image: product.image,
-              unit_price: product.price,
+              unit_price: product.unit_price ?? product.unitPrice ?? product.price ?? 0,
             };
           } catch (error) {
             console.warn(`Error fetching product ${product_id}:`, error);
@@ -112,7 +119,7 @@ export const CartProvider = ({ children }) => {
               quantity: cartMap[product_id],
               name: `Product ${product_id}`,
               image: null,
-              unit_price: 0,
+              unit_price: 999,
             };
           }
         });
@@ -142,8 +149,8 @@ export const CartProvider = ({ children }) => {
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
       console.log("User in addToCart:", user);
       
-      if (!user.userId) {
-        console.error("No userId found in user object:", user);
+      if (!user.email) {
+        console.error("No email found in user object:", user);
         return;
       }
   
@@ -164,11 +171,11 @@ export const CartProvider = ({ children }) => {
       
       let backendSuccess = false;
       
-      // Only try backend if not a guest user or if guest but wants to try backend first
-      if (user.userType !== "guest" || !user.shopping_cart) {
+      // Only try backend if not a guest user
+      if (user.userType !== "guest") {
         try {
           // Try to add to cart using the backend
-          const response = await fetch(`http://localhost:8080/customers/add-to-cart?customerID=${encodeURIComponent(user.userId)}`, {
+          const response = await fetch(`http://localhost:8080/customers/add-to-cart?email=${encodeURIComponent(user.email)}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -183,18 +190,32 @@ export const CartProvider = ({ children }) => {
           }
           
           backendSuccess = true;
-        } catch (backendError) {
-          console.warn("Backend error, using local cart:", backendError);
           
-          if (user.userType !== "guest") {
-            // For regular users, propagate the error
-            console.error("Regular user cart update failed");
+          // Update local shopping_cart for regular users too
+          if (!user.shopping_cart) {
+            user.shopping_cart = {};
           }
+          
+          const productId = payload.product_id;
+          user.shopping_cart[productId] = (user.shopping_cart[productId] || 0) + 1;
+          
+          // Save the updated user object
+          localStorage.setItem('user', JSON.stringify(user));
+        } catch (backendError) {
+          console.error("Failed to add to cart on backend:", backendError);
+          // For regular users, show an error but still try to update local cart
+          if (!user.shopping_cart) {
+            user.shopping_cart = {};
+          }
+          
+          const productId = payload.product_id;
+          user.shopping_cart[productId] = (user.shopping_cart[productId] || 0) + 1;
+          
+          // Save the updated user object
+          localStorage.setItem('user', JSON.stringify(user));
         }
-      }
-      
-      // For guest users or if backend failed for guest users, update localStorage
-      if ((user.userType === "guest" || !backendSuccess) && user.userType === "guest") {
+      } else {
+        // For guest users, update localStorage
         // Get current shopping cart from user object
         const shopping_cart = user.shopping_cart || {};
         
@@ -243,18 +264,18 @@ export const CartProvider = ({ children }) => {
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
       console.log("User in deleteFromCart:", user);
       
-      if (!user?.userId) {
-        console.error("User object missing userId:", user);
+      if (!user?.email) {
+        console.error("User object missing email:", user);
         return;
       }
       
       let backendSuccess = false;
       
-      // Only try backend if not a guest user or if guest but wants to try backend first
-      if (user.userType !== "guest" || !user.shopping_cart) {
+      // Only try backend if not a guest user
+      if (user.userType !== "guest") {
         try {
           // Try to delete from cart using the backend
-          const response = await fetch(`http://localhost:8080/customers/delete-from-cart?customerID=${encodeURIComponent(user.userId)}`, {
+          const response = await fetch(`http://localhost:8080/customers/delete-from-cart?email=${encodeURIComponent(user.email)}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -276,17 +297,35 @@ export const CartProvider = ({ children }) => {
           }
           
           backendSuccess = true;
+          
+          // Also update local shopping_cart for regular users
+          if (user.shopping_cart && user.shopping_cart[product.product_id]) {
+            if (user.shopping_cart[product.product_id] <= 1) {
+              delete user.shopping_cart[product.product_id];
+            } else {
+              user.shopping_cart[product.product_id] -= 1;
+            }
+            
+            // Save the updated user object
+            localStorage.setItem('user', JSON.stringify(user));
+          }
         } catch (backendError) {
-          console.warn("Backend error during delete:", backendError);
-          if (user.userType !== "guest") {
-            // For regular users, propagate the error since we can't fallback
-            console.error("Regular user cart update failed");
+          console.error("Failed to delete from cart on backend:", backendError);
+          
+          // For regular users, still try to update local cart
+          if (user.shopping_cart && user.shopping_cart[product.product_id]) {
+            if (user.shopping_cart[product.product_id] <= 1) {
+              delete user.shopping_cart[product.product_id];
+            } else {
+              user.shopping_cart[product.product_id] -= 1;
+            }
+            
+            // Save the updated user object
+            localStorage.setItem('user', JSON.stringify(user));
           }
         }
-      }
-      
-      // For guest users or if backend failed, update localStorage
-      if ((user.userType === "guest" || !backendSuccess) && user.userType === "guest") {
+      } else {
+        // For guest users, update localStorage
         // Get current shopping cart from user object
         const shopping_cart = user.shopping_cart || {};
         
@@ -320,7 +359,6 @@ export const CartProvider = ({ children }) => {
       );
       
       // Trigger a refetch to ensure UI is in sync with backend/localStorage
-      // Immediate refetch is more reliable than setTimeout
       setRefetch(prev => !prev);
     } catch (err) {
       console.error("Error removing from cart:", err);
@@ -342,9 +380,11 @@ export const CartProvider = ({ children }) => {
         acc[item.product_id] = item.quantity;
         return acc;
       }, {});
-  
+  console.log("User in checkout-----------:", user);
+  console.log("User id:", user.account_id||user.userId);
       // Prepare fake invoice to show in InvoicePage
       const fakeInvoice = {
+        account_id: user.account_id||user.userId,
         name: user.username,
         surname: user.username,
         email: user.email,
@@ -353,7 +393,7 @@ export const CartProvider = ({ children }) => {
           quantity: item.quantity,
           name: item.name,
           image: item.image,
-          unit_price: item.unit_price
+          unit_price: item.unit_price|| item.unitPrice
         })),
         total_price: totalPrice,
         orderStatus: "pending",
@@ -380,7 +420,7 @@ export const CartProvider = ({ children }) => {
   
 
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + (item.unit_price || 0) * (item.quantity || 0),
+    (sum, item) => sum + (item.unit_price || item.unitPrice || 0) * (item.quantity || 0),
     0
   );
 

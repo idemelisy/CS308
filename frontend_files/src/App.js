@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from "./AuthContext";
 import { CartProvider } from './CartContext';
@@ -55,14 +55,21 @@ function App() {
 }
 
 function Welcome() {
+  const navigate = useNavigate();
+  
   return (
     <div className="container">
       <h1>Welcome to Our Store</h1>
       <p>Please choose an option:</p>
-      <button onClick={() => window.location.href = '/register'}>Register</button>
-      <button onClick={() => window.location.href = '/login'}>Login</button>
+      <button onClick={() => navigate('/register')}>Register</button>
+      <button onClick={() => navigate('/login')}>Login</button>
       <div className="footer">
-        <p>Or <Link to="/continue">Continue without logging in</Link></p>
+        <button 
+          onClick={() => navigate('/continue')}
+          style={{ marginTop: "10px", backgroundColor: "#f0f0f0", color: "#333" }}
+        >
+          Continue as Guest
+        </button>
       </div>
     </div>
   );

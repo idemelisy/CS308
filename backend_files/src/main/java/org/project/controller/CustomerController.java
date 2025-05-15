@@ -6,13 +6,16 @@ import org.project.model.product_model.Product;
 import org.project.repository.UserRepository;
 import org.project.service.CustomerService;
 import org.project.service.EmailSenderService;
+import org.project.service.ProductService;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/customers")
@@ -29,6 +32,9 @@ public class CustomerController {
 
     @Autowired
     private EmailSenderService emailSenderService;
+
+    @Autowired
+    private ProductService productService;
 
     @GetMapping
     public List<Customer> getAllCustomers() {
@@ -82,6 +88,24 @@ public class CustomerController {
     public void sendInvoiceMail(@RequestParam String toEmail, @RequestParam MultipartFile file) throws MessagingException{
         emailSenderService.sendEmail(toEmail, file, "invoice", "", 0);
     }
+
+    @GetMapping("get-wishlist")
+    public List<Product> get_wishlist(@RequestParam String customerID) {
+        Customer customer = (Customer) user_repo.findById(customerID).get();
+        Set<String> productIds = customer.getWishlist();
+
+        List<Product> wishlistProducts = new ArrayList<>();
+
+        for (String productId : productIds) {
+            Product product = productService.find_product(productId);
+            if (product != null) {
+                wishlistProducts.add(product);
+            }
+        }
+
+        return wishlistProducts;
+    }
+
 
     @PostMapping("add-wishlist")
     public Customer add_to_wishlist(@RequestBody Product product, @RequestParam String customerID){

@@ -1,23 +1,32 @@
 // global.js
+const USER_STORAGE_KEY = 'user'; // Define a constant for the key
 
 export function setCurrentUser(user) {
   console.log("Saving user to storage:", user);
-  localStorage.setItem('currentUser', JSON.stringify(user));
+  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
 }
 
-export function getCurrentUser() {
-  const raw = localStorage.getItem('currentUser');
-  console.log("Raw user from storage:", raw);
+export const getCurrentUser = () => {
   try {
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    console.error("Error parsing user from storage", e);
+    const rawUser = localStorage.getItem(USER_STORAGE_KEY);
+    console.log("Raw user from storage:", rawUser);
+    
+    if (!rawUser) {
+      return null;
+    }
+
+    const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
+    console.log("Parsed user in getCurrentUser:", user);
+    
+    return user;
+  } catch (error) {
+    console.error("Error getting current user:", error);
     return null;
   }
-}
+};
 
 export function logoutUser() {
-  localStorage.removeItem('currentUser');
+  localStorage.removeItem(USER_STORAGE_KEY);
 }
 
 export function createGuestUser() {

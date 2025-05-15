@@ -5,6 +5,7 @@ import { getCurrentUser, logoutUser } from "./global";
 import Navbar from "./components/Navbar";
 import SortProducts from "./components/SortProducts"; // 🌟 BURAYI UNUTMA
 import { FaHeart } from "react-icons/fa";
+
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   console.log("💡 Rendering product card:", product);
@@ -33,6 +34,7 @@ const ProductCard = ({ product }) => {
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   console.log("📡 home is rendered");
 
   const fetchAllProducts = async () => {
@@ -66,6 +68,17 @@ const Home = () => {
     }
   };
 
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    const currentUser = getCurrentUser();
+    /*if (!currentUser) {
+      navigate('/login');
+    } else {
+      navigate('/wishlist');
+    }*/
+      navigate('/wishlist');
+  };
+
   useEffect(() => {
     fetchAllProducts();
   }, []);
@@ -78,9 +91,14 @@ const Home = () => {
         bottom: 30,
         right: 30,
         zIndex: 1000
-      }}>  <Link to="/wishlist">
-      <FaHeart size={32} color="#e63946" title="Wishlist" />
-    </Link>
+      }}>
+        <FaHeart 
+          size={32} 
+          color="#e63946" 
+          title="Wishlist" 
+          onClick={() => navigate('/wishlist')}
+          style={{ cursor: 'pointer' }}
+        />
       </div>
         <SortProducts onSorted={setProducts} />
         <div

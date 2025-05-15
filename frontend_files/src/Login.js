@@ -78,8 +78,10 @@ function Login() {
 
       switch (roleData) {
         case "ProductManager":
+          navigate("/product-managers"); // Navigate to ProductManager dashboard
+          break;
         case "SalesManager":
-          navigate("/approval-page");
+          navigate("/sales-managers"); // Navigate to approval page for ProductManager and SalesManager
           break;
         case "Customer":
           navigate("/home");

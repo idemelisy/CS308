@@ -30,11 +30,11 @@ const Product = () => {
   const { addToWishlist } = useWishlist();
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
+    const currentUser = getCurrentUser()
     try {
-      if (currentUser && (currentUser.account_id || currentUser.email)) {
+      if (currentUser && (currentUser.userId ?? currentUser.account_id)) {
         const userState = {
-          userId: currentUser.account_id ?? currentUser.email,
+          userId: currentUser.account_id ?? currentUser.userId,
           username: currentUser.name || "User",
           email: currentUser.email || "noemail@domain.com",
         };
@@ -174,12 +174,12 @@ const Product = () => {
       });
       return;
     }
-
+    
     const reviewObject = {
       rating_id: null,
       comment_id: null,
       productId: id,
-      userId: user.userId,
+      userId: user.userId || user.account_id,
       userEmail: user.email,
       rating: userRating,
       content: newComment,

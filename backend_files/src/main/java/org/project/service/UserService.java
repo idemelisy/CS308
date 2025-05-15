@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class    UserService {
 
     @Autowired
     private UserRepository user_repo;
@@ -24,8 +24,22 @@ public class UserService {
 
     public User merge_carts(String guestID, Customer customer){
         Guest guest = (Guest) user_repo.findById(guestID).get();
+        if(guest.getShopping_cart() == null){
+            user_repo.delete(guest);
+            return customer;
+        }
 
-        customer.setShopping_cart(guest.getShopping_cart() != null ? new HashMap<>(guest.getShopping_cart()) : new HashMap<>());
+        HashMap<String, Integer> guestCart = guest.getShopping_cart();
+        HashMap<String, Integer> customerCart = customer.getShopping_cart() != null ? customer.getShopping_cart() : new HashMap<>(); 
+        customer.setShopping_cart(customerCart);
+
+        for (Map.Entry<String, Integer> entry : guestCart.entrySet()) {
+            String productId = entry.getKey();
+            Integer guestQuantity = entry.getValue() != null ? entry.getValue() : 0;
+            Integer customerQuantity = customerCart.getOrDefault(productId, 0);
+            customerCart.put(productId, customerQuantity + guestQuantity);
+        }
+
         user_repo.delete(guest);
         return user_repo.save(customer);
     }

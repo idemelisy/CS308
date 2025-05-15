@@ -60,7 +60,7 @@ function Login() {
         userType: "customer", // Add user type
         shopping_cart: shoppingCart // Add shopping cart to the user object
       };
-  
+      
       setCurrentUser(userToSave);
       /*const userObject = {
         account_id: loginData.account_id,   // <- important

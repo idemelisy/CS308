@@ -2,6 +2,7 @@ package org.project.model;
 
 import java.util.Map;
 
+import java.time.Instant;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,5 +23,6 @@ public class Invoice {
     private Map<String, Integer> purchased;
     private double total_price;
     private String orderStatus;
+    private Instant date;
 
 }

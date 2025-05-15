@@ -51,15 +51,15 @@ public class CustomerController {
     @PostMapping("/add-to-cart")
     public String addToCart(@RequestBody Product product, @RequestParam String email){
         User user = user_repo.findByEmail(email);
-        if (user instanceof Customer) return customerService.add_to_cart(product, email);
-        else return customerService.add_to_guest_cart(product, email);
+        if (user instanceof Guest) return customerService.add_to_guest_cart(product, email);
+        else return customerService.add_to_cart(product, email);
     }
 
     @DeleteMapping("/delete-from-cart")
     public String deleteFromCart(@RequestBody Product product, @RequestParam String email){
         User user = user_repo.findByEmail(email);
-        if (user instanceof Customer) return customerService.delete_from_cart(product,email);
-        else return customerService.delete_from_guest_cart(product, email);
+        if (user instanceof Guest) return customerService.delete_from_guest_cart(product,email);
+        else return customerService.delete_from_cart(product, email);
     }
 
     @PostMapping("/checkout")

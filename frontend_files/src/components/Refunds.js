@@ -40,11 +40,12 @@ const Refunds = () => {
   return (
     <div>
       <h1>Refund Requests</h1>
-      {refunds.length === 0 ? (
+      {Array.isArray(refunds) && refunds.length === 0 ? (
         <p>No refund requests waiting for approval.</p>
       ) : (
         <ul>
-          {refunds.map((refund) => (
+          {Array.isArray(refunds) &&
+          refunds.map((refund) => (
             <li key={refund._id} style={{ marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
               <p><strong>Customer:</strong> {refund.refundCustomer?.email}</p>
               <p><strong>Product ID:</strong> {refund.refund_productID}</p>

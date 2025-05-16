@@ -67,6 +67,24 @@ const Home = () => {
       console.error("Search failed:", error);
     }
   };
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const handleCategoryChange = async (e) => {
+    const category = e.target.value;
+    setSelectedCategory(category);
+    if (!category) {
+      fetchAllProducts();
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:8080/products/category?category=${category}`);
+      const data = await response.json();
+      setProducts(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching category products:", error);
+      setProducts([]);
+    }
+  };
 
   const handleWishlistClick = (e) => {
     e.preventDefault();
@@ -99,6 +117,19 @@ const Home = () => {
           onClick={() => navigate('/wishlist')}
           style={{ cursor: 'pointer' }}
         />
+      </div>
+      <div style={{ margin: "20px 0" }}>
+        <label htmlFor="category-select"><strong>Category: </strong></label>
+        <select
+          id="category-select"
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+        >
+          <option value="">All</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Home Appliances">Home Appliances</option>
+          <option value="Clothing">Clothing</option>
+        </select>
       </div>
         <SortProducts onSorted={setProducts} />
         <div

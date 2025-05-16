@@ -24,6 +24,7 @@ import Orders from "./components/Orders";
 import Comments from "./components/Comments";
 import SalesManagerDashboard from './components/SalesManagerDashboard.js';
 import Invoices from './components/Invoices.js';
+import CustomerProfile from './components/CustomerProfile.js';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -54,6 +55,7 @@ function App() {
               <Route path="/product-managers/comments" element={<Comments />} />
               <Route path="/sales-managers" element={<SalesManagerDashboard />} />
               <Route path="/sales-managers/invoices" element={<Invoices />} />
+              <Route path="/customer-profile" element={<CustomerProfile />} />
             </Routes>
           </WishlistProvider>
         </CartProvider>

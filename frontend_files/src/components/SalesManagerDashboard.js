@@ -56,6 +56,7 @@ const SalesManagerDashboard = () => {
     <div>
       <h1>Sales Manager Dashboard</h1>
       <button onClick={() => navigate("/sales-managers/invoices")}>Invoices</button>
+      <button onClick={() => navigate("/sales-managers/refunds")}>Refunds</button>
       <h2>Product Discounts</h2>
       <ul>
         {products.map((product) => (

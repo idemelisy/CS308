@@ -23,18 +23,33 @@ const SalesManagerDashboard = () => {
     }
 
     const discountedPrice = product.unitPrice - (product.unitPrice * discount) / 100;
-    alert(
-      `Discount applied! New price for ${product.name}: $${discountedPrice.toFixed(2)}`
-    );
 
-    // Backend entegrasyonu yapılmadığı için sadece frontend'de gösteriyoruz
-    setProducts((prevProducts) =>
-      prevProducts.map((p) =>
-        p.product_id === product.product_id
-          ? { ...p, unitPrice: discountedPrice }
-          : p
-      )
-    );
+  // Backend'e indirimli fiyatı gönder
+    fetch(`http://localhost:8080/sales-managers/declare-sale?new_price=${discountedPrice}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(product),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to apply discount");
+        return response.json();
+      })
+      .then((updatedProduct) => {
+        alert(
+          `Discount applied! New price for ${updatedProduct.name}: $${updatedProduct.unitPrice.toFixed(2)}`
+        );
+        setProducts((prevProducts) =>
+          prevProducts.map((p) =>
+            p.product_id === updatedProduct.product_id
+              ? { ...p, unitPrice: updatedProduct.unitPrice }
+              : p
+          )
+        );
+      })
+      .catch((error) => {
+        alert("Discount could not be applied.");
+        console.error(error);
+      });
   };
 
   return (

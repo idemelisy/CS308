@@ -92,12 +92,22 @@ const OrderHistory = () => {
               <p><strong>Purchased Items:</strong> {Object.keys(order.purchased).length === 0 ? 'No items purchased' : `${Object.keys(order.purchased).length} items`}</p>
               <div className="order-actions">
                 <button onClick={() => navigate(`/order/${order.invoiceId}`)}>View Details</button>
-                <button 
-                  onClick={() => navigate('/request-refund', { state: { order } })}
-                  className="refund-button"
-                >
-                  Request Refund
-                </button>
+                {order.orderStatus === "processing" && (
+                  <button
+                    onClick={() => navigate('/cancel', { state: { order } })}
+                    className="cancel-button"
+                  >
+                    Cancel
+                  </button>
+                )}
+                {order.orderStatus === "delivered" && (
+                  <button 
+                    onClick={() => navigate('/request-refund', { state: { order } })}
+                    className="refund-button"
+                  >
+                    Request Refund
+                  </button>
+                )}
               </div>
             </li>
           ))}

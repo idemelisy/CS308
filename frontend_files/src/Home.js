@@ -17,7 +17,7 @@ const ProductCard = ({ product }) => {
     >
       
       <img
-        src={product.image}
+        src={`/images/${product.image}`}
         alt={product.productName}
         className="product-image"
       />

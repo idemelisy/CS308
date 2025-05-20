@@ -140,12 +140,23 @@ const OrderHistory = () => {
               )}
               
               <div className="order-actions">
-                <button 
-                  onClick={() => navigate('/request-refund', { state: { order } })}
-                  className="action-refund"
-                >
-                  <FaFileInvoiceDollar /> Request Refund
-                </button>
+                <button onClick={() => navigate(`/order/${order.invoiceId}`)}>View Details</button>
+                {order.orderStatus === "processing" && (
+                  <button
+                    onClick={() => navigate('/cancel', { state: { order } })}
+                    className="cancel-button"
+                  >
+                    Cancel
+                  </button>
+                )}
+                {order.orderStatus === "delivered" && (
+                  <button 
+                    onClick={() => navigate('/request-refund', { state: { order } })}
+                    className="refund-button"
+                  >
+                    Request Refund
+                  </button>
+                )}
               </div>
             </li>
           ))}

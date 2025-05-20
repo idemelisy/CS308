@@ -19,7 +19,13 @@ import InvoicePage from "./InvoicePage.js";
 import ApprovalPage from './ApprovalPage';
 import Wishlist from './Wishlist';
 import RequestRefund from './RequestRefund';
-import GuestConversion from './GuestConversion';
+import ProductManager from "./components/ProductManagerDashboard";
+import Orders from "./components/Orders";
+import Comments from "./components/Comments";
+import SalesManagerDashboard from './components/SalesManagerDashboard.js';
+import Invoices from './components/Invoices.js';
+import CustomerProfile from './components/CustomerProfile.js';
+import Refunds from './components/Refunds.js';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,7 +51,13 @@ function App() {
               <Route path="/approval-page" element={<ApprovalPage />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/request-refund" element={<RequestRefund />} />
-              <Route path="/convert-account" element={<GuestConversion />} />
+              <Route path="/product-managers" element={<ProductManager />} />
+              <Route path="/product-managers/orders" element={<Orders />} />
+              <Route path="/product-managers/comments" element={<Comments />} />
+              <Route path="/sales-managers" element={<SalesManagerDashboard />} />
+              <Route path="/sales-managers/invoices" element={<Invoices />} />
+              <Route path="/customer-profile" element={<CustomerProfile />} />
+              <Route path="/sales-managers/refunds" element={<Refunds />} />
             </Routes>
           </WishlistProvider>
         </CartProvider>

@@ -55,7 +55,7 @@ public class CustomerController {
     }
 
     @PostMapping("/add-to-cart")
-    public String addToCart(@RequestBody Product product, @RequestParam String email){
+    public String addToCart(@RequestBody Product product, @RequestParam("email") String email){
         User user = user_repo.findByEmail(email);
         if (user instanceof Guest) return customerService.add_to_guest_cart(product, email);
         else return customerService.add_to_cart(product, email);
@@ -89,7 +89,7 @@ public class CustomerController {
         emailSenderService.sendEmail(toEmail, file, "invoice", "", 0);
     }
 
-    @GetMapping("get-wishlist")
+    @GetMapping("/get-wishlist")
     public List<Product> get_wishlist(@RequestParam String customerID) {
         Customer customer = (Customer) user_repo.findById(customerID).get();
         Set<String> productIds = customer.getWishlist();
@@ -107,22 +107,22 @@ public class CustomerController {
     }
 
 
-    @PostMapping("add-wishlist")
-    public Customer add_to_wishlist(@RequestBody Product product, @RequestParam String customerID){
+    @PostMapping("/add-wishlist")
+    public Customer add_to_wishlist(@RequestBody Product product, @RequestParam("customerID") String customerID){
         return customerService.add_to_wishlist(product, customerID);
     }
 
-    @PostMapping("drop-wishlist")
+    @PostMapping("/drop-wishlist")
     public Customer drop_wishlist(@RequestBody Product product, @RequestParam String customerID){
         return customerService.drop_from_wishlist(product, customerID);
     }
 
-    @PostMapping("request-refund")
-    public Refund request_refund(@RequestParam String productID, @RequestBody Customer customer, @RequestParam int refund_amount) throws Exception{
-        return customerService.request_refund(productID, customer, refund_amount);
+    @PostMapping("/request-refund")
+    public Refund request_refund(@RequestParam("productID") String productID, @RequestParam("invoiceID") String invoiceID, @RequestBody Customer customer, @RequestParam("refund_amount") int refund_amount) throws Exception{
+        return customerService.request_refund(productID, invoiceID, customer, refund_amount);
     }
 
-    @DeleteMapping("cancel-order")
+    @DeleteMapping("/cancel-order")
     public String cancel_order(@RequestParam String invoiceID){
         return customerService.cancel_order(invoiceID);
     }

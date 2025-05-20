@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { useNavigate, Link } from "react-router-dom";
-import { getCurrentUser, logoutUser } from "./global";
+import { useNavigate } from "react-router-dom";
+import { getCurrentUser } from "./global";
 import Navbar from "./components/Navbar";
-import SortProducts from "./components/SortProducts"; // 🌟 BURAYI UNUTMA
+import SortProducts from "./components/SortProducts";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
-  console.log("💡 Rendering product card:", product);
 
   return (
     <div
       className="product-card"
       onClick={() => navigate(`/product/${product.product_id}`)}
     >
-      
       <img
         src={`/images/${product.image}`}
         alt={product.productName}
@@ -35,23 +33,24 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
   const navigate = useNavigate();
-  console.log("📡 home is rendered");
+
+  const filterVisible = (list) =>
+    list.filter((p) => Number(p.unitPrice) > 0);
 
   useEffect(() => {
-    // Check if user is guest
     const user = getCurrentUser();
     setIsGuest(user?.userType === "guest");
   }, []);
 
   const fetchAllProducts = async () => {
-    console.log("📡 Attempting to fetch all products...");
     try {
       const response = await fetch("http://localhost:8080/products/all");
       const data = await response.json();
-      setProducts(Array.isArray(data) ? data : []);
+      const filtered = Array.isArray(data) ? filterVisible(data) : [];
+      setProducts(filtered);
+      setLoading(false);
     } catch (error) {
       console.error("❌ Error fetching all products:", error);
-    } finally {
       setLoading(false);
     }
   };
@@ -65,7 +64,7 @@ const Home = () => {
       const response = await fetch(`http://localhost:8080/products/search?keyword=${keyword}`);
       const data = await response.json();
       if (response.ok) {
-        setProducts(data);
+        setProducts(filterVisible(data));
       } else {
         console.error("Search failed with error:", data);
       }
@@ -81,16 +80,18 @@ const Home = () => {
   return (
     <div className="homepage">
       <Navbar onSearch={handleSearch} />
-      
-      <SortProducts onSorted={setProducts} />
-      
+
+      <SortProducts
+        onSorted={(sorted) => setProducts(filterVisible(sorted))}
+      />
+
       {loading ? (
-        <div className="loading-container" style={{ 
-          textAlign: 'center', 
-          padding: '40px', 
+        <div className="loading-container" style={{
+          textAlign: 'center',
+          padding: '40px',
           fontSize: '1.2rem',
           color: '#666',
-          width: '100%' 
+          width: '100%'
         }}>
           <p>Loading products...</p>
         </div>
@@ -101,18 +102,18 @@ const Home = () => {
               <ProductCard key={product.id || product.product_id} product={product} />
             ))
           ) : (
-            <div className="no-products" style={{ 
-              textAlign: 'center', 
-              gridColumn: '1 / -1', 
-              padding: '40px', 
-              color: '#666' 
+            <div className="no-products" style={{
+              textAlign: 'center',
+              gridColumn: '1 / -1',
+              padding: '40px',
+              color: '#666'
             }}>
               <p>No products found.</p>
             </div>
           )}
         </div>
       )}
-      
+
       <footer className="footer">
         <p>
           © 2025 E-Commerce | <a href="#">Terms & Conditions</a>

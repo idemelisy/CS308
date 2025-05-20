@@ -25,23 +25,28 @@ public class SalesManagerController {
         return userService.getAllSalesManagers();
     }
 
-    @PostMapping("declare-sale")
-    public Product set_sale(@RequestBody Product product, @RequestParam double new_price) throws Exception{
+    @PostMapping("/declare-sale")
+    public Product set_sale(@RequestBody Product product, @RequestParam("new_price") double new_price) throws Exception{
         return manager_service.declare_sale(product, new_price);
     }
 
-    @PostMapping("approve-refund")
+    @PostMapping("/approve-refund")
     public Refund approve_refund(@RequestBody Refund refund) throws Exception{
         return manager_service.approve_refund(refund);
     }
 
-    @PostMapping("reject-refund")
+    @PostMapping("/reject-refund")
     public Refund reject_refund(@RequestBody Refund refund) throws Exception{
         return manager_service.reject_refund(refund);
     } 
 
-    @GetMapping("waiting-approvals")
+    @GetMapping("/waiting-approvals")
     public List<Refund> get_waiting_refunds(){
         return manager_service.get_waiting_refunds();
+    }
+
+    @PostMapping("/set-price")
+    public Product set_price(@RequestBody Product product, @RequestParam("price") double price){
+        return manager_service.set_price(product, price);
     }
 }

@@ -39,6 +39,10 @@ public class SalesManagerService {
         
         for(Customer current_customer: all_customers){
             HashSet<String> current_wishlist = current_customer.getWishlist();
+            if(current_wishlist == null){
+                continue;
+            }
+
             if(current_wishlist.contains(product.getProduct_id())){
                 ResponseEntity<String> response = email_sender.sendEmail(
                     current_customer.getEmail(),
@@ -59,6 +63,11 @@ public class SalesManagerService {
 
     public Refund approve_refund(Refund refund) throws Exception{
         refund.setApprovalStatus("approved");
+
+        Product product = product_repo.findById(refund.getRefund_productID()).get();
+        int past_stock = product.getStock();
+        product.setStock(past_stock + refund.getRefund_pieces());
+        product_repo.save(product);
 
         ResponseEntity<String> response = email_sender.sendEmail(
                     refund.getRefundCustomer().getEmail(),
@@ -101,5 +110,20 @@ public class SalesManagerService {
             }
         }
         return all;
+    }
+
+    public List<Product> pending_products(){
+        List<Product> all = product_repo.findAll();
+        for (Product prod: all){
+            if(prod.getUnitPrice() > 0){
+                all.remove(prod);
+            }
+        }
+        return all;
+    }
+
+    public Product set_price(Product product, double price){
+        product.setUnitPrice(price);
+        return product_repo.save(product);
     }
 }

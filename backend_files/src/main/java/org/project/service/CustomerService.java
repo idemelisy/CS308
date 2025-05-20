@@ -67,7 +67,7 @@ public class CustomerService {
         return total_price;
     }
 
-    public Invoice checkout(Customer current_customer){
+    public Invoice checkout(Customer current_customer, String address){
         Invoice new_receipt = new Invoice();
         new_receipt.setInvoiceId(generate_id());
         new_receipt.setPurchased(new HashMap<>(current_customer.getShopping_cart()));
@@ -90,7 +90,7 @@ public class CustomerService {
                     return product.getUnitPrice() * quantity;
                 })
                 .sum();
-
+        new_receipt.setAddress(address);
         new_receipt.setTotal_price(total_price);
         new_receipt.setOrderStatus("processing");
         new_receipt.setDate(Instant.now());

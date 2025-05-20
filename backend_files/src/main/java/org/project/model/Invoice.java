@@ -25,5 +25,6 @@ public class Invoice {
     private double total_price;
     private String orderStatus;
     private Instant date;
+    private String address;
 
 }

@@ -4,6 +4,8 @@ import "./ProductManagerDashboard.css";
 
 const ProductManager = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState("");
   const navigate = useNavigate();
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -23,15 +25,17 @@ const ProductManager = () => {
       .then((response) => response.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setProducts(data); // Eğer veri bir dizi ise güncelle
+          setProducts(data);
+          const uniqueCategories = [...new Set(data.map(p => p.category).filter(Boolean))];
+          setCategories(uniqueCategories);
         } else {
           console.error("API'den beklenen formatta veri gelmedi:", data);
-          setProducts([]); // Hata durumunda boş bir dizi ata
+          setProducts([]);
         }
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
-        setProducts([]); // Hata durumunda boş bir dizi ata
+        setProducts([]);
       });
   }, []);
 
@@ -41,7 +45,6 @@ const ProductManager = () => {
   };
 
   const handleAddProduct = () => {
-    // Yeni ürün ekleme
     fetch("http://localhost:8080/products/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,7 +59,6 @@ const ProductManager = () => {
   };
 
   const handleDeleteProduct = (id) => {
-    // Ürün silme
     fetch(`http://localhost:8080/products/${id}/delete`, { method: "DELETE" })
       .then(() => setProducts(products.filter((product) => product.product_id !== id)))
       .catch((error) => console.error("Error deleting product:", error));
@@ -68,108 +70,64 @@ const ProductManager = () => {
       <button onClick={() => navigate("/product-managers/orders")}>Orders</button>
       <button onClick={() => navigate("/product-managers/comments")}>Comments</button>
 
+      <div className="add-category">
+        <h2>Add Category</h2>
+        <input
+          type="text"
+          placeholder="New Category"
+          value={newCategory}
+          onChange={(e) => setNewCategory(e.target.value)}
+        />
+        <button onClick={() => setCategories(prev => [...prev, newCategory])}>Add Category</button>
+      </div>
+
       <div className="add-product">
         <h2>Add New Product</h2>
-        <input
-          type="text"
-          name="name"
-          placeholder="Product Name"
-          value={newProduct.name}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="description"
-          placeholder="Description"
-          value={newProduct.description}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="unitPrice"
-          placeholder="Unit Price"
-          value={newProduct.unitPrice}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="stock"
-          placeholder="Stock"
-          value={newProduct.stock}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="product_id"
-          placeholder="Product ID"
-          value={newProduct.product_id}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="model"
-          placeholder="Model"
-          value={newProduct.model}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="serialNumber"
-          placeholder="Serial Number"
-          value={newProduct.serialNumber}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="Category"
-          value={newProduct.category}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="warrantyStatus"
-          placeholder="Warranty Status"
-          value={newProduct.warrantyStatus}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="distributorID"
-          placeholder="Distributor ID"
-          value={newProduct.distributorID}
-          onChange={handleInputChange}
-        />
+        <input type="text" name="name" placeholder="Product Name" value={newProduct.name} onChange={handleInputChange} />
+        <input type="text" name="description" placeholder="Description" value={newProduct.description} onChange={handleInputChange} />
+        <input type="number" name="stock" placeholder="Stock" value={newProduct.stock} onChange={handleInputChange} />
+        <input type="text" name="product_id" placeholder="Product ID" value={newProduct.product_id} onChange={handleInputChange} />
+        <input type="text" name="model" placeholder="Model" value={newProduct.model} onChange={handleInputChange} />
+        <input type="text" name="serialNumber" placeholder="Serial Number" value={newProduct.serialNumber} onChange={handleInputChange} />
+        <select name="category" value={newProduct.category} onChange={handleInputChange}>
+          <option value="">Select Category</option>
+          {categories.map((cat, i) => (
+            <option key={i} value={cat}>{cat}</option>
+          ))}
+        </select>
+        <input type="text" name="warrantyStatus" placeholder="Warranty Status" value={newProduct.warrantyStatus} onChange={handleInputChange} />
+        <input type="text" name="distributorID" placeholder="Distributor ID" value={newProduct.distributorID} onChange={handleInputChange} />
         <button onClick={handleAddProduct}>Add Product</button>
       </div>
 
       <div className="product-list">
-        <h2>Product List</h2>
-        <ul>
-          {products.map((product) => (
-            <li key={product.product_id}>
-              <strong>{product.name}</strong> - ${product.unitPrice} - Stock: {product.stock}
-              <input
-                type="number"
-                placeholder="New Stock"
-                onChange={(e) => {
-                  const newStock = e.target.value;
-                  setProducts((prevProducts) =>
-                    prevProducts.map((p) =>
-                      p.product_id === product.product_id ? { ...p, stock: newStock } : p
-                    )
-                  );
-                }}
-              />
-              <button
-                onClick={() => alert(`Stock for ${product.name} updated to ${product.stock}`)}
-              >
-                Update Stock
-              </button>
-              <button onClick={() => handleDeleteProduct(product.product_id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
+        <h2>Product List by Category</h2>
+        {categories.map((category, i) => (
+          <div key={i} className="category-section">
+            <h3>{category}</h3>
+            <ul>
+              {products.filter(p => p.category === category).map((product) => (
+                <li key={product.product_id}>
+                  <strong>{product.name}</strong> - ${product.unitPrice} - Stock: {product.stock}
+                  <input
+                    type="number"
+                    placeholder="New Stock"
+                    onChange={(e) => {
+                      const newStock = e.target.value;
+                      setProducts((prevProducts) =>
+                        prevProducts.map((p) =>
+                          p.product_id === product.product_id ? { ...p, stock: newStock } : p
+                        )
+                      );
+                    }}
+                  />
+                  <button onClick={() => alert(`Stock for ${product.name} updated to ${product.stock}`)}>Update Stock</button>
+                  <button onClick={() => handleDeleteProduct(product.product_id)}>Delete</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );

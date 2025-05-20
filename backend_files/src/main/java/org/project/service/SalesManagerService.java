@@ -1,13 +1,21 @@
 package org.project.service;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.project.model.Customer;
+import org.project.model.Invoice;
 import org.project.model.Refund;
 import org.project.model.product_model.Product;
 import org.project.repository.ProductRepository;
 import org.project.repository.RefundRepository;
+import org.project.repository.ShoppingHistory;
 import org.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +38,9 @@ public class SalesManagerService {
 
     @Autowired
     private RefundRepository refund_repo;
+
+    @Autowired
+    private ShoppingHistory invoice_repo;
 
 
     public Product declare_sale(Product product, double new_price) throws Exception{
@@ -125,5 +136,36 @@ public class SalesManagerService {
     public Product set_price(Product product, double price){
         product.setUnitPrice(price);
         return product_repo.save(product);
+    }
+
+    public List<Invoice> range_search(Instant startDate, Instant endDate){
+        return invoice_repo.findByDateBetween(startDate, endDate);
+    }
+
+    public Map<String, Object> get_chart(Instant startDate, Instant endDate){
+        List<Invoice> invoices = invoice_repo.findByDateBetween(startDate, endDate);
+
+        List<String> labels = new ArrayList<>();
+        List<Double> totalCosts = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+
+        for (Invoice inv : invoices) {
+            labels.add(inv.getDate().atZone(ZoneId.systemDefault()).format(formatter));
+            totalCosts.add(inv.getTotal_price());
+        }
+
+        Map<String, Object> chartData = new HashMap<>();
+        chartData.put("labels", labels);
+        
+        Map<String, Object> dataset = new HashMap<>();
+        dataset.put("label", "Total Cost");
+        dataset.put("data", totalCosts);
+        dataset.put("borderColor", "#4A90E2");
+        dataset.put("backgroundColor", "#4A90E230");
+        dataset.put("fill", false);
+
+        chartData.put("datasets", List.of(dataset));
+        
+        return chartData;
     }
 }

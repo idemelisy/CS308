@@ -5,61 +5,80 @@ const Invoices = () => {
   const [endDate, setEndDate] = useState("");
   const [invoices, setInvoices] = useState([]);
 
-  // Simüle edilmiş invoice verileri
-  const mockInvoices = [
-    { id: "1", date: "2025-05-10", total: 500.0, customer: "John Doe" },
-    { id: "2", date: "2025-05-11", total: 300.0, customer: "Jane Smith" },
-    { id: "3", date: "2025-05-12", total: 700.0, customer: "Alice Johnson" },
-  ];
+  const handleSearch = async () => {
+    if (!startDate || !endDate) {
+      alert("Please select both start and end dates.");
+      return;
+    }
 
-  const handleSearch = () => {
-    // Şimdilik sadece mock verileri filtreliyoruz
-    const filteredInvoices = mockInvoices.filter(
-      (invoice) =>
-        (!startDate || invoice.date >= startDate) &&
-        (!endDate || invoice.date <= endDate)
-    );
-    setInvoices(filteredInvoices);
+    const formattedStart = `${startDate}T00:00:00Z`;
+    const formattedEnd = `${endDate}T23:59:59Z`;
+
+    try {
+      const response = await fetch(`http://localhost:8080/sales-managers/range-invoices?start_date=${formattedStart}&end_date=${formattedEnd}`);
+      if (!response.ok) throw new Error("Failed to fetch invoices");
+      const data = await response.json();
+      setInvoices(data);
+    } catch (err) {
+      console.error("❌ Error fetching invoices:", err);
+      alert("Failed to fetch invoices. See console for details.");
+    }
   };
 
   const handleDownloadPdf = (invoice) => {
-    alert(`Downloading PDF for Invoice ID: ${invoice.id}`);
-    // PDF indirme işlemi backend hazır olduğunda entegre edilecek
+    alert(`Downloading PDF for Invoice ID: ${invoice._id || invoice.id}`);
   };
 
   return (
-    <div>
-      <h1>Invoices</h1>
-      <div>
+    <div style={{ padding: "2rem" }}>
+      <h1 style={{ color: "#ff6600" }}>Invoices</h1>
+
+      <div style={{ marginBottom: "1.5rem" }}>
         <label>
-          Start Date:
+          Start Date:{" "}
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
-        </label>
+        </label>{" "}
         <label>
-          End Date:
+          End Date:{" "}
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
-        </label>
-        <button onClick={handleSearch}>Search</button>
+        </label>{" "}
+        <button style={{ backgroundColor: "#ff912b", color: "white", padding: "0.5rem 1rem" }} onClick={handleSearch}>
+          Search
+        </button>
       </div>
+
       <h2>Invoice List</h2>
-      <ul>
-        {invoices.map((invoice) => (
-          <li key={invoice.id}>
-            <p><strong>ID:</strong> {invoice.id}</p>
-            <p><strong>Date:</strong> {invoice.date}</p>
-            <p><strong>Total:</strong> ${invoice.total.toFixed(2)}</p>
-            <p><strong>Customer:</strong> {invoice.customer}</p>
-            <button onClick={() => handleDownloadPdf(invoice)}>Download PDF</button>
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        {invoices.length > 0 ? invoices.map((invoice, i) => (
+          <li
+            key={invoice._id || i}
+            style={{
+              marginBottom: "2rem",
+              background: "#fff5e6",
+              borderRadius: "8px",
+              padding: "1rem",
+              boxShadow: "0 0 10px rgba(0,0,0,0.05)",
+            }}
+          >
+            <p><strong>ID:</strong> {invoice._id || "N/A"}</p>
+            <p><strong>Date:</strong> {invoice.date?.split("T")[0]}</p>
+            <p><strong>Total:</strong> ${invoice.total_price?.toFixed(2)}</p>
+            <p><strong>Customer:</strong> {invoice.purchaser?.name || invoice.purchaser?.email || "Unknown"}</p>
+            <button style={{ backgroundColor: "#ff912b", color: "white" }} onClick={() => handleDownloadPdf(invoice)}>
+              Download PDF
+            </button>
           </li>
-        ))}
+        )) : (
+          <p style={{ color: "#666" }}>No invoices found in this date range.</p>
+        )}
       </ul>
     </div>
   );

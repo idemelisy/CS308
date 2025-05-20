@@ -69,8 +69,8 @@ public class CustomerController {
     }
 
     @PostMapping("/checkout")
-    public Invoice checkout(@RequestBody Customer customer){
-        return customerService.checkout(customer);
+    public Invoice checkout(@RequestBody Customer customer, @RequestParam String address){
+        return customerService.checkout(customer, address);
     }
     
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setCurrentUser } from "./global";
+import { v4 as uuidv4 } from "uuid";
 
 function Login() {
   const navigate = useNavigate();
@@ -31,14 +32,21 @@ function Login() {
 
       // Fetch wishlist data for customers
       let wishlist = [];
+      let shoppingCart = {};
       if (loginData.account_id) {
         try {
           const wishlistResponse = await fetch(`http://localhost:8080/customers/get-wishlist?customerID=${loginData.account_id}`);
           if (wishlistResponse.ok) {
             wishlist = await wishlistResponse.json();
           }
+          
+          // Also fetch shopping cart
+          const cartResponse = await fetch(`http://localhost:8080/customers/get-cart?customerID=${loginData.account_id}`);
+          if (cartResponse.ok) {
+            shoppingCart = await cartResponse.json();
+          }
         } catch (error) {
-          console.error("Error fetching wishlist:", error);
+          console.error("Error fetching user data:", error);
         }
       }
 
@@ -47,19 +55,22 @@ function Login() {
         username: loginData.name || "User",
         email: loginData.email || formData.email,
         wishlist: wishlist, // Add wishlist to the user object
-        wishlistNeedsUpdate: false // Add flag to track if wishlist needs updating
+        wishlistNeedsUpdate: false, // Add flag to track if wishlist needs updating
+        userType: "customer", // Add user type
+        shopping_cart: shoppingCart // Add shopping cart to the user object
       };
-
+      
       setCurrentUser(userToSave);
-      const userObject = {
-        account_id: loginData.account_id,
+      /*const userObject = {
+        account_id: loginData.account_id,   // <- important
         email: loginData.email,
         name: loginData.name,
         wishlist: wishlist, // Add wishlist to localStorage
-        wishlistNeedsUpdate: false // Add flag to localStorage
+        wishlistNeedsUpdate: false, // Add flag to localStorage
+        userType: "customer" // Add user type
       };
-
-      localStorage.setItem('currentUser', JSON.stringify(userObject));
+      
+      localStorage.setItem('currentUser', JSON.stringify(userObject));*/
       console.log("User saved to storage:", userToSave);
 
       const roleResponse = await fetch(
@@ -92,6 +103,58 @@ function Login() {
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong.");
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    try {
+      // Generate a unique guest ID
+      const guestId = uuidv4();
+      const uniqueEmail = `guest_${guestId}@guest.mail`;
+      
+      // Register guest user with backend
+      const registerResponse = await fetch("http://localhost:8080/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userType: "guest",
+          name: "Guest",
+          surname: "User",
+          email: uniqueEmail,
+          password: "guest123",
+          additionalParams: {}
+        })
+      });
+      
+      if (!registerResponse.ok) {
+        throw new Error("Failed to register guest user");
+      }
+      
+      const guestData = await registerResponse.json();
+      console.log("Guest registered:", guestData);
+      
+      // Create guest user object
+      const guestUser = {
+        userId: guestData.account_id,
+        username: "Guest",
+        email: uniqueEmail,
+        wishlist: [],
+        wishlistNeedsUpdate: false,
+        userType: "guest",
+        shopping_cart: {}
+      };
+      
+      // Save guest user to local storage
+      setCurrentUser(guestUser);
+      console.log("Guest user created:", guestUser);
+      
+      // Navigate to home page
+      navigate("/home");
+    } catch (error) {
+      console.error("Error creating guest account:", error);
+      alert("Failed to continue as guest.");
     }
   };
 
@@ -137,6 +200,12 @@ function Login() {
           Login
         </button>
       </form>
+      <button 
+        onClick={handleGuestLogin} 
+        style={{ marginTop: "10px", backgroundColor: "#f0f0f0", color: "#333" }}
+      >
+        Continue as Guest
+      </button>
       <p>
         Don't have an account? <a href="/register">Register here</a>
       </p>

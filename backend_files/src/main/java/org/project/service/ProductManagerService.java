@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 import org.project.model.Invoice;
 import org.project.model.product_model.Comment;
+import org.project.model.product_model.Product;
 import org.project.repository.CommentRepository;
+import org.project.repository.ProductRepository;
 import org.project.repository.ShoppingHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class ProductManagerService {
 
     @Autowired
     private ShoppingHistory invoice_repo;
+
+    @Autowired 
+    private ProductRepository product_repo;
 
     
     public List<Comment> list_waiting_approvals(){
@@ -61,5 +66,10 @@ public class ProductManagerService {
 
         }
         return invoice_repo.save(invoice);
+    }
+
+    public Product add_product(Product product){
+        product.setUnitPrice(-1.0);
+        return product_repo.save(product);
     }
 }

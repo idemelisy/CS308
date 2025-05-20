@@ -4,7 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "./global";
 import Navbar from "./components/Navbar";
 import SortProducts from "./components/SortProducts"; // 🌟 BURAYI UNUTMA
-import { FaHeart } from "react-icons/fa";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -34,8 +33,15 @@ const ProductCard = ({ product }) => {
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
   const navigate = useNavigate();
   console.log("📡 home is rendered");
+
+  useEffect(() => {
+    // Check if user is guest
+    const user = getCurrentUser();
+    setIsGuest(user?.userType === "guest");
+  }, []);
 
   const fetchAllProducts = async () => {
     console.log("📡 Attempting to fetch all products...");
@@ -67,35 +73,6 @@ const Home = () => {
       console.error("Search failed:", error);
     }
   };
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const handleCategoryChange = async (e) => {
-    const category = e.target.value;
-    setSelectedCategory(category);
-    if (!category) {
-      fetchAllProducts();
-      return;
-    }
-    try {
-      const response = await fetch(`http://localhost:8080/products/category?category=${category}`);
-      const data = await response.json();
-      setProducts(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error fetching category products:", error);
-      setProducts([]);
-    }
-  };
-
-  const handleWishlistClick = (e) => {
-    e.preventDefault();
-    const currentUser = getCurrentUser();
-    /*if (!currentUser) {
-      navigate('/login');
-    } else {
-      navigate('/wishlist');
-    }*/
-      navigate('/wishlist');
-  };
 
   useEffect(() => {
     fetchAllProducts();
@@ -104,52 +81,38 @@ const Home = () => {
   return (
     <div className="homepage">
       <Navbar onSearch={handleSearch} />
-      <div style={{
-        position: "fixed",
-        bottom: 30,
-        right: 30,
-        zIndex: 1000
-      }}>
-        <FaHeart 
-          size={32} 
-          color="#e63946" 
-          title="Wishlist" 
-          onClick={() => navigate('/wishlist')}
-          style={{ cursor: 'pointer' }}
-        />
-      </div>
-      <div style={{ margin: "20px 0" }}>
-        <label htmlFor="category-select"><strong>Category: </strong></label>
-        <select
-          id="category-select"
-          value={selectedCategory}
-          onChange={handleCategoryChange}
-        >
-          <option value="">All</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Home Appliances">Home Appliances</option>
-          <option value="Clothing">Clothing</option>
-        </select>
-      </div>
-        <SortProducts onSorted={setProducts} />
-        <div
-          className="product-grid"
-          style={{
-            display: "flex",
-            gap: "20px",
-            overflowX: "auto",
-            whiteSpace: "nowrap",
-            padding: "20px",
-          }}
-        >
-          {loading ? (
-            <p>Loading products...</p>
-          ) : (
+      
+      <SortProducts onSorted={setProducts} />
+      
+      {loading ? (
+        <div className="loading-container" style={{ 
+          textAlign: 'center', 
+          padding: '40px', 
+          fontSize: '1.2rem',
+          color: '#666',
+          width: '100%' 
+        }}>
+          <p>Loading products...</p>
+        </div>
+      ) : (
+        <div className="product-grid">
+          {products.length > 0 ? (
             products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id || product.product_id} product={product} />
             ))
+          ) : (
+            <div className="no-products" style={{ 
+              textAlign: 'center', 
+              gridColumn: '1 / -1', 
+              padding: '40px', 
+              color: '#666' 
+            }}>
+              <p>No products found.</p>
+            </div>
           )}
         </div>
+      )}
+      
       <footer className="footer">
         <p>
           © 2025 E-Commerce | <a href="#">Terms & Conditions</a>

@@ -34,7 +34,13 @@ public class ProductService {
     }
 
     public List<Product> list_all_products(){
-        return product_repo.findAll();
+        List<Product> all = product_repo.findAll();
+        for (Product p: all){
+            if (p.getUnitPrice() < 0){
+                all.remove(p);
+            }
+        }
+        return all;
     }
 
     public List<Product> list_by_category(String category){

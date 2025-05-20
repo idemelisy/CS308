@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getCurrentUser } from './global';
 import './RequestRefund.css';
+import { FaUndo, FaArrowLeft } from 'react-icons/fa';
 
 const RequestRefund = () => {
   const [orders, setOrders] = useState([]);
@@ -24,7 +25,7 @@ const RequestRefund = () => {
         }
 
         const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
-        const customerID = user.account_id || user.id;
+        const customerID = user.account_id ?? user.userId;
 
         const response = await fetch(`http://localhost:8080/customers/shopping-history?customerID=${customerID}`);
         if (!response.ok) {
@@ -151,13 +152,42 @@ const RequestRefund = () => {
   };
 
   if (loading) {
-    return <div className="refund-container">Loading...</div>;
+    return (
+      <div className="refund-container">
+        <h2>Request a Refund</h2>
+        <div className="loading-state" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '40px 0'
+        }}>
+          <div className="loading-spinner" style={{
+            width: '50px',
+            height: '50px',
+            border: '5px solid #f3f3f3',
+            borderTop: '5px solid #FF921C',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            marginBottom: '20px'
+          }}></div>
+          <p>Loading your orders...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="refund-container">
       <h2>Request a Refund</h2>
       {error && <div className="error-message">{error}</div>}
+      
+      <button 
+        onClick={() => navigate('/order-history')}
+        className="back-button"
+      >
+        <FaArrowLeft /> Back to Order History
+      </button>
       
       <div className="form-group">
         <label>Select Order:</label>
@@ -181,46 +211,40 @@ const RequestRefund = () => {
       {selectedOrder && (
         <div className="order-details">
           <h3>Order Details</h3>
-          <p>Order ID: #{selectedOrder.invoiceId}</p>
-          <p>Date: {new Date(selectedOrder.date).toLocaleDateString()}</p>
-          <p>Total Amount: ${selectedOrder.total_price.toFixed(2)}</p>
-          
+          <div style={{marginBottom: '18px'}}>
+            <div style={{fontSize: '1rem', color: '#333'}}><b>Order ID:</b> #{selectedOrder.invoiceId}</div>
+            <div style={{fontSize: '1rem', color: '#333'}}><b>Date:</b> {new Date(selectedOrder.date).toLocaleDateString()}</div>
+            <div style={{fontSize: '1rem', color: '#333'}}><b>Total Amount:</b> ${selectedOrder.total_price.toFixed(2)}</div>
+          </div>
           <h4>Products in this Order:</h4>
           <div className="products-list">
             {Object.entries(selectedOrder.purchased).map(([productId, quantity]) => (
-              <div key={productId} className="product-item">
-                <div className="product-info">
-                  <p>
-                    <strong>Product:</strong> {productDetails[productId]?.name || 'Loading...'} 
-                    <span className="product-id">(ID: {productId})</span>
-                  </p>
-                  <p><strong>Quantity Purchased:</strong> {quantity}</p>
-                  {productDetails[productId]?.unitPrice && (
-                    <p><strong>Price per Unit:</strong> ${productDetails[productId].unitPrice.toFixed(2)}</p>
-                  )}
-                  <div className="refund-quantity-input">
-                    <label>Quantity to Refund:</label>
-                    <input
-                      type="number"
-                      value={refundQuantities[productId] || 1}
-                      onChange={(e) => handleRefundQuantityChange(productId, parseInt(e.target.value))}
-                      min="1"
-                      max={quantity}
-                      required
-                    />
-                    <span className="max-quantity">(Max: {quantity})</span>
-                  </div>
-                  {productDetails[productId]?.unitPrice && refundQuantities[productId] && (
-                    <p className="refund-total">
-                      <strong>Refund Total:</strong> ${(productDetails[productId].unitPrice * refundQuantities[productId]).toFixed(2)}
-                    </p>
-                  )}
+              <div key={productId} className="product-item basic-card">
+                <div className="basic-title">{productDetails[productId]?.name || 'Loading...'}</div>
+                <div className="basic-id">ID: {productId}</div>
+                <div className="basic-row">Price per Unit: <span>${productDetails[productId]?.unitPrice ? productDetails[productId].unitPrice.toFixed(2) : '-'}</span></div>
+                <div className="basic-row">Quantity Purchased: <span>{quantity}</span></div>
+                <div className="basic-row">
+                  Quantity to Refund:
+                  <input
+                    type="number"
+                    value={refundQuantities[productId] || 1}
+                    onChange={(e) => handleRefundQuantityChange(productId, parseInt(e.target.value))}
+                    min="1"
+                    max={quantity}
+                    required
+                    className="basic-input"
+                  />
+                  <span className="max-quantity">(Max: {quantity})</span>
+                </div>
+                <div className="basic-row" style={{color: '#e63946', fontWeight: 600}}>
+                  Refund Total: ${productDetails[productId]?.unitPrice && refundQuantities[productId] ? (productDetails[productId].unitPrice * refundQuantities[productId]).toFixed(2) : '-'}
                 </div>
                 <button 
                   onClick={() => handleRefundRequest(productId)}
-                  className="refund-button"
+                  className="basic-refund-btn"
                 >
-                  Request Refund
+                  <FaUndo style={{marginRight: '8px'}}/> Request Refund
                 </button>
               </div>
             ))}

@@ -67,7 +67,7 @@ public class CustomerService {
         return total_price;
     }
 
-    public Invoice checkout(Customer current_customer){
+    public Invoice checkout(Customer current_customer, String address){
         Invoice new_receipt = new Invoice();
         new_receipt.setInvoiceId(generate_id());
         new_receipt.setPurchased(new HashMap<>(current_customer.getShopping_cart()));
@@ -90,10 +90,16 @@ public class CustomerService {
                     return product.getUnitPrice() * quantity;
                 })
                 .sum();
-
+        new_receipt.setAddress(address);
         new_receipt.setTotal_price(total_price);
         new_receipt.setOrderStatus("processing");
         new_receipt.setDate(Instant.now());
+        new_receipt.setPrices(new HashMap<>());
+        for(HashMap.Entry<String, Integer> entry: current_customer.getShopping_cart().entrySet()){
+            String product_id = entry.getKey();
+            Product curr_product = product_repo.findById(product_id).get();
+            new_receipt.getPrices().put(product_id, curr_product.getUnitPrice());
+        }
 
         // Preserve the wishlist before clearing the cart
         HashSet<String> wishlist = current_customer.getWishlist();
@@ -250,25 +256,48 @@ public class CustomerService {
         return user_repo.save(customer);
     }
 
-    public Refund request_refund(String productID, Customer customer, int refund_amount) throws Exception{
+    public Refund request_refund(String productID, String invoiceID, Customer customer, int refund_amount) throws Exception{
         Instant now = Instant.now();
-        int total_bought = 0;
-        List<Invoice> all = receipt.findAll();
 
-        for(Invoice current: all){
-            if(current.getPurchaser().getAccount_id().equals(customer.getAccount_id()) &&
-            current.getOrderStatus().equals("delivered")){
-                Duration duration = Duration.between(current.getDate(), now);
-                if(duration.toDays() <= 30) total_bought++;
+        Invoice current = receipt.findByInvoiceId(invoiceID);
+        if(current == null) throw new Exception("Invoice not found");
+
+        double refund_price = 0.0;
+        int total_amount = 0;
+
+        if(current.getPurchaser().getAccount_id().equals(customer.getAccount_id()) &&
+        current.getOrderStatus().equals("delivered") &&
+        current.getPurchased().containsKey(productID)){
+            Duration duration = Duration.between(now, current.getDate());
+            System.out.println("Duration: " + duration.toDays());
+            if(duration.toDays() >= 30){
+                refund_price = current.getPrices().get(productID);
+                total_amount = current.getPurchased().get(productID);
             }
         }
+        else{
+            throw new Exception("You cannot request a refund for this product!");
+        }
 
-        if (total_bought != refund_amount) throw new Exception("Return amount is greater than bought amount!");
+        if (total_amount < refund_amount) throw new Exception("Return amount is greater than bought amount!" + total_amount);
+
         Refund new_refund = new Refund(generate_id(), customer, productID, refund_amount, 
-                                        product_repo.findById(productID).get().getUnitPrice() * refund_amount, 
+                                        refund_price * refund_amount, 
                                         "waiting-approval");
 
         return refund_repo.save(new_refund);
+    }
+
+    public String cancel_order(String invoiceID){
+        Invoice invoice = receipt.findByInvoiceId(invoiceID);
+
+        if(invoice.getOrderStatus().equals("processing")){
+            receipt.delete(invoice);
+
+            return "Successfully deleted order";
+        }
+
+        return "Could not delete order";
     }
 }
 

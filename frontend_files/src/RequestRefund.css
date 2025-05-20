@@ -14,6 +14,26 @@
   text-align: center;
 }
 
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.back-button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -44,6 +64,8 @@
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .order-details h3 {
@@ -62,96 +84,127 @@
 }
 
 .products-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.basic-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  border-left: 3px solid #FF921C;
+  padding: 32px 40px 28px 32px;
+  margin-bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-size: 1.13rem;
 }
 
 .product-item {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-left: 5px solid #FF921C;
+  padding: 24px 20px 20px 20px;
+  margin-bottom: 28px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 15px;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 370px;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-.product-info {
-  flex: 1;
+.product-main-info {
+  margin-bottom: 18px;
+  width: 100%;
+  text-align: left;
 }
 
-.product-info p {
-  margin: 5px 0;
-  font-size: 1rem;
-}
-
-.product-info p strong {
-  color: #333;
-  margin-right: 5px;
+.product-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 2px;
+  display: block;
 }
 
 .product-id {
-  color: #666;
-  font-size: 0.9rem;
-  margin-left: 5px;
+  font-size: 0.95em;
+  color: #888;
+  margin-left: 0;
+  display: block;
+  margin-top: 2px;
 }
 
-.refund-quantity-input {
-  margin-top: 10px;
+.product-field {
+  margin-bottom: 12px;
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.refund-quantity-input label {
-  font-weight: bold;
+.product-label {
+  font-weight: 600;
   color: #333;
-  white-space: nowrap;
+  min-width: 120px;
+  font-size: 1rem;
 }
 
-.refund-quantity-input input {
-  width: 80px;
-  padding: 8px;
+.product-value {
+  color: #444;
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.refund-quantity-inputbox {
+  width: 70px;
+  padding: 7px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.refund-quantity-input input:focus {
-  outline: none;
-  border-color: #FF921C;
-  box-shadow: 0 0 0 2px rgba(255, 146, 28, 0.2);
-}
-
-.max-quantity {
-  color: #666;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  margin-right: 8px;
 }
 
 .refund-total {
-  margin-top: 8px;
   color: #e63946;
   font-weight: bold;
+  margin-left: 8px;
 }
 
 .refund-button {
-  padding: 8px 16px;
+  padding: 15px 20px;
   background: #e63946;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
   white-space: nowrap;
-  margin-left: 15px;
+  width: 100%;
+  margin-top: 18px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .refund-button:hover {
   background: #dc2f3d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(230, 57, 70, 0.4);
 }
 
 .error-message {
@@ -161,4 +214,29 @@
   border-radius: 6px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .product-item {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .products-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .products-list {
+    grid-template-columns: 1fr;
+  }
 } 

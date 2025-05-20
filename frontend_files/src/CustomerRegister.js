@@ -39,7 +39,7 @@ function CustomerRegister() {
 
       if (response.ok) {
         alert("Registration Successful!");
-        setCurrentUser(data); // Sets the CURRENT_USER as a GLOBAL variable
+        setCurrentUser(JSON.parse(data)); // Sets the CURRENT_USER as a GLOBAL variable
         navigate("/home"); // Redirect to homepage
         setError(null); // ✅ Clear error if success
       } else {

@@ -23,6 +23,7 @@ public class Guest extends Customer{
     public Guest(String account_id){
         super(account_id, null, null, "guest.mail", null);
         this.shopping_cart = null;
+        this.setWishlist(null);
     }
 
 }

@@ -3,6 +3,8 @@ package org.project.controller;
 import org.project.model.Invoice;
 import org.project.model.ProductManager;
 import org.project.model.product_model.Comment;
+import org.project.model.product_model.Product;
+import org.project.repository.ProductRepository;
 import org.project.repository.UserRepository;
 import org.project.service.ProductManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class ProductManagerController {
 
     @Autowired 
     private UserRepository user_repo;
+
+    @Autowired
+    private ProductRepository product_repo;
 
     @GetMapping
     public List<ProductManager> get_product_manager(){
@@ -48,5 +53,15 @@ public class ProductManagerController {
     @PostMapping("/advance-order-status")
     public Invoice advance_status(@RequestBody Invoice invoice){
         return managerService.advance_order_status(invoice);
+    }
+
+    @PostMapping("/add-product")
+    public Product add_product(@RequestBody Product product) {
+        return managerService.add_product(product);
+    }
+
+    @DeleteMapping("/delete-product")
+    public void delete_product(@RequestBody Product product) {
+        product_repo.delete(product);
     }
 }

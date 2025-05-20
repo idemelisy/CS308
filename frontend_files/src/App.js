@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from "./AuthContext";
 import { CartProvider } from './CartContext';
@@ -19,11 +19,7 @@ import InvoicePage from "./InvoicePage.js";
 import ApprovalPage from './ApprovalPage';
 import Wishlist from './Wishlist';
 import RequestRefund from './RequestRefund';
-import ProductManager from "./components/ProductManagerDashboard";
-import Orders from "./components/Orders";
-import Comments from "./components/Comments";
-import SalesManagerDashboard from './components/SalesManagerDashboard.js';
-import Invoices from './components/Invoices.js';
+import GuestConversion from './GuestConversion';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -49,11 +45,7 @@ function App() {
               <Route path="/approval-page" element={<ApprovalPage />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/request-refund" element={<RequestRefund />} />
-              <Route path="/product-managers" element={<ProductManager />} />
-              <Route path="/product-managers/orders" element={<Orders />} />
-              <Route path="/product-managers/comments" element={<Comments />} />
-              <Route path="/sales-managers" element={<SalesManagerDashboard />} />
-              <Route path="/sales-managers/invoices" element={<Invoices />} />
+              <Route path="/convert-account" element={<GuestConversion />} />
             </Routes>
           </WishlistProvider>
         </CartProvider>
@@ -63,14 +55,21 @@ function App() {
 }
 
 function Welcome() {
+  const navigate = useNavigate();
+  
   return (
     <div className="container">
       <h1>Welcome to Our Store</h1>
       <p>Please choose an option:</p>
-      <button onClick={() => window.location.href = '/register'}>Register</button>
-      <button onClick={() => window.location.href = '/login'}>Login</button>
+      <button onClick={() => navigate('/register')}>Register</button>
+      <button onClick={() => navigate('/login')}>Login</button>
       <div className="footer">
-        <p>Or <Link to="/continue">Continue without logging in</Link></p>
+        <button 
+          onClick={() => navigate('/continue')}
+          style={{ marginTop: "10px", backgroundColor: "#f0f0f0", color: "#333" }}
+        >
+          Continue as Guest
+        </button>
       </div>
     </div>
   );

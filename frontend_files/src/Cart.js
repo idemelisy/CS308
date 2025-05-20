@@ -1,4 +1,5 @@
-// Cart.js
+// Cart.js - Güncellenmiş (adres alanı ve checkout entegrasyonu)
+
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { CartContext } from './CartContext';
@@ -9,18 +10,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaShoppingCart, FaTrash, FaMinus, FaPlus, FaCreditCard, FaTimes } from 'react-icons/fa';
 
 const Cart = () => {
-  const { cartItems, deleteFromCart, totalPrice } = useContext(CartContext);
+  const { cartItems, deleteFromCart, totalPrice, deliveryAddress, setDeliveryAddress, checkout } = useContext(CartContext);
   const items = Array.isArray(cartItems) ? cartItems : [];
   const navigate = useNavigate();
   const [isGuest, setIsGuest] = useState(false);
-
   const [showBankingModal, setShowBankingModal] = useState(false);
-  const [cardInfo, setCardInfo] = useState({
-    name: '',
-    cardNumber: '',
-    expiryDate: '',
-    ccv: '',
-  });
+  const [cardInfo, setCardInfo] = useState({ name: '', cardNumber: '', expiryDate: '', ccv: '' });
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -31,12 +26,10 @@ const Cart = () => {
     const rawUser = localStorage.getItem("user");
     const user = rawUser ? JSON.parse(rawUser) : null;
     const isGuest = user?.userType === "guest" || user?._class === "guest";
-  
     if (isGuest) {
       navigate("/login");
       return;
     }
-  
     setShowBankingModal(true);
   };
 
@@ -47,8 +40,11 @@ const Cart = () => {
 
   const handleModalSubmit = (e) => {
     e.preventDefault();
+    if (!deliveryAddress.trim()) {
+      toast.error("Please enter your delivery address.");
+      return;
+    }
     setShowBankingModal(false);
-
     toast.success("Invoice has been sent! ✉️", {
       position: "bottom-right",
       autoClose: 2000,
@@ -56,8 +52,7 @@ const Cart = () => {
       closeOnClick: true,
       pauseOnHover: true,
     });
-
-    navigate('/invoice', { state: { invoice: { purchased: cartItems, total_price: totalPrice } } });
+    checkout();
   };
 
   return (
@@ -68,13 +63,11 @@ const Cart = () => {
           {items.length} {items.length === 1 ? 'item' : 'items'}
         </div>
       </div>
-      
       {isGuest && (
         <div className="guest-banner">
           <p>You're shopping as a guest. <a href="/convert-account">Create an account</a> to save your cart and access order history!</p>
         </div>
       )}
-      
       {items.length === 0 ? (
         <div className="empty-cart">
           <FaShoppingCart size={50} color="#ddd" />
@@ -109,7 +102,17 @@ const Cart = () => {
               </li>
             ))}
           </ul>
-          
+          <div className="address-section">
+            <label>Delivery Address</label>
+            <textarea
+              rows="3"
+              value={deliveryAddress}
+              onChange={(e) => setDeliveryAddress(e.target.value)}
+              placeholder="Enter delivery address..."
+              required
+              style={{ width: "100%", marginBottom: "1rem" }}
+            />
+          </div>
           <div className="cart-footer">
             <div className="cart-total">
               Total: <span>${Number(totalPrice || 0).toFixed(2)}</span>
@@ -126,8 +129,6 @@ const Cart = () => {
           <Link to="/home" className="continue-shopping">Continue Shopping</Link>
         </div>
       )}
-
-      {/* Banking Modal */}
       {showBankingModal && (
         <div className="modal">
           <div className="modal-content">
@@ -135,54 +136,22 @@ const Cart = () => {
             <form onSubmit={handleModalSubmit}>
               <div className="form-group">
                 <label>Name on Card</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={cardInfo.name}
-                  onChange={handleModalChange}
-                  placeholder="John Doe"
-                  required
-                />
+                <input type="text" name="name" value={cardInfo.name} onChange={handleModalChange} placeholder="John Doe" required />
               </div>
               <div className="form-group">
                 <label>Card Number</label>
-                <input
-                  type="text"
-                  name="cardNumber"
-                  value={cardInfo.cardNumber}
-                  onChange={handleModalChange}
-                  placeholder="1234 5678 9012 3456"
-                  required
-                />
+                <input type="text" name="cardNumber" value={cardInfo.cardNumber} onChange={handleModalChange} placeholder="1234 5678 9012 3456" required />
               </div>
               <div className="form-group">
                 <label>Expiry Date</label>
-                <input
-                  type="text"
-                  name="expiryDate"
-                  placeholder="MM/YY"
-                  value={cardInfo.expiryDate}
-                  onChange={handleModalChange}
-                  required
-                />
+                <input type="text" name="expiryDate" placeholder="MM/YY" value={cardInfo.expiryDate} onChange={handleModalChange} required />
               </div>
               <div className="form-group">
                 <label>Security Code (CVC)</label>
-                <input
-                  type="text"
-                  name="ccv"
-                  value={cardInfo.ccv}
-                  placeholder="123"
-                  onChange={handleModalChange}
-                  required
-                />
+                <input type="text" name="ccv" value={cardInfo.ccv} placeholder="123" onChange={handleModalChange} required />
               </div>
               <div className="modal-actions">
-                <button 
-                  type="button" 
-                  className="cancel"
-                  onClick={() => setShowBankingModal(false)}
-                >
+                <button type="button" className="cancel" onClick={() => setShowBankingModal(false)}>
                   <FaTimes /> Cancel
                 </button>
                 <button type="submit" className="confirm">
@@ -193,7 +162,6 @@ const Cart = () => {
           </div>
         </div>
       )}
-
       <ToastContainer />
     </div>
   );

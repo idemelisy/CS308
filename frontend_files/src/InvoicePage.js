@@ -105,7 +105,7 @@ function InvoicePage() {
   
       console.log("Payload being sent to backend:", payload);
   
-      const response = await fetch("http://localhost:8080/customers/checkout", {
+      const response = await fetch(`http://localhost:8080/customers/checkout?address=${encodeURIComponent(invoice.delivery_address)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -153,6 +153,7 @@ function InvoicePage() {
             <p><strong>Name:</strong> {invoice.name || "Unknown"} {invoice.surname || ""}</p>
             <p><strong>Email:</strong> {invoice.email || "N/A"}</p>
             <p><strong>Status:</strong> {invoice.orderStatus || "Pending"}</p>
+            <p><strong>Delivery Address:</strong> {invoice.delivery_address || "Not Provided"}</p>
           </div>
           
           <div className="order-summary">

@@ -22,6 +22,7 @@ public class Customer extends User{
     @Field("customer_cart")
     private HashMap<String, Integer> shopping_cart;
     private HashSet<String> wishlist;
+    private String taxID;
 
     public Customer(String account_id, String name, String surname, String email, String password){
         super(account_id, name, surname, email, password);

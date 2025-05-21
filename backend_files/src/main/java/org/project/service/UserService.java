@@ -59,6 +59,8 @@ public class    UserService {
 
             case "customer":
                 new_user = new Customer(new_id, name, surname, email, password);
+                Customer customer = (Customer) new_user;
+                customer.setTaxID(additional_params.get("taxID" + new_id));
                 break;
 
             case "sales_manager":

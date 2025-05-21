@@ -8,6 +8,7 @@ import org.project.service.SalesManagerService;
 import org.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -67,5 +68,9 @@ public class SalesManagerController {
 
         return manager_service.get_chart(start_date, end_date);
     }
-}
 
+    @GetMapping("/download-invoice")
+    public ResponseEntity<byte[]> download_invoice(@RequestParam("invoice_id") String invoice_id) throws Exception{
+        return manager_service.download_pdf(invoice_id);
+    }
+}

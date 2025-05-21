@@ -26,6 +26,7 @@ import SalesManagerDashboard from './components/SalesManagerDashboard.js';
 import Invoices from './components/Invoices.js';
 import CustomerProfile from './components/CustomerProfile.js';
 import Refunds from './components/Refunds.js';
+import CancelOrder from './CancelOrder.js';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -58,6 +59,7 @@ function App() {
               <Route path="/sales-managers/invoices" element={<Invoices />} />
               <Route path="/customer-profile" element={<CustomerProfile />} />
               <Route path="/sales-managers/refunds" element={<Refunds />} />
+              <Route path="/cancel" element={<CancelOrder />} />
             </Routes>
           </WishlistProvider>
         </CartProvider>

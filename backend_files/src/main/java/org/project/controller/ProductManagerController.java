@@ -64,4 +64,9 @@ public class ProductManagerController {
     public void delete_product(@RequestBody Product product) {
         product_repo.delete(product);
     }
+
+    @PostMapping("/update-product")
+    public Product update_stock(@RequestBody Product product, @RequestParam int quantity) {
+        return managerService.update_stock(product, quantity);
+    }
 }

@@ -32,6 +32,8 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const navigate = useNavigate();
 
   const filterVisible = (list) =>
@@ -48,6 +50,8 @@ const Home = () => {
       const data = await response.json();
       const filtered = Array.isArray(data) ? filterVisible(data) : [];
       setProducts(filtered);
+      const uniqueCategories = [...new Set(filtered.map(p => p.category).filter(Boolean))];
+      setCategories(uniqueCategories);
       setLoading(false);
     } catch (error) {
       console.error("❌ Error fetching all products:", error);
@@ -85,6 +89,21 @@ const Home = () => {
         onSorted={(sorted) => setProducts(filterVisible(sorted))}
       />
 
+      <div style={{ margin: "20px 0" }}>
+        <label htmlFor="category-select" style={{ marginRight: 8 }}>Filter by Category:</label>
+        <select
+          id="category-select"
+          value={selectedCategory}
+          onChange={e => setSelectedCategory(e.target.value)}
+          style={{ padding: "4px 8px" }}
+        >
+          <option value="">All Categories</option>
+          {categories.map((cat, i) => (
+            <option key={i} value={cat}>{cat}</option>
+          ))}
+        </select>
+      </div>
+
       {loading ? (
         <div className="loading-container" style={{
           textAlign: 'center',
@@ -98,9 +117,11 @@ const Home = () => {
       ) : (
         <div className="product-grid">
           {products.length > 0 ? (
-            products.map((product) => (
-              <ProductCard key={product.id || product.product_id} product={product} />
-            ))
+            products
+              .filter(product => !selectedCategory || product.category === selectedCategory)
+              .map((product) => (
+                <ProductCard key={product.id || product.product_id} product={product} />
+              ))
           ) : (
             <div className="no-products" style={{
               textAlign: 'center',

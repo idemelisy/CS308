@@ -268,9 +268,9 @@ public class CustomerService {
         if(current.getPurchaser().getAccount_id().equals(customer.getAccount_id()) &&
         current.getOrderStatus().equals("delivered") &&
         current.getPurchased().containsKey(productID)){
-            Duration duration = Duration.between(now, current.getDate());
+            Duration duration = Duration.between(current.getDate(), now);
             System.out.println("Duration: " + duration.toDays());
-            if(duration.toDays() >= 30){
+            if(duration.toDays() <= 30){
                 refund_price = current.getPrices().get(productID);
                 total_amount = current.getPurchased().get(productID);
             }

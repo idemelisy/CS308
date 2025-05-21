@@ -1,5 +1,6 @@
 package org.project.service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -18,9 +19,16 @@ import org.project.repository.RefundRepository;
 import org.project.repository.ShoppingHistory;
 import org.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 
 
 
@@ -168,4 +176,36 @@ public class SalesManagerService {
         
         return chartData;
     }
+
+    public ResponseEntity<byte[]> download_pdf(String invoiceID){
+        Invoice invoice = invoice_repo.findById(invoiceID).orElseThrow(() -> new RuntimeException("Invoice not found"));
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(baos);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+
+        document.add(new Paragraph("Invoice Details"));
+        document.add(new Paragraph("ID: " + invoice.getInvoiceId()));
+        document.add(new Paragraph("Customer: " + invoice.getPurchaser().getAccount_id()));
+        document.add(new Paragraph("Amount: " + invoice.getTotal_price()));
+        document.add(new Paragraph("Date: " + invoice.getDate()));
+        document.add(new Paragraph("Address: " + invoice.getAddress()));
+        document.add(new Paragraph("Status: " + invoice.getOrderStatus()));
+
+
+
+        document.close();
+
+        byte[] pdfBytes = baos.toByteArray();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice_" + invoiceID + ".pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
 }
+

@@ -72,4 +72,9 @@ public class ProductManagerService {
         product.setUnitPrice(-1.0);
         return product_repo.save(product);
     }
+
+    public Product update_stock(Product product, int stock){
+        product.setStock(stock);
+        return product_repo.save(product);
+    }
 }

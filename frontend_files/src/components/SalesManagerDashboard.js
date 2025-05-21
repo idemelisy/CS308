@@ -73,6 +73,7 @@ const SalesManagerDashboard = () => {
       <div className="nav-buttons">
         <button onClick={() => navigate("/sales-managers/invoices")}>Invoices</button>
         <button onClick={() => navigate("/sales-managers/refunds")}>Refunds</button>
+        <button onClick={() => navigate("/sales-managers/chart")}>View Revenue Chart</button>
       </div>
 
       <div className="product-cards">

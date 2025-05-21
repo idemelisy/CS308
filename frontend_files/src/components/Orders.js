@@ -3,28 +3,35 @@ import React, { useEffect, useState } from "react";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
 
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/product-managers/get-orders");
+      if (!response.ok) throw new Error("Failed to fetch orders");
+      const data = await response.json();
+      setOrders(data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+
   useEffect(() => {
-    fetch("http://localhost:8080/product-managers/get-orders")
-      .then((response) => response.json())
-      .then((data) => setOrders(data))
-      .catch((error) => console.error("Error fetching orders:", error));
+    fetchOrders();
   }, []);
 
-  const handleAdvanceOrderStatus = (order) => {
-    fetch("http://localhost:8080/product-managers/advance-order-status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(order),
-    })
-      .then((response) => response.json())
-      .then((updatedOrder) => {
-        setOrders((prevOrders) =>
-          prevOrders.map((o) =>
-            o._id === updatedOrder._id ? updatedOrder : o
-          )
-        );
-      })
-      .catch((error) => console.error("Error advancing order status:", error));
+  const handleAdvanceOrderStatus = async (order) => {
+    try {
+      const response = await fetch("http://localhost:8080/product-managers/advance-order-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+
+      if (!response.ok) throw new Error("Failed to update status");
+
+      await fetchOrders(); // tekrar veri çek
+    } catch (error) {
+      console.error("Error advancing order status:", error);
+    }
   };
 
   return (

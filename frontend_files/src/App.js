@@ -24,9 +24,11 @@ import Orders from "./components/Orders";
 import Comments from "./components/Comments";
 import SalesManagerDashboard from './components/SalesManagerDashboard.js';
 import Invoices from './components/Invoices.js';
+import Chart from './components/Chart.js';
 import CustomerProfile from './components/CustomerProfile.js';
 import Refunds from './components/Refunds.js';
 import CancelOrder from './CancelOrder.js';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,6 +59,7 @@ function App() {
               <Route path="/product-managers/comments" element={<Comments />} />
               <Route path="/sales-managers" element={<SalesManagerDashboard />} />
               <Route path="/sales-managers/invoices" element={<Invoices />} />
+              <Route path="/sales-managers/chart" element={<Chart />} />
               <Route path="/customer-profile" element={<CustomerProfile />} />
               <Route path="/sales-managers/refunds" element={<Refunds />} />
               <Route path="/cancel" element={<CancelOrder />} />

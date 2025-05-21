@@ -102,7 +102,8 @@ const RequestRefund = () => {
 
       const product = productDetails[productId];
       // Convert refund amount to integer (cents)
-      const refundAmount = Math.round(product.unitPrice * quantity * 100);
+      //const refundAmount = Math.round(product.unitPrice * quantity * 100);
+      const refundAmount = quantity;
 
       console.log('Requesting refund with:', {
         productId,
@@ -113,26 +114,21 @@ const RequestRefund = () => {
 
       const user = typeof rawUser === "string" ? JSON.parse(rawUser) : rawUser;
       const customer = {
-        account_id: user.account_id,
-        name: user.name,
-        surname: user.surname,
+        account_id: user.account_id ?? user.userId,
+        name: user.name ?? user.username,
+        surname: user.surname ?? "",
         email: user.email
       };
 
-      console.log('Sending request to:', `http://localhost:8080/customers/request-refund?productID=${productId}&refund_amount=${refundAmount}`);
+      console.log('Sending request to:', `http://localhost:8080/customers/request-refund?productID=${productId}&invoiceID=${selectedOrder.invoiceId}&refund_amount=${refundAmount}`);
       console.log('With customer data:', customer);
 
-      const response = await fetch(`http://localhost:8080/customers/request-refund?productID=${productId}&refund_amount=${refundAmount}`, {
+      const response = await fetch(`http://localhost:8080/customers/request-refund?productID=${productId}&invoiceID=${selectedOrder.invoiceId}&refund_amount=${refundAmount}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          account_id: customer.account_id,
-          name: customer.name,
-          surname: customer.surname,
-          email: customer.email
-        })
+        body: JSON.stringify(customer)
       });
 
       console.log('Response status:', response.status);

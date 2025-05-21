@@ -33,10 +33,19 @@ const Orders = () => {
       <ul>
         {orders.map((order) => (
           <li key={order._id}>
-            <p><strong>Invoice ID:</strong> {order._id}</p>
+            <p><strong>Invoice ID:</strong> {order.invoiceId}</p>
+            <p><strong>Products:</strong></p>
+            <ul>
+              {Object.entries(order.purchased).map(([productId, quantity]) => (
+                <li key={productId}>
+                  <strong>{productId}</strong>: {quantity}
+                </li>
+              ))}
+            </ul>
             <p><strong>Purchaser Email:</strong> {order.purchaser.email}</p>
             <p><strong>Status:</strong> {order.orderStatus}</p>
             <p><strong>Total Price:</strong> ${order.total_price.toFixed(2)}</p>
+            <p><strong>Delivery Address:</strong> {order.address}</p>
             <button
               onClick={() => handleAdvanceOrderStatus(order)}
               disabled={order.orderStatus === "delivered"}

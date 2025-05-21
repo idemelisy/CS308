@@ -68,10 +68,20 @@ const Invoices = () => {
               boxShadow: "0 0 10px rgba(0,0,0,0.05)",
             }}
           >
-            <p><strong>ID:</strong> {invoice._id || "N/A"}</p>
+            <p><strong>Invoice ID:</strong> {invoice.invoiceId || "N/A"}</p>
             <p><strong>Date:</strong> {invoice.date?.split("T")[0]}</p>
+            <p><strong>Products:</strong></p>
+            <ul>
+              {Object.entries(invoice.purchased).map(([productId, quantity]) => (
+                <li key={productId}>
+                  <strong>{productId}</strong>: {quantity}
+                </li>
+              ))}
+            </ul>
             <p><strong>Total:</strong> ${invoice.total_price?.toFixed(2)}</p>
-            <p><strong>Customer:</strong> {invoice.purchaser?.name || invoice.purchaser?.email || "Unknown"}</p>
+            <p><strong>Status:</strong> {invoice.orderStatus || "Pending"}</p>
+            <p><strong>Delivery Address:</strong> {invoice.address || "N/A"}</p>
+            <p><strong>Customer Name:</strong> {invoice.purchaser?.name || invoice.purchaser?.email || "Unknown"}</p>
             <button style={{ backgroundColor: "#ff912b", color: "white" }} onClick={() => handleDownloadPdf(invoice)}>
               Download PDF
             </button>

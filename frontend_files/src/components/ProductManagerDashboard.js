@@ -6,7 +6,9 @@ const ProductManager = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
+  const [stockInputs, setStockInputs] = useState({});
   const navigate = useNavigate();
+
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
@@ -64,6 +66,34 @@ const ProductManager = () => {
       .catch((error) => console.error("Error deleting product:", error));
   };
 
+  const handleUpdateStock = (product) => {
+    const newStock = stockInputs[product.product_id];
+    if (!newStock || isNaN(newStock)) {
+      alert("Please enter a valid stock number.");
+      return;
+    }
+
+    fetch(`http://localhost:8080/product-managers/update-product?quantity=${newStock}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(product),
+    })
+      .then(res => res.json())
+      .then(updated => {
+        setProducts(prev =>
+          prev.map(p =>
+            p.product_id === updated.product_id ? updated : p
+          )
+        );
+        alert(`Stock updated for ${product.name}`);
+        setStockInputs(prev => ({ ...prev, [product.product_id]: "" }));
+      })
+      .catch(err => {
+        console.error("Stock update error:", err);
+        alert("Failed to update stock.");
+      });
+  };
+
   return (
     <div className="product-manager">
       <h1>Product Manager</h1>
@@ -112,16 +142,10 @@ const ProductManager = () => {
                   <input
                     type="number"
                     placeholder="New Stock"
-                    onChange={(e) => {
-                      const newStock = e.target.value;
-                      setProducts((prevProducts) =>
-                        prevProducts.map((p) =>
-                          p.product_id === product.product_id ? { ...p, stock: newStock } : p
-                        )
-                      );
-                    }}
+                    value={stockInputs[product.product_id] || ""}
+                    onChange={(e) => setStockInputs(prev => ({ ...prev, [product.product_id]: e.target.value }))}
                   />
-                  <button onClick={() => alert(`Stock for ${product.name} updated to ${product.stock}`)}>Update Stock</button>
+                  <button onClick={() => handleUpdateStock(product)}>Update Stock</button>
                   <button onClick={() => handleDeleteProduct(product.product_id)}>Delete</button>
                 </li>
               ))}

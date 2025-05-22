@@ -101,9 +101,9 @@ public class NewUnitTests {
         List<Product> products = productRepository.findAllByUnitPriceAsc();
 
         assertEquals(3, products.size());
-        assertEquals(500.0, products.get(0).getUnitPrice()); // Phone
-        assertEquals(750.0, products.get(1).getUnitPrice()); // Tablet
-        assertEquals(1000.0, products.get(2).getUnitPrice()); // Laptop
+        assertEquals(500.0, products.get(0).getUnitPrice()); 
+        assertEquals(750.0, products.get(1).getUnitPrice()); 
+        assertEquals(1000.0, products.get(2).getUnitPrice()); 
     }
 
     @Test
@@ -121,7 +121,6 @@ public class NewUnitTests {
         assertEquals(1000.0, products.get(0).getUnitPrice());
     }
 
-    // Testler: findAllByUnitPriceDesc
     @Test
     void testFindAllByUnitPriceDesc_withMultipleProducts() {
         productRepository.save(new Product("1", "Laptop", "XPS 13", "SN12345", "High-performance laptop", 1000.0, 10, "Electronics", "Active", "DIST001"));
@@ -131,9 +130,9 @@ public class NewUnitTests {
         List<Product> products = productRepository.findAllByUnitPriceDesc();
 
         assertEquals(3, products.size());
-        assertEquals(1000.0, products.get(0).getUnitPrice()); // Laptop
-        assertEquals(750.0, products.get(1).getUnitPrice()); // Tablet
-        assertEquals(500.0, products.get(2).getUnitPrice()); // Phone
+        assertEquals(1000.0, products.get(0).getUnitPrice()); 
+        assertEquals(750.0, products.get(1).getUnitPrice()); 
+        assertEquals(500.0, products.get(2).getUnitPrice()); 
     }
 
     @Test

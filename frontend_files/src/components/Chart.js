@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend
+} from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -15,13 +22,16 @@ const Chart = () => {
       return;
     }
 
-    const formattedStart = `${startDate}T00:00:00Z`;
-    const formattedEnd = `${endDate}T23:59:59Z`;
+    const formattedStart = new Date(startDate).toISOString();
+    const formattedEnd = new Date(endDate).toISOString();
 
     try {
-      const res = await fetch(`http://localhost:8080/sales-managers/get-chart?start_date=${formattedStart}&end_date=${formattedEnd}`);
+      const res = await fetch(
+        `http://localhost:8080/sales-managers/get-chart?start_date=${formattedStart}&end_date=${formattedEnd}`
+      );
       if (!res.ok) throw new Error("Failed to fetch chart data.");
       const data = await res.json();
+      console.log("📊 Backend'den gelen veri:", data);
 
       setChartData({
         labels: ["Revenue", "Cost", "Profit"],
@@ -45,20 +55,26 @@ const Chart = () => {
 
       <div style={{ marginBottom: "2rem" }}>
         <input
-          type="date"
+          type="datetime-local"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           style={{ marginRight: "1rem", padding: "0.5rem" }}
         />
         <input
-          type="date"
+          type="datetime-local"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
           style={{ marginRight: "1rem", padding: "0.5rem" }}
         />
         <button
           onClick={fetchChart}
-          style={{ padding: "0.5rem 1rem", backgroundColor: "#ff912b", color: "white", border: "none", borderRadius: "4px" }}
+          style={{
+            padding: "0.5rem 1rem",
+            backgroundColor: "#ff912b",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
         >
           Generate Chart
         </button>

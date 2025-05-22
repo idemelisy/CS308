@@ -150,32 +150,27 @@ public class SalesManagerService {
         return invoice_repo.findByDateBetween(startDate, endDate);
     }
 
-    public Map<String, Object> get_chart(Instant startDate, Instant endDate){
+    public Map<String, Object> get_chart(Instant startDate, Instant endDate) {
         List<Invoice> invoices = invoice_repo.findByDateBetween(startDate, endDate);
 
-        List<String> labels = new ArrayList<>();
-        List<Double> totalCosts = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        double revenue = 0.0;
+        double cost = 0.0;
 
         for (Invoice inv : invoices) {
-            labels.add(inv.getDate().atZone(ZoneId.systemDefault()).format(formatter));
-            totalCosts.add(inv.getTotal_price());
+            revenue += inv.getTotal_price();
+            cost += inv.getTotal_price() * 0.7; // Assuming cost is 70% of the total price
         }
 
-        Map<String, Object> chartData = new HashMap<>();
-        chartData.put("labels", labels);
-        
-        Map<String, Object> dataset = new HashMap<>();
-        dataset.put("label", "Total Cost");
-        dataset.put("data", totalCosts);
-        dataset.put("borderColor", "#4A90E2");
-        dataset.put("backgroundColor", "#4A90E230");
-        dataset.put("fill", false);
+        double profit = revenue - cost;
 
-        chartData.put("datasets", List.of(dataset));
-        
-        return chartData;
+        Map<String, Object> result = new HashMap<>();
+        result.put("revenue", revenue);
+        result.put("cost", cost);
+        result.put("profit", profit);
+
+        return result;
     }
+
 
     public ResponseEntity<byte[]> download_pdf(String invoiceID){
         Invoice invoice = invoice_repo.findById(invoiceID).orElseThrow(() -> new RuntimeException("Invoice not found"));
